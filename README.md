@@ -102,6 +102,6 @@ K<sub>3</sub> ( K<sub>5</sub> ( K<sub>o</sub>, Git ID length, Git ID, Timestamp,
 | Name        |Position| Role              |
 |-------------|-------------------|-------------------|
 | Sooyoung Lee | TA | Server & Client Coding     |
-| Seokjoo Mun | Member | Protocol Design & Server Coding    |
+| Seokjoo Mun | Member | Protocol Design & Server Coding   |
 | Taekjin Lee | Member | Server & Client Coding |
 | Seunghwan Hong | Member | Client Coding |
