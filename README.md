@@ -119,8 +119,8 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 - Flag (1 byte)
   - 0x00 : 송신 중인 암호화 데이터
   - 0x01 : 평문 데이터
-	- 0x02 : 리스트 업데이트
-	- 0x04 : 하트비트(UDP)
+  - 0x02 : 리스트 업데이트
+  - 0x04 : 하트비트(UDP)
 - One Time Key (4 byte) : 송신자가 보낸 일회성 키를 의미하며, 수신자가 재응답시 해당 키를 포함하여 메시지를 송신하여야 한다.
 - Git ID Len (1 byte) : 송신자의 Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
 - Publickey (8 byte) : 리스트에 업데이트할 대상의 공개키
