@@ -21,21 +21,19 @@
 0                   1                   2                   3                 4
 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         dst IP Address (4byte)                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | Flag (1byte)(0x00)|                One Time key (4byte)                     |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |    One Time Key   | GitID Len(1byte) |           Timestamp (4byte)          |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|               Timestamp              |       Message Length (4byte)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|            Message Length            |            Github ID (? byte)        |
+|               Timestamp              |           Github ID (? byte)         |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                               Github ID                                     |
 +                                                                             +
                                   ...
 +                                                                             +
 |                                                                             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           Message Length (4byte)                            |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                              Message (?byte)                                |
 +														                     +
@@ -48,7 +46,7 @@
 - dst IP Address (4 byte): 다음 목적지의 IP 주소
 - Flag (1 byte)
 	- 0x00 : 송신
-	- 0x01 : 송신에 대한 응답
+	- 0x01 : Reserved
 	- 0x02 : 리스트 업데이트
 	- 0x04 : 하트비트(UDP)
 - One Time Key (4 byte) : 송신자가 보낸 일회성 키를 의미하며, 수신자가 재응답시 해당 키를 포함하여 메시지를 송신하여야 한다.
@@ -77,7 +75,7 @@
 
 수신 노드는 동일한 구조와 송신자가 송신한 One Time Key를 포함하여 다시 송신자에게 메시지를 전송한다. 다음은 각 노드에 번호가 있다고 가정하고, A에서 B로 3 -> 5 -> 4번 노드를 거쳐 전송되는 경우를 나타낸 것이다.
 
-K<sub>3</sub> ( K<sub>5</sub> ( OTK, Git ID length, Git ID, Timestamp, Message Lenght, Message ),  IP<sub>4</sub> ), IP<sub>5</sub>
+K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Message Lenght, Message ),  IP<sub>4</sub> ), IP<sub>5</sub>
 
 - K<sub>n</sub> : n번 요소의 공개키를 이용한 암호화
 - OTK : One Time Key
@@ -115,22 +113,22 @@ K<sub>3</sub> ( K<sub>5</sub> ( OTK, Git ID length, Git ID, Timestamp, Message L
 
 - Flag (1 byte)
 	- 0x00 : 송신
-	- 0x01 : 송신에 대한 응답
+	- 0x01 : Reserved
 	- 0x02 : 리스트 업데이트
 	- 0x04 : 하트비트(UDP)
 - One Time Key (4 byte) : 송신자가 보낸 일회성 키를 의미하며, 수신자가 재응답시 해당 키를 포함하여 메시지를 송신하여야 한다.
 - Git ID Len (1 byte) : 송신자의 Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
-- Publickey (8 byte) : 리스트에 업데이트할 대상의 Publickey
+- Publickey (8 byte) : 리스트에 업데이트할 대상의 공개키
 - IP Address (4 byte) : 리스트에 업데이트할 대상의 IP 주소
 - Target GitID Length (1 byte) : 송신자의 Github ID를 나타내며, 최대 39를 넘지 않는다.
 - Github ID (? byte) : 송신자의 Github ID를 나타내며, 최대 39byte를 넘지 않는다.
 - Target Github ID (? byte) : 리스트에 업데이트할 대상의 Github ID를 나타내며, 최대 39byte를 넘지 않는다.
 
 ### 3) Heatbeat
- Heartbeat는 디렉토리 서버(Directory Server)에서 노드 리스트를 관리하기 위함으로써, 특정 노드의 생존 여부를 위해 사용하며, 반드시 서버에서 해당 데이터를 먼저 전송한다. 이때 해당 패킷은 수신 노드의 공개키로 암호화된 UDP 패킷을 사용한다.
+ Heartbeat는 디렉토리 서버(Directory Server)에서 노드 리스트를 관리하기 위함으로써, 특정 노드의 생존 여부를 위해 사용한다.
 ```
 0                   1                   2                   3				 4
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | Flag (1byte)(0x04)|                 One Time key (4byte)                    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -138,13 +136,13 @@ K<sub>3</sub> ( K<sub>5</sub> ( OTK, Git ID length, Git ID, Timestamp, Message L
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-해당 Heartbeat 메시지를 수신한 노드는 동일한 One Time Key를 내포한 패킷을 서버의 공개키로 암호화하여 다시 송신한다.
+해당 Heartbeat 메시지를 수신한 노드는 동일한 One Time Key를 내포한 패킷을 재송신하여 자신이 살아있음을 디렉토리 서버에게 알려주어야 한다. 이때, 5초를 기준으로 하트비트가 오지않는다면 해당 서버에서 최대 3번 하트비트 패킷을 송신한다. 이때도 오지 않는다면, 서버를 죽은 것으로 간주하여 해당 서버의 등록 요청이 올 때까지 리스트에서 제거한다.
 
 ## Team Member
 -----
 | Name        |Position| Role              |
 |-------------|-------------------|-------------------|
-| Sooyoung Lee | PL | Server & Client Coding     |
+| Suyoung Lee | Leader | Server & Client Coding     |
 | Seokjoo Mun | Member | Protocol Design & Server Coding    |
 | Taekjin Lee | Member | Server & Client Coding |
 | Seunghwan Hong | Member | Client Coding |
