@@ -17,6 +17,7 @@
 
 ## 2. Coummunication Protocol
 ### 1) Data Transfer
+#### A. Plain Message Structure
 ```
 0             1               2               3               4 byte
 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 bit
@@ -58,6 +59,8 @@
 - Message Length (4 byte) : 송신자가 보낸 메시지의 크기
 - Github ID (? byte) : 송신자의 Github ID를 나타내며, 최대 39바이트를 넘지 않는다.
 - Message (? byte) : 송신자가 보낸 메시지
+
+#### B. Encrypted Message Structure
 
 ```
 0             1               2               3               4 byte
