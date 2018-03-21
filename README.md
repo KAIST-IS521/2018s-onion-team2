@@ -28,7 +28,9 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | One Time Key|               Timestamp (4byte)               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  Timestamp  |  GitID Len    |      Github ID (? byte)       |
+|  Timestamp  |            Github ID Length (4byte)           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  GitID Len  |               Github ID (? byte)              |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                          Github ID                          |
 +                                                             +
@@ -46,18 +48,17 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-- dst IP Address (4 byte): 다음 목적지의 IP 주소
 - Flag (1 byte)
 	- 0x00 : 송신 중인 암호화 데이터
 	- 0x01 : 평문 데이터
 	- 0x02 : 리스트 업데이트
 	- 0x04 : 하트비트(UDP)
+- dst IP Address (4 byte): 다음 목적지의 IP 주소, 평문일 경우 최종 목적지의 IP
 - One Time Key (4 byte) : 송신자가 보낸 일회성 키를 의미하며, 수신자가 재응답시 해당 키를 포함하여 메시지를 송신하여야 한다.
-- Git ID Len (1 byte) : 송신자의 Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
-- Github ID (? < 40 byte) : 송신자의 Github ID
 - Timestamp (4 byte) : 송신을 기준으로 설정한 타임스탬프 값
+- Github ID Length (4 byte) : 송신자의 Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
+- Github ID (? < 40 byte) : 송신자의 Github ID, 최대 39바이트를 넘지 않는다.
 - Message Length (4 byte) : 송신자가 보낸 메시지의 크기
-- Github ID (? byte) : 송신자의 Github ID를 나타내며, 최대 39바이트를 넘지 않는다.
 - Message (? byte) : 송신자가 보낸 메시지
 
 #### B. Encrypted Message Structure
@@ -68,8 +69,9 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | Flag (0x00) |             dst IP Address (4byte)            |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| dst IP Addr | Encrypted Data|     Encrypted Data (?byte)    |
-|             | Length (1byte)|                               |
+| dst IP Addr |          Encrypted Data Length (4byte)        |   
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| Enc Data len|             Encrypted Data (?byte)            |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                  Encrypted Data (?byte)                     |
 +                                                             +
@@ -78,6 +80,14 @@
 |                                                             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
+- Flag (1 byte)
+  - 0x00 : 송신 중인 암호화 데이터
+  - 0x01 : 평문 데이터
+  - 0x02 : 리스트 업데이트
+  - 0x04 : 하트비트(UDP)
+- dst IP Address (4 byte): 다음 목적지의 IP 주소, 평문일 경우 최종 목적지의 IP
+- Encrypted Data Length (4 byte) : 암호화된 데이터의 길이
+- Encrypted Data (? byte) : 암호화된 데이터
 
 상기의 패킷 구조는 네트워크 서킷(Circuit)의 요소를 지나는 순서대로 다음 노드가 향해야할 IP와 함께 요소의 공개키(Public Key)로 암호화하여 전송된다.
 
@@ -98,12 +108,13 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |  Timestamp  |  Mode (1byte) |      Publickey (8byte)        |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Publickey (8byte)                          |
+|                       Publickey (8byte)                     |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |         Publickey           |      IP Address (4byte)       |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         IP Address          |    GitID      |    Github     |
-|                             | Length(1byte) |ID (? < 40byte)|
+|         IP Address          |    Github ID Length (4byte)   |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   Github ID Length (4byte)  |     Github ID (? < 40byte)    |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                         Github ID                           |
 +                                                             +
@@ -122,9 +133,9 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 - Mode (1 byte) : 업데이트 할 대상을 노드가 가지고 있는 리스트에서 처리할 방법을 나타낸다.
   - 0x00 : 추가
   - 0x01 : 삭제
-- Git ID Len (1 byte) :리스트에 업데이트 할 대상의  Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
 - Publickey (8 byte) : 리스트에 업데이트할 대상의 공개키
 - IP Address (4 byte) : 리스트에 업데이트할 대상의 IP 주소
+- Git ID Length (4 byte) :리스트에 업데이트 할 대상의  Github ID의 길이를 나타내며, 최대 39byte를 초과할 수 없음
 - Github ID (? byte) : 리스트에 업데이트할 대상의  Github ID를 나타내며, 최대 39byte를 넘지 않는다.
 
 ### 3) Heatbeat
