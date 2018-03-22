@@ -1,5 +1,5 @@
-#ifndef __HBCHECKER_H__
-#define __HBCHECKER_H__
+#ifndef __HBCHECKLIST_H__
+#define __HBCHECKLIST_H__
 #define BYTE unsigned char
 
 #include <list>
@@ -12,6 +12,7 @@ private:
  String Timestamp;
  String IP;
  bool Arrive;
+ int Cnt;
 public:
  hb_node(String _Onetimekey, String _IP, bool _bArrive, String _Timestamp);
  String getOnetimekey();
@@ -29,7 +30,7 @@ public:
  hb_node* searchNode(bool Arrive);	// 찾아라 도착하지 않은놈
  int timeChecker(String Timestamp);	// 추노 대작전
  bool deleteNode(String IP);	// 졌지만 잘싸웠다.
- bool updateNode(String Onetimekey, String _IP, bool bArrive, String Timestamp); // 여어 히사시부리
+ bool updateNode(String Onetimekey, String IP, bool Arrive, String Timestamp); // 여어 히사시부리
  bool appendNode(hb_node append_node);	// 야생의 새로운 노드가 등장했다.
- bool resendClient();			// 산체로 잡아와라
+ hb_node* resendClient();			// 산체로 잡아와라
 }  

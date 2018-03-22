@@ -56,14 +56,42 @@ hb_node* hbchecklist::searchNode(String IP) {
 // hbchecklist::searchNode
 // Description - hbchecklist의 node들 중 도착하지 않은 노드의 포인터를 반환
 // return - hb_node* or Null
-hb_node* hbchecklist::searchNode(bool Arrive) {
+hb_node* hbchecklist::searchNode(bool arrive) {
 
 }
-
 
 // hbchecklist::timeChecker
 // Description - hb_node의 타임아웃 여부를 반환
 // return - True or False
 bool hbchecklist::timeChecker(String Timestamp) {
+
+}
+
+// hbchecklist::deleteNode
+// Description - hbchecklist 중 해당IP를 가진 리스트를 삭제
+// return - True or False
+bool hbchecklist::deleteNode(String IP) {
+
+}
+
+// hbchecklist::updateNode
+// Description - hbchecklist 중 Heartbeat가 온 리스트의 정보를 모두 업데이트
+// return - True or False
+bool hbchecklist::updateNode(String Onetimekey, String IP, bool Arrive, String Timestamp) {
+
+}
+
+
+// hbchecklist::appendNode
+// Description - 새로 만들어진 Node에 대한 Heartbeat 리스트 추가
+// return - True or False
+bool hbchecklist::appendNode(hb_node append_node) {
+
+}
+
+// hb_node*::resendClient
+// Description - 응답이 오지 않은 Node에 대해 죽었는지 살았는지 확인 후 이를 덮어씀
+// return - True
+hb_node* hbchecklist::resendClient() {
 
 }
