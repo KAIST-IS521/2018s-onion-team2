@@ -22,3 +22,5 @@ public:
   bool setOneTimeKey(BYTE* OneTimeKey);
   bool setContents(String content);
 }
+
+#endif
