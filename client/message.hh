@@ -2,6 +2,18 @@
 #ifndef __MESSAGE__
 #define __MESSAGE__
 
+class encMessage{
+private:
+  String nextIP;
+  BYTE* encData;
+publlic:
+  encMessage();
+  String getNextIP();
+  BYTE* getEncData();
+  bool setNextIP(String src);
+  bool setEncData(BYTE* src);
+ }
+
 class message{
 private:
   String Content;

@@ -2,6 +2,31 @@
 #include "message.hh"
 using namespace std;
 
+// encMessage::encMessage
+// Description - encMessage 생성자
+// Return - None
+encMessage::encMessage();
+
+// encMessage::getNextIP
+// Description - 해당 객체의 nextIP 변수의 값을 반환
+// Return - String or Null
+String encMessage::getNextIP();
+
+// encMessage::getEncData
+// Description - 해당 객체의 encData 변수의 값을 반환
+// Return - BYTE* or Null
+BYTE* encMessage::getEncData();
+
+// encMessage::setNextIP
+// Description - 해당 객체의 nextIP 변수에 값을 세팅
+// Return - True / False
+bool encMessage::setNextIP(String src);
+
+// encMessage::setNextIP
+// Description - 해당 객체의 encData 변수에 값을 세팅
+// Return - True / False
+bool encMessage::setEncData(BYTE* src);
+
 // message::message
 message::message(){
 
