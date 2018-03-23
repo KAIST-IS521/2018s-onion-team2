@@ -4,11 +4,20 @@
 
 class heartbeat{
 private:
-  long OneTimeKey;
+  BYTE* OneTimeKey;
   long timestamp;
 public:
-  bool recvHeartbeat();
-  String ParseMessage();
-  bool SendHeartbeat();
-
+  heartbeat();
+  BYTE* getOneTimeKey(BYTE* _OneTimeKey,long timestamp);
+  long getTimestamp();
+  bool setOntTimeKey(BYTE* _OneTimeKey);
+  bool setTimestamp(long _timestamp);
 }
+
+// hbd = heartbeat daemon
+using namespace hbd{
+  BYTE* recvHeartbeat();
+  void heartbeatListener();
+  bool sendHeartbeat(BYTE* send_source);
+}
+#endif
