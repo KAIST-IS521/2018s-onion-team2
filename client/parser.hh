@@ -4,13 +4,15 @@
 
 namespace parser{
   bool streamParser(BYTE* stream);
-  bool message㎩rser(BYTE* stream , message _message);
-  bool list㎩rser(BYTE* stream, nodelist curNodeList);
-  bool hbParser(BYTE* stream, heartbeat recvBeat);
-  
-  BYTE* packMessage(String GithubID, String IP, String PubKeyID);
-  BYTE* packHeartBeat(BYTE* OTK, long Timestamp);
+  message* message㎩rser(BYTE* stream);
+  node* list㎩rser(BYTE* stream);
+  heartbeat* hbParser(BYTE* stream);
+  encMessage* encMessageParser(BYTE* stream);
 
+  BYTE* packEncMessage(encMessage* src);
+  BYTE* packMessage(message* src);
+  BYTE* packNode(node* src);
+  BYTE* packHeartBeat(heartbeat* src);
 }
 
 #endif
