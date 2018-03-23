@@ -31,6 +31,7 @@ public
   bool deleteNode(String GithubID);
   bool deleteNode(String IP);
   int getNodelistLen();
+  int setNodelistLen();
   //int getLastUpdateTime(); // 필요 있을까...?
   bool appendNode(node append_node);
 }
