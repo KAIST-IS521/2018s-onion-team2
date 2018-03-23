@@ -4,10 +4,10 @@
 #define BYTE unsigned char
 
 namespace gpg{
-  BYTE* encBytestream();
+  BYTE* encBytestream(BYTE* src);
   bool keyRefresh();
-  BYTE* decBytestream();
-  bool recvPubKey();
+  BYTE* decBytestream(BYTE* src);
+  bool recvPubKey(String PubKeyID);
 }
 
 #endif
