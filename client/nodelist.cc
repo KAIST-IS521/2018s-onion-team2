@@ -87,6 +87,13 @@ int nodelist::getNodelistLen(){
 
 }
 
+// nodelist::getRandomNode
+// Descripton - count 만큼의 random node들을 반환
+// return - array of node , NULL
+list<node*> nodelist::getRandomNode(int count){
+  
+}
+
 // nodelist::getLastUpdateTime
 // Desciption - list가 최근에 업데이트 된 시각을 반환
 // return - timestamp

@@ -28,7 +28,7 @@ heartbeat* parser::hbParser(char* stream){
 // parser::encMessageParser
 // Description - 0x01(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
 // Return - Null(실패), encMessage*
-encMessage* parser::encMessageParser(char* stream){
+encMessage* parser::encMessageParser(char* stream,string IP){
 }
 
 // parser::packEncMessage

@@ -1,7 +1,7 @@
 #include "timestamp.hh"
 using namespace std;
 
-time_t timestamp::stgetTimestampNow(){
+time_t timestamp::getTimestampNow(){
   return time(NULL);
   
 }

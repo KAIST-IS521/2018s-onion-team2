@@ -30,6 +30,7 @@ public
   bool deleteNode(string GithubID);
   bool deleteNode(string IP);
   int getNodelistLen();
+  list<node*> getRandomNode(int count);
   //int getLastUpdateTime(); // 필요 있을까...?
   bool appendNode(node append_node);
 }
