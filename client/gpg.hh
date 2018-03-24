@@ -1,13 +1,11 @@
-
 #ifndef __gpg__
 #define __gpg__
-#define BYTE unsigned char
 
 namespace gpg{
-  BYTE* encBytestream(BYTE* src);
+  char* encBytestream(char* src);
   bool keyRefresh();
-  BYTE* decBytestream(BYTE* src);
-  bool recvPubKey(String PubKeyID);
+  char* decBytestream(char* src);
+  bool recvPubKey(string PubKeyID);
 }
 
 #endif

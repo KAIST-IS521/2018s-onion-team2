@@ -5,7 +5,7 @@
 // storage::storage
 // Description - storage 객체 생성자
 // return - None
-storage::storage(String path){
+storage::storage(string path){
 
 }
 
@@ -24,14 +24,14 @@ int storage::storeMessage(list<message> messageList){
 // storage::loadMessage
 // Description - 특정 GithubID와 주고 받은 Message를 조회
 // return - Null(실패), list<message> 객체 (성공)
-list<message> storage::loadMessage(String GithubID){
+list<message> storage::loadMessage(string GithubID){
 
 }
 
 // storage::loadMessage
 // Description - 특정 GithubID와 주고 받은 Message를 조회하되, 최근 n개를 조회한다.
 // return - Null(실패), list<message> 객체 (성공)
-list<message> storage::loadMessage(String GithubID, int count){
+list<message> storage::loadMessage(string GithubID, int count){
 
 }
 

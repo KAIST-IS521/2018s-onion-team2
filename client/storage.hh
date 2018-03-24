@@ -3,13 +3,13 @@
 
 class storage{
 private:
-  String path;
+  string path;
 public:
-  storage(String path);
+  storage(string path);
   bool storeMessage(message* target);
   int storeMessage(list<message> messageList);
-  list<message> loadMessage(String GithubID);
-  list<message> loadMessage(String GithubID, int count);
+  list<message> loadMessage(string GithubID);
+  list<message> loadMessage(string GithubID, int count);
   
   //List는 봐서.. 저장을..
 }

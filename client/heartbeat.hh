@@ -4,20 +4,21 @@
 
 class heartbeat{
 private:
-  BYTE* OneTimeKey;
-  long timestamp;
+  char* OneTimeKey;
+  time_t timestamp;
 public:
-  heartbeat();
-  BYTE* getOneTimeKey(BYTE* _OneTimeKey,long timestamp);
-  long getTimestamp();
-  bool setOntTimeKey(BYTE* _OneTimeKey);
-  bool setTimestamp(long _timestamp);
+  heartbeat(char* stream);
+  heartbeat(char* _OneTimeKey,time_t timestamp);
+  char* getOneTimeKey();
+  time_t getTimestamp();
+  bool setOntTimeKey(char* _OneTimeKey);
+  bool setTimestamp(time_t _timestamp);
 }
 
 // hbd = heartbeat daemon
 using namespace hbd{
-  BYTE* recvHeartbeat();
+  char* recvHeartbeat();
   void heartbeatListener();
-  bool sendHeartbeat(BYTE* send_source);
+  bool sendHeartbeat(char* send_source);
 }
 #endif
