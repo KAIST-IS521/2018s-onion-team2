@@ -2,9 +2,9 @@
 #define __gpg__
 
 namespace gpg{
-  char* encBytestream(char* src);
+  char* encBytestream(char* src, string PubKeyID);
   bool keyRefresh();
-  char* decBytestream(char* src);
+  char* decBytestream(char* src, string passphase);
   bool recvPubKey(string PubKeyID);
 }
 

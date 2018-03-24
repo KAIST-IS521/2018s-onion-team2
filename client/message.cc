@@ -6,46 +6,57 @@ using namespace std;
 // Description - encMessage 생성자
 // Return - None
 encMessage::encMessage(){
+  this->nextIP = NULL;
+  this->encData = NULL;
 }
 
 // encMessage::getNextIP
 // Description - 해당 객체의 nextIP 변수의 값을 반환
 // Return - String or Null
 string encMessage::getNextIP(){
+  return this->nextIP;
 }
 
 // encMessage::getEncData
 // Description - 해당 객체의 encData 변수의 값을 반환
-// Return - BYTE* or Null
+// Return - char* or Null
 char* encMessage::getEncData(){
+  return this->encData;
 }
 
 // encMessage::setNextIP
 // Description - 해당 객체의 nextIP 변수에 값을 세팅
 // Return - True / False
 bool encMessage::setNextIP(String src){
+  try{
+    this->nextIP = src;
+  }
+  catch(){
+    return false;
+  }
+  return true;
 }
 
 // encMessage::setNextIP
 // Description - 해당 객체의 encData 변수에 값을 세팅
 // Return - True / False
-bool encMessage::setEncData(BYTE* src){
+bool encMessage::setEncData(char* src){
+  try{
+    this->encData = src
+  }
+  catch(){
+    return false;
+  }
+  return true;
 }
 
 // message::message
 message::message(){
-
-}
-
-message::~message(){
-
-}
-
-// message::setMessage
-// Description - message에 값을 할당하는 함수
-// Return - true = 성공, false = 실패
-bool message::setMessage(){
-
+  this->Content = NULL;
+  this->GithubID = NULL;
+  this->OneTimeKey = NULL;
+  this->timestamp = 0;
+  this->writable = true;
 }
 
 // message::getContents
@@ -114,7 +125,7 @@ bool message::setGithubID(String GithubID){
 // message::setOneTimeKey
 // Description - Writeable Flag가 켜져있을 때 OneTimeKey를 message 객체에 기록
 // Return - true = 성공, false = 실패
-bool message::setOneTimeKey(BYTE* OneTimeKey){
+bool message::setOneTimeKey(char* OneTimeKey){
   if (isWritable()){
     this->OneTimeKey = OneTimeKey;
     return true;

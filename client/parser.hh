@@ -8,7 +8,7 @@ namespace parser{
   heartbeat* hbParser(char* stream);
   encMessage* encMessageParser(char* stream);
 
-  char* packEncMessage(encMessage* src);
+  char* packEncMessage(encMessage* src,string IP);
   char* packMessage(message* src);
   char* packNode(node* src);
   char* packHeartBeat(heartbeat* src);

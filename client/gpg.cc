@@ -5,7 +5,7 @@ using namespace gpg;
 // gpg::encBytestream
 // Description - src의 char stream을 fork-exec를 통하여 gpg encryption을 수행하고 결과를 반환
 // Return - Encrypted Byte* or Null(실패 시)
-char* gpg::encBytestream(char* src){
+char* gpg::encBytestream(char* src, string PubKeyID){
 
 }
 
@@ -19,7 +19,7 @@ bool gpg::keyRefresh(){
 // gpg::decBytestream
 // Description - src의 char stream을 fork-exec를 통하여 gpg decription을 수행하고 결과를 반환
 // Return - Plain char* or Null(실패 시)
-char* gpg::decBytestream(char* src){
+char* gpg::decBytestream(char* src, string passphrase){
 
 }
 
