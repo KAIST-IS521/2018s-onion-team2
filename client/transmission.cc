@@ -5,7 +5,7 @@ using namespace tmd;
 
 // tmd::tmdReciver
 // Description - tmdReciverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
-// Return - Null(실패) or 받은 패킷의 개인키 복호화된 BYTE Strea
+// Return - Null(실패) or 받은 패킷의 개인키 복호화된 BYTE Stream
 BYTE* tmd::tmdReciver(int port){
 }
 
