@@ -1,6 +1,7 @@
 
 #ifndef __HEARTBEAT__
 #define __HEARTBEAT__
+#include "timestamp.hh"
 
 class heartbeat{
 private:
