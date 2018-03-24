@@ -4,35 +4,35 @@
 
 class encMessage{
 private:
-  String nextIP;
-  BYTE* encData;
+  string nextIP;
+  char* encData;
 publlic:
   encMessage();
-  String getNextIP();
-  BYTE* getEncData();
-  bool setNextIP(String src);
-  bool setEncData(BYTE* src);
+  string getNextIP();
+  char* getEncData();
+  bool setNextIP(string src);
+  bool setEncData(char* src);
  }
 
 class message{
 private:
-  String Content;
-  String GithubID;
-  BYTE* OneTimeKey;
-  long timestamp;
+  string Content;
+  string GithubID;
+  char* OneTimeKey;
+  time_t timestamp;
   bool writable;
 public:
   message();
   bool setMessage();
-  String getContents();
-  String getGithubID();
-  String getTimestamp();
-  BYTE* getOneTimeKey();
+  string getContents();
+  string getGithubID();
+  string getTimestamp();
+  char* getOneTimeKey();
   bool isWriteable();
-  bool setTimestamp(long timestamp);
-  bool setGithubID(String githubID);
-  bool setOneTimeKey(BYTE* OneTimeKey);
-  bool setContents(String content);
+  bool setTimestamp(time_t timestamp);
+  bool setGithubID(string githubID);
+  bool setOneTimeKey(char* OneTimeKey);
+  bool setContents(string content);
 }
 
 #endif
