@@ -2,6 +2,9 @@
 #ifndef __HEARTBEAT__
 #define __HEARTBEAT__
 #include "timestamp.hh"
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 class heartbeat{
 private:
