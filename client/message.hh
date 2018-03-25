@@ -12,7 +12,7 @@ publlic:
   char* getEncData();
   bool setNextIP(string src);
   bool setEncData(char* src);
- }
+ };
 
 class message{
 private:
@@ -33,6 +33,6 @@ public:
   bool setGithubID(string githubID);
   bool setOneTimeKey(char* OneTimeKey);
   bool setContents(string content);
-}
+};
 
 #endif
