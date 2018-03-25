@@ -8,9 +8,9 @@ using namespace std;
 
 class userInfo: public node {
 private:
-	string Passphrase;
+  string Passphrase;
 public:
-	userInfo(string GithubID, string PublicKeyID, string IP, string Passphrase);
+  userInfo(string GithubID, string PublicKeyID, string IP, string Passphrase);
 };
 
 #endif
