@@ -142,19 +142,41 @@ char* parser::packEncMessage(encMessage* src){
   stream[1] = src->getNextIP();
   stream[5] = sizeof(src->getEncData());
   stream[9] = src->getEncData();
+
+  return stream;
 }
 
 // parser::packMessage
 // Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packMessage(message* src){
+  char* stream = NULL;
+  stream[0] = 1;
+  stream[1] = src->getNextIP();
+  stream[5] = src->getOneTimeKey();
+  stream[9] = src->getTimestamp();
+  stream[13] = sizeof(src->getGithubID());
+  stream[17] = src->getGithubID();
+  stream[17+sizeof(src->getGithubID()] = sizeof(src->getContents());
+  stream[21+sizeof(src->getGithubID()] = src->getContents();
 
+  return stream;
 }
 
 // parser::packNode
 // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packNode(node* src){
+  char* stream = NULL;
+  stream[0] = 2;
+  stream[1] = src->getTimestamp();
+  stream[5] =
+  stream[6] = src->getPubKeyID();
+  stream[14] = src->getIP();
+  stream[18] = sizeof(src->getGithubID());
+  stream[22] = src->getGithubID();
+
+  return stream;
 
 }
 
@@ -162,5 +184,10 @@ char* parser::packNode(node* src){
 // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
 // Return - Null(실패), char(Packing 된 BYTE strea)
 char* parser::packHeartBeat(heartbeat* src){
+  char* stream = NULL;
+  stream[0] = 4;
+  stream[1] = src->getOneTimeKey();
+  stream[5] = src->getTimestamp();
 
+  return stream;
 }
