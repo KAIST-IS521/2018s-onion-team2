@@ -1,6 +1,7 @@
 #ifndef __transmission__
 #define __transmission__
 #define MESSAGE_PORT 56827
+#define MAX_THREAD 10
 
 // tmd = TransMission Daemon
 namespace tmd{

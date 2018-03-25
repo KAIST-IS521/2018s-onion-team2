@@ -1,14 +1,18 @@
 #include "transmission.hh"
 #include <iostream>
 
+pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
+
 // tmd::tmdReciver
 // Description - tmdReciverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
-// Return - Null(실패) or 받은 패킷의 개인키 복호화된 char Stream < 테스트 완료 >
-char* tmd::tmdReciver(int recvFd){
+// Return - 정상종료 0, 이외 음수 < 통신부 테스트 완료 >
+void* tmd::tmdReciver(void* recvFd){
   char* buf;
   char* tempBuf = new char[1024];
   int curBufSize=0;
   int streamSize=1024;
+  int recvFd = *(int*)_recvFd;
+  pthread_detach(pthread_self());
   try{
     while(read(recvFd,tempBuf,1024)){
       if(curBufSize==0){
@@ -30,9 +34,37 @@ char* tmd::tmdReciver(int recvFd){
     }
   }
   catch(int exceptionCode){
-    return NULL;
   }
-  return buf;
+ // return buf;
+ // processing recived packet
+
+  buf = tmdReciver(recvFd);
+  // decypt buf by pubkey
+ string passphrase('asdfasdfa'); // example
+ buf = gpg::decBytestream(buf,passphrase);
+ switch(buf[0]){
+    // 0x04(heartbeat) 여기서 발견되면 안됨.
+    // MUTEX 잘 써야 함
+    //pthread_mutex_lock(&m);
+    //pthread_mutex_unlock(&m);
+    case '\x00':
+      // 평문 : message 객체로 만들고, storage에 저장
+      break;
+
+    case '\x01':
+      // 암호문 : 길이 및 메세지 따서 해당 서버로 재송신
+
+      break;
+
+    case '\x02':
+      // 리스트 업데이트 : 프로토콜에 맞게 파싱하여 리스트에 추가/삭제
+
+      break;
+    default:
+      // fail : 무시
+      break;
+  }
+  return 0;
 }
 
 // tmd::tmdReciverMain
@@ -42,7 +74,7 @@ int tmd::tmdReciverMain(){
   char* buf;
   int recvFd;
   int sockFd = socket(AF_INET, SOCK_STREAM,0);
-
+  pthread_t tid[MAX_THREAD];
   if (sockFd < 0){
     return -1;
   }
@@ -62,38 +94,13 @@ int tmd::tmdReciverMain(){
   }
 
   while(true){
-    recvFd = accept(sockFd, (struct sockaddr*)&conn_info, (socklen_t*)&conn_len);
-    if(recvFd<0){
-      return -4;
-    }
-    
-    // processing recived packet
-
-    buf = tmdReciver(recvFd);
-
-    // decypt buf by pubkey
-
-    string passphrase('asdfasdfa'); // example
-
-    buf = gpg::decBytestream(buf,passphrase);
-
-    switch(buf[0]){
-      // 0x04(heartbeat) 여기서 발견되면 안됨.
-      case '\x00':
-        // 평문 : message 객체로 만들고, storage에 저장
-        
-        break;
-      case '\x01':
-        // 암호문 : 길이 및 메세지 따서 해당 서버로 재송신
-
-        break;
-      case '\x02':
-        // 리스트 업데이트 : 프로토콜에 맞게 파싱하여 리스트에 추가/삭제
-        
-        break;
-      default:
-        // fail : 무시
-        break;
+    for(int i=0;i<MAX_THREAD;i++){
+      recvFd = accept(sockFd, (struct sockaddr*)&conn_info, (socklen_t*)&conn_len);
+      cout << recvFd << endl;
+      if(recvFd<0){
+        return -4;
+      }
+      pthread_create(&tid[i],NULL,tmdReciver,(void **)&recvFd);
     }
   }
   return 0;
