@@ -5,12 +5,6 @@
 using namespace std;
 
 // node::node
-// Description - node 객체의 생성자 (필요 없다고 판단시 삭제, hh파일 수정 요)
-node::node(){
-
-}
-
-// node::node
 // Description - node 객체의 생성자 ( plain message의 datastream을 직접 파싱하여 node화 )
 // return - None
 node::node(char* datastream){
@@ -20,29 +14,31 @@ node::node(char* datastream){
 // node::node
 // Description - node 객체의 생성자 ( node의 각 요소를 직접 삽입하는 형태 )
 // return - None
-node::node(string _GithubID, String PubKeyID, String IP){
-
+node::node(string _GithubID, string PubKeyID, string IP){
+	this->GithubID = _GithubID;
+	this->PubKeyID = PubKeyID;
+	this->IP = IP;
 }
 
 // node::getGithubID
 // Description - node의 GithubID를 반환
 // return - GithubID or Null(없을 경우)
 string node::getGithubID(){
-
+	return this->GithubID;
 }
 
 // node::getPubKeyID
 // Description  - node의 PubKeyID를 반환
 // return - PubKeyID or Null
 string node::getPubKeyID(){
-
+	return this->PubKeyID;
 }
 
 // node::getIP
 // Description - node의 IP를 반환
 // return - IP or Null
 string node::getIP(){
-
+	return this->IP;
 }
 
 // nodelist::nodelist
@@ -62,9 +58,9 @@ node* nodelist::searchNode(string GithubID){
 // nodelist::searchNode
 // Description - Nodelist의 node들 중 주어진 IP를 가진 노드의 포인터를 반환
 // return - node* or Null
-node* nodelist::searchNode(string IP){
+// node* nodelist::searchNode(string IP){
 
-}
+// }
 
 // nodelist::deleteNode
 // Desciption - Nodelist의 node 중 주어진 GithubID를 가진 노드의 포인터를 반환
@@ -76,9 +72,9 @@ bool nodelist::deleteNode(string GithubID){
 // nodelist::deleteNode
 // Desciption - Nodelist의 node 중 주어진 IP를 가진 노드의 포인터를 반환
 // return - True(성공), False(실패)
-bool nodelist::deleteNode(string IP){
+// bool nodelist::deleteNode(string IP){
 
-}
+// }
 
 // nodelist::getNodelistLen
 // Desciption - Nodelist의 길이(=Node 수)를 반환
