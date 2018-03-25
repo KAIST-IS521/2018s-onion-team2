@@ -137,10 +137,12 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packEncMessage(encMessage* src){
-  char* stream = NULL;
+  int length = strlen(src->getEncData());
+  char* stream = new char[9+length];
+
   stream[0] = 0;
   stream[1] = src->getNextIP();
-  stream[5] = sizeof(src->getEncData());
+  stream[5] = strlen(src->getEncData());
   stream[9] = src->getEncData();
 
   return stream;
@@ -155,10 +157,10 @@ char* parser::packMessage(message* src){
   stream[1] = src->getNextIP();
   stream[5] = src->getOneTimeKey();
   stream[9] = src->getTimestamp();
-  stream[13] = sizeof(src->getGithubID());
+  stream[13] = strlen(src->getGithubID());
   stream[17] = src->getGithubID();
-  stream[17+sizeof(src->getGithubID()] = sizeof(src->getContents());
-  stream[21+sizeof(src->getGithubID()] = src->getContents();
+  stream[17+strlen(src->getGithubID()] = strlen(src->getContents());
+  stream[21+strlen(src->getGithubID()] = src->getContents();
 
   return stream;
 }
@@ -169,11 +171,11 @@ char* parser::packMessage(message* src){
 char* parser::packNode(node* src){
   char* stream = NULL;
   stream[0] = 2;
-  stream[1] = src->getTimestamp();
-  stream[5] =
+  stream[1] = src->getTimestamp();            // node에는 timestamp 관련 변수나 함수가 없음.
+  stream[5] =                                 // mode관련 변수가 없음.
   stream[6] = src->getPubKeyID();
   stream[14] = src->getIP();
-  stream[18] = sizeof(src->getGithubID());
+  stream[18] = strlen(src->getGithubID());
   stream[22] = src->getGithubID();
 
   return stream;
