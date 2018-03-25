@@ -48,3 +48,11 @@ void ui::printBanner(userInfo user){
   cin >> /* githubID */;
   printMessages(githubID);
 }
+
+void ui::printMessages(string githubID){
+  // for messages in the msg list, print messages
+
+  cin >> /* exit or send message */
+  // if exit => printBanner
+  // else send message
+}
