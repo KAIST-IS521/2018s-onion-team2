@@ -4,8 +4,9 @@
 #include "userInfo.hh"
 
 namespace ui{
-  void printBanner();
-	userInfo login();
+  void printBanner(userInfo user);
+  userInfo login();
+  void clearScreen();
 }
 
 #endif
