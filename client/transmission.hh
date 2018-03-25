@@ -1,5 +1,6 @@
 #ifndef __transmission__
 #define __transmission__
+#define MESSAGE_PORT 56827
 
 // tmd = TransMission Daemon
 namespace tmd{

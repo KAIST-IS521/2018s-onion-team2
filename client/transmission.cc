@@ -37,7 +37,7 @@ char* tmd::tmdReciver(int recvFd){
 
 // tmd::tmdReciverMain
 // Description - 지속적으로 tmdReciver 함수를 돌림. tmdReciver에서 반환한 char STREAM을 처리하고 계속 돌아야함.
-// Return - 0(정상 종료), -1(이상 종료) // 구현하기 힘들면 void로 변경해도 무방. < 테스트 완료 >
+// Return - 0(정상 종료), -1(이상 종료) // 구현하기 힘들면 void로 변경해도 무방. < 통신부 테스트 완료 >
 int tmd::tmdReciverMain(){
   char* buf;
   int recvFd;
@@ -51,7 +51,7 @@ int tmd::tmdReciverMain(){
   bzero((char*)&sock_info, sizeof(sock_info));
   sock_info.sin_family = AF_INET;
   sock_info.sin_addr.s_addr = INADDR_ANY;
-  sock_info.sin_port = htons(60001); // #### port discuss ####
+  sock_info.sin_port = htons(MESSAGE_PORT);
 
   if (0 > bind(sockFd,(struct sockaddr *) &sock_info,sizeof(sock_info))){
     return -2;
@@ -80,15 +80,19 @@ int tmd::tmdReciverMain(){
     switch(buf[0]){
       // 0x04(heartbeat) 여기서 발견되면 안됨.
       case '\x00':
+        // 평문 : message 객체로 만들고, storage에 저장
         
         break;
       case '\x01':
+        // 암호문 : 길이 및 메세지 따서 해당 서버로 재송신
+
         break;
       case '\x02':
+        // 리스트 업데이트 : 프로토콜에 맞게 파싱하여 리스트에 추가/삭제
         
         break;
       default:
-        //fail
+        // fail : 무시
         break;
     }
   }
@@ -144,7 +148,7 @@ bool tmd::tmdSender(string IP, char* scheme, int scheme_len){
   bzero((char*)&sock_info, sizeof(sock_info));
   sock_info.sin_family = AF_INET;
   sock_info.sin_addr.s_addr = inet_addr(IP.c_str());
-  sock_info.sin_port = htons(60001); // #### port discuss ####
+  sock_info.sin_port = htons(MESSAGE_PORT);
 
   if (0 > connect(sockFd,(struct sockaddr *) &sock_info,sizeof(sock_info))){
     return -2;

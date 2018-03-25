@@ -68,7 +68,7 @@ char* hbd::recvHeartbeat()
     struct sockaddr_in server_info;
     memset(&server_info,0,sizeof(server_info)); // initalize server_info to 0
     server_info.sin_family=AF_INET;
-    server_info.sin_port = htons(60000);              // discuss about it ### PORT ###
+    server_info.sin_port = htons(HB_PORT);              // discuss about it ### PORT ###
     server_info.sin_adr.s_addr=inet_addr("127.0.0.1"); // discuss about it ### SERVER IP ###
 
     if(-1 == bind(socketFd,(struct sockaddr*)&server_addr,sizeof(server_addr))){
@@ -97,7 +97,7 @@ void hbd::heartbeatListener()
       char* gotData = recvHeartbeat();
       if(gotData!=NULL){
         heartbeat parsedData = new heartbeat(gotData);
-        parsedData.setTimestamp(timestamp::getTimestampNow());                                // timestamp 함수 제작 요
+        parsedData.setTimestamp(timestamp::getTimestampNow());
         char* packedData = parser::packHeartBeat(&parsedData);
         
         if(packedData!=NULL){
@@ -131,7 +131,7 @@ bool hbd::sendHeartbeat(char* send_source, int send_size)
     struct sockaddr_in server_info;
     memset(&server_info,0,sizeof(server_info)); // initalize server_info to 0
     server_info.sin_family=AF_INET;
-    server_info.sin_port = htons(60000);              // discuss about it ### PORT ###
+    server_info.sin_port = htons(HB_PORT);              // discuss about it ### PORT ###
     server_info.sin_addr.s_addr=inet_addr("127.0.0.1"); // discuss about it ### SERVER IP ###
   
     sendto(socketFd, send_source, send_size+1,0,(struct sockaddr*)&server_info,sizeof(server_info));
