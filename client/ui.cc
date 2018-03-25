@@ -39,4 +39,11 @@ void ui::clearScreen()
 void ui::printBanner(userInfo user){
   clearScreen();
   cout << "Welcome to Onion Messanger, " + user.getGithubID() + "!!!" << endl;
+
+  // for node in node_list
+    cout << /*[node_idx] user githubID : N new messages*/ << endl;
+
+  cout << "Select the one you want to chat with: ";
+  cin >> /* node_idx */;
+  printMessages(string githubID);
 }
