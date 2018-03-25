@@ -1,6 +1,7 @@
 #include <iostream>
 #include "ui.hh"
 #include "userInfo.hh"
+#include "hearbeat.hh"
 
 using namespace std;
 
@@ -17,6 +18,12 @@ userInfo ui::login(){
   // We may need to change the code to automatically detect user's ip address
   cout << "Please enter your IP address: ";
   cin >> IP;
+
+  // Send an info that user has logged-in to the server
+
+  // Retrieve client list from the Server
+
+  // Create a thread for the listening
 
   return userInfo(GithubId, PublicKeyID, IP, Passphrase);
 }
