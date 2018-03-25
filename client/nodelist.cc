@@ -15,30 +15,30 @@ node::node(char* datastream){
 // Description - node 객체의 생성자 ( node의 각 요소를 직접 삽입하는 형태 )
 // return - None
 node::node(string _GithubID, string PubKeyID, string IP){
-	this->GithubID = _GithubID;
-	this->PubKeyID = PubKeyID;
-	this->IP = IP;
+  this->GithubID = _GithubID;
+  this->PubKeyID = PubKeyID;
+  this->IP = IP;
 }
 
 // node::getGithubID
 // Description - node의 GithubID를 반환
 // return - GithubID or Null(없을 경우)
 string node::getGithubID(){
-	return this->GithubID;
+  return this->GithubID;
 }
 
 // node::getPubKeyID
 // Description  - node의 PubKeyID를 반환
 // return - PubKeyID or Null
 string node::getPubKeyID(){
-	return this->PubKeyID;
+  return this->PubKeyID;
 }
 
 // node::getIP
 // Description - node의 IP를 반환
 // return - IP or Null
 string node::getIP(){
-	return this->IP;
+  return this->IP;
 }
 
 // nodelist::nodelist
