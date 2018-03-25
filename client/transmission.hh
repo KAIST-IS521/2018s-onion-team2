@@ -3,10 +3,10 @@
 
 // tmd = TransMission Daemon
 namespace tmd{
-  char* tmdReciver(int port);
+  char* tmdReciver();
   int tmdReciverMain();
-  string* tmdPathSelecter();
-  char* tmdPackPacket(BYTE* plain);
+  list<node*> tmdPathSelecter();
+  char* tmdPackPacket(node* sender, node* reciver, BYTE* plain);
   bool tmdSender(string IP,char* scheme);
 }
 
