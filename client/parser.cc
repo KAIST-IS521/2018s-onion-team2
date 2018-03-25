@@ -80,7 +80,7 @@ node* parser::list㎩rser(char* stream){
     *temp = node(ID, PK, IP);
   }
 
-  else if (stream[5] == 1){
+  else if (stream[5] == 1){                   // MODE가 삭제인 경우. 아직 코딩 못함.
     string msg = "";
     for (int i = 0; i<8; i++){
       msg += stream[6+i];
@@ -137,7 +137,7 @@ encMessage* parser::encMessageParser(char* stream,string IP){
   }
 
   unsigned int enc_data_length = stream[5];
-  char* enc_data;                     
+  char* enc_data;
   strncpy(enc_data, &stream[9], enc_data_length);
   if (!temp->setEncData(enc_data)){
     cout << "Wrong Encrypted Data" << endl;
@@ -153,10 +153,11 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 char* parser::packEncMessage(encMessage* src){
   char* stream = "0";
 
-  const char IP[4] = src->getNextIP();
+  char IP[4] = src->getNextIP();
   strcat(stream, IP);
-  const char length[4] = strlen(src->getEncData());
-  stream[9] = src->getEncData();
+  int data_length = strlen(src->getEncData());
+  strncat(stream, (char)data_length, 4);
+  strcat(stream, src->getEncData());
 
   return stream;
 }
@@ -166,13 +167,19 @@ char* parser::packEncMessage(encMessage* src){
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packMessage(message* src){
   char* stream = "1";
-  stream[1] = src->getNextIP();
-  stream[5] = src->getOneTimeKey();
-  stream[9] = src->getTimestamp();
-  stream[13] = strlen(src->getGithubID());
-  stream[17] = src->getGithubID();
-  stream[17+strlen(src->getGithubID()] = strlen(src->getContents());
-  stream[21+strlen(src->getGithubID()] = src->getContents();
+  strcat(stream, src->getNextIP());
+  strcat(stream, src->getOneTimeKey());
+  strcat(stream, src->getTimestamp());
+
+  int ID_length = strlen(src->getGithubID());
+  strncat(stream, (char)ID_length, 4);
+
+  strcat(stream, src->getGithubID());
+
+  int con_length = strlen(src->getContents());
+  strncat(stream, (char)con_length, 4);
+
+  strcat(stream, src->getContents());
 
   return stream;
 }
@@ -182,12 +189,15 @@ char* parser::packMessage(message* src){
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packNode(node* src){
   char* stream = "2";
-  stream[1] = src->getTimestamp();            // node에는 timestamp 관련 변수나 함수가 없음.
-  stream[5] =                                 // mode관련 변수가 없음.
-  stream[6] = src->getPubKeyID();
-  stream[14] = src->getIP();
-  stream[18] = strlen(src->getGithubID());
-  stream[22] = src->getGithubID();
+  strcat(stream, src->getTimestamp());        // node에는 timestamp 관련 변수나 함수가 없음.
+  //strcat(stream, src->);                    // mode관련 변수가 없음.
+  strcat(stream, src->getPubKeyID());
+  strcat(stream, src->getIP());
+
+  int ID_length = strlen(src->getGithubID());
+  strncat(stream, (char)ID_length, 4);
+
+  strcat(stream, src->getGithubID());
 
   return stream;
 
@@ -198,8 +208,8 @@ char* parser::packNode(node* src){
 // Return - Null(실패), char(Packing 된 BYTE strea)
 char* parser::packHeartBeat(heartbeat* src){
   char* stream = "4";
-  stream[1] = src->getOneTimeKey();
-  stream[5] = src->getTimestamp();
+  strcat(stream, src->getOneTimeKey());
+  strcat(stream, src->getTimestamp());
 
   return stream;
 }
