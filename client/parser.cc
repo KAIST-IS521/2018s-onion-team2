@@ -8,13 +8,14 @@ using namespace std;
 // Description - 0x00(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
 message* parser::message㎩rser(char* stream){
-  message* temp;
+  message* temp = new message;
   if (steam[0] != 0){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  char* OTK = stream[5];    // OTK가 5~8바이트가 되야함. (4바이트)
+  char OTK[4];
+  strncpy(OTK, &stream[5], 4);          // OTK가 5~8바이트가 되야함. (4바이트)
   if (!temp->setOneTimeKey(OTK)){
     cout << "Wrong OneTimeKey" << endl;
     return NULL;
@@ -27,16 +28,20 @@ message* parser::message㎩rser(char* stream){
   }
 
   unsigned int ID_length = stream[13];     // GithubID의 length가 되야함. (4바이트)
-  string ID = NULL;
-  memcpy(ID, stream[17], ID_length);
-  if (!temp->setGithubID(ID) || length > 39){
+  String ID = "";
+  for (int i = 0; i<msg_length; i++){
+    ID += stream[17+i];
+  }
+  if (!temp->setGithubID(ID) || ID_length > 39){
     cout << "Wrong GithubID" << endl;
     return NULL;
   }
 
   unsigned int msg_length = stream[17+ID_length];     // message의 length가 되야햠. (4바이트)
-  string msg = NULL;
-  memcpy(msg, stream[21+ID_length], msg_length);
+  string msg = "";
+  for (int i = 0; i<msg_length; i++){
+    msg += stream[21+i];
+  }
 
   if (!temp->setMessage(msg)){
     cout << "Wrong Message" << endl;
@@ -57,25 +62,29 @@ node* parser::list㎩rser(char* stream){
 
   if (stream[5] == 0){
     string PK = NULL;
-    memcpy(PK, stream[6], 8);
+    memcpy(PK, &stream[6], 8);
 
     string IP = NULL;
-    memcpy(PK, stream[14], 4);
+    memcpy(PK, &stream[14], 4);
 
     unsigned int ID_length = stream[18];
     if (ID_length > 39){
       cout << "Wrong GithubID length" << endl;
       return NULL;
     }
-    string ID = NULL;
-    memcpy(ID, stream[22], ID_length);
+    string ID = "";
+    for (int i = 0; i<ID_length; i++){
+      ID += stream[22+i];
+    }
 
     *temp = node(ID, PK, IP);
   }
 
   else if (stream[5] == 1){
-    string msg = NULL;
-    memcpy(msg, stream[6], 8);
+    string msg = "";
+    for (int i = 0; i<8; i++){
+      msg += stream[6+i];
+    }
   }
 
   return temp;
@@ -86,12 +95,14 @@ node* parser::list㎩rser(char* stream){
 // Return - Null(실패), heartbeat*
 heartbeat* parser::hbParser(char* stream){
   heartbeat* temp;
-  if (steam[0] != 4){
+  if (stream[0] != 4){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  char* OTK = stream[5];    // OTK가 5~8바이트가 되야함. (4바이트)
+  char OTK[4];
+  strncpy(OTK, &stream[1], 4);
+
   if (!temp->setOneTimeKey(OTK)){
     cout << "Wrong OneTimeKey" << endl;
     return NULL;
@@ -116,15 +127,18 @@ encMessage* parser::encMessageParser(char* stream,string IP){
     return NULL;
   }
 
-  string next_IP = NULL;
-  memcpy(next_IP, stream[1], 4);
+  string next_IP = "";
+  for (int i = 0; i<4; i++){
+    next_IP += stream[1+i];
+  }
   if (!temp->setNextIP(next_IP)){
     cout << "Wrong Next IP" << endl;
     return NULL;
   }
 
   unsigned int enc_data_length = stream[5];
-  char* enc_data = stream[9];                     // 이부분은 고쳐야함.
+  char* enc_data;                     
+  strncpy(enc_data, &stream[9], enc_data_length);
   if (!temp->setEncData(enc_data)){
     cout << "Wrong Encrypted Data" << endl;
     return NULL;
@@ -137,12 +151,11 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packEncMessage(encMessage* src){
-  int length = strlen(src->getEncData());
-  char* stream = new char[9+length];
+  char* stream = "0";
 
-  stream[0] = 0;
-  stream[1] = src->getNextIP();
-  stream[5] = strlen(src->getEncData());
+  const char IP[4] = src->getNextIP();
+  strcat(stream, IP);
+  const char length[4] = strlen(src->getEncData());
   stream[9] = src->getEncData();
 
   return stream;
@@ -152,8 +165,7 @@ char* parser::packEncMessage(encMessage* src){
 // Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packMessage(message* src){
-  char* stream = NULL;
-  stream[0] = 1;
+  char* stream = "1";
   stream[1] = src->getNextIP();
   stream[5] = src->getOneTimeKey();
   stream[9] = src->getTimestamp();
@@ -169,8 +181,7 @@ char* parser::packMessage(message* src){
 // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packNode(node* src){
-  char* stream = NULL;
-  stream[0] = 2;
+  char* stream = "2";
   stream[1] = src->getTimestamp();            // node에는 timestamp 관련 변수나 함수가 없음.
   stream[5] =                                 // mode관련 변수가 없음.
   stream[6] = src->getPubKeyID();
@@ -186,8 +197,7 @@ char* parser::packNode(node* src){
 // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
 // Return - Null(실패), char(Packing 된 BYTE strea)
 char* parser::packHeartBeat(heartbeat* src){
-  char* stream = NULL;
-  stream[0] = 4;
+  char* stream = "4";
   stream[1] = src->getOneTimeKey();
   stream[5] = src->getTimestamp();
 
