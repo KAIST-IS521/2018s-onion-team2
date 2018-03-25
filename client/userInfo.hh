@@ -2,6 +2,7 @@
 #define __userinfo__
 
 #include <iostream>
+#include <list>
 #include "nodelist.hh"
 
 using namespace std;
@@ -9,6 +10,7 @@ using namespace std;
 class userInfo: public node {
 private:
   string Passphrase;
+  // Need a list that contains unread messages
 public:
   userInfo(string GithubID, string PublicKeyID, string IP, string Passphrase);
 };
