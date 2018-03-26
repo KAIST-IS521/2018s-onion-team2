@@ -1,15 +1,16 @@
 #include "parser.hh"
 #include <iostream>
 #include <cstring>
+#include "timestamp.hh"
 using namespace std;
 
 
 // parser::messageParser
-// Description - 0x00(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
+// Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
 message* parser::message㎩rser(char* stream){
-  message* temp = new message;
-  if (steam[0] != 0){
+  message* temp = new message();
+  if (steam[0] != 1){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
@@ -54,7 +55,7 @@ message* parser::message㎩rser(char* stream){
 // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
 // Return - Null(실패), node*
 node* parser::list㎩rser(char* stream){
-  node* temp;
+  node* temp = new node();
   if (steam[0] != 2){
     cout << "Wrong Parser" << endl;
     return NULL;
@@ -94,7 +95,7 @@ node* parser::list㎩rser(char* stream){
 // Description - 0x04(heartbeat) char stream에 대한 Parsing을 실시하고 heartbeat형태로 반환
 // Return - Null(실패), heartbeat*
 heartbeat* parser::hbParser(char* stream){
-  heartbeat* temp;
+  heartbeat* temp = new heartbeat();
   if (stream[0] != 4){
     cout << "Wrong Parser" << endl;
     return NULL;
@@ -118,10 +119,10 @@ heartbeat* parser::hbParser(char* stream){
 }
 
 // parser::encMessageParser
-// Description - 0x01(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
+// Description - 0x00(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
 // Return - Null(실패), encMessage*
 encMessage* parser::encMessageParser(char* stream,string IP){
-  encMessage* temp;
+  encMessage* temp = new encMessage();
   if (steam[0] != 0){
     cout << "Wrong Parser" << endl;
     return NULL;
@@ -189,8 +190,9 @@ char* parser::packMessage(message* src){
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packNode(node* src){
   char* stream = "2";
-  strcat(stream, src->getTimestamp());        // node에는 timestamp 관련 변수나 함수가 없음.
-  //strcat(stream, src->);                    // mode관련 변수가 없음.
+  time_t TS = getTimestampNow();
+  strcat(stream, timestamp2byte(TS));       
+  strcat(stream, "1");
   strcat(stream, src->getPubKeyID());
   strcat(stream, src->getIP());
 
