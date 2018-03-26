@@ -106,11 +106,11 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 | Flag (0x02) |               Timestamp (4byte)               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  Timestamp  |  Mode (1byte) |      Publickey (8byte)        |
+|  Timestamp  |  Mode (1byte) |     Publickey ID (8byte)      |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                       Publickey (8byte)                     |
+|                      Publickey ID (8byte)                   |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|         Publickey           |      IP Address (4byte)       |
+|        Publickey ID         |      IP Address (4byte)       |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |         IP Address          |    Github ID Length (4byte)   |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -162,4 +162,4 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 | Suyoung Lee | Leader | Server & Client Coding     |
 | Seokjoo Mun | Member | Protocol Design & Server Coding    |
 | Taekjin Lee | Member | Server & Client Coding |
-| Seunghwan Hong | Member | Client Coding |
+| Seunghan Hong | Member | Client Coding |
