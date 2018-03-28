@@ -62,11 +62,15 @@ node* parser::list㎩rser(char* stream){
   }
 
   if (stream[5] == 0){
-    string PK = NULL;
-    memcpy(PK, &stream[6], 8);
+    string PK = "";
+    for (int i = 0; i<8; i++){
+      PK += stream[6+i];
+    }
 
-    string IP = NULL;
-    memcpy(PK, &stream[14], 4);
+    string IP = "";
+    for (int i = 0; i<8; i++){
+      IP += stream[14+i];
+    }
 
     unsigned int ID_length = stream[18];
     if (ID_length > 39){
@@ -82,9 +86,25 @@ node* parser::list㎩rser(char* stream){
   }
 
   else if (stream[5] == 1){                   // MODE가 삭제인 경우. 아직 코딩 못함.
-    string msg = "";
+    string PK = "";
     for (int i = 0; i<8; i++){
-      msg += stream[6+i];
+      PK += stream[6+i];
+    }
+
+    string IP = "";
+    for (int i = 0; i<8; i++){
+      IP += stream[14+i];
+    }
+
+    unsigned int ID_length = stream[18];
+    if (ID_length > 39){
+      cout << "Wrong GithubID length" << endl;
+      return NULL;
+    }
+
+    string ID = "";
+    for (int i = 0; i<ID_length; i++){
+      ID += stream[22+i];
     }
   }
 
@@ -191,7 +211,7 @@ char* parser::packMessage(message* src){
 char* parser::packNode(node* src){
   char* stream = "2";
   time_t TS = getTimestampNow();
-  strcat(stream, timestamp2byte(TS));       
+  strcat(stream, timestamp2byte(TS));
   strcat(stream, "1");
   strcat(stream, src->getPubKeyID());
   strcat(stream, src->getIP());
