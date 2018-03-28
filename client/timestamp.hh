@@ -1,7 +1,9 @@
 #ifndef __timestamp__
 #define __timestamp__
 #include <ctime>
-
+#include <string>
+#include <sstream>
+using namespace std;
 namespace timestamp{
   
   time_t getTimestampNow();
@@ -12,4 +14,4 @@ namespace timestamp{
 
 }
 
-#endif __endif__
+#endif
