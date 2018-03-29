@@ -1,7 +1,9 @@
 #ifndef __nodelist__
 #define __nodelist__
 
+#include <iostream>
 #include <list>
+#include <cstdlib>
 
 using namespace std;
 
@@ -11,8 +13,6 @@ private:
   string PubKeyID;
   string IP;
 public:
-  node();
-  node(char* datastream);
   node(string _GithubID, String PubKeyID, String IP);
   string getGithubID();
   string getPubKeyID();
@@ -21,17 +21,15 @@ public:
 
 class nodelist(){
 private:
-  list<node> nodelist;
-  //time_t updatetime; // 필요 있을까...?
+  list<node*> nodelist;
 public
-  nodelist(node first_node);
+  nodelist(node* first_node);
   node* searchNode(string GithubID);
   node* searchNode(string IP);
   bool deleteNode(string GithubID);
   bool deleteNode(string IP);
   int getNodelistLen();
-  list<node*> getRandomNode(int count);
-  //int getLastUpdateTime(); // 필요 있을까...?
-  bool appendNode(node append_node);
+  list* getRandomNode();
+  bool appendNode(node* append_node);
 }
 #endif
