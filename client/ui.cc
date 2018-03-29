@@ -1,9 +1,31 @@
 #include <iostream>
+#include <cstdlib>
 #include "ui.hh"
 #include "userInfo.hh"
-#include "hearbeat.hh"
+#include "heartbeat.hh"
 
 using namespace std;
+
+// Original code for this function can be found on https://gist.github.com/wewearglasses/2521037
+string ui::getIPAddr(){
+  string ip_addr = "";
+  struct ifaddrs* net_ifa = NULL;
+  struct ifaddrs* cur_ifa = NULL;
+
+  if(!getifaddrs(&net_ifa)){
+    cur_ifa = net_ifa;
+    while(cur_ifa) {
+      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("docker0")) {
+        ip_addr = inet_ntoa(((struct sockaddr_in*)cur_ifa->ifa_addr)->sin_addr);
+      }
+      cur_ifa = cur_ifa->ifa_next;
+    }
+  }
+
+  if(!net_ifa)
+    freeifaddrs(net_ifa);
+  return ip_addr;
+}
 
 userInfo ui::login(){
   string GithubId, PublicKeyID, IP, Passphrase;
@@ -15,9 +37,9 @@ userInfo ui::login(){
   cout << "Please enter passphrase: ";
   cin >> Passphrase;
 
-  // We may need to change the code to automatically detect user's ip address
-  cout << "Please enter your IP address: ";
-  cin >> IP;
+  if((IP = ui::getIPAddr()) == ""){
+    exit(-1)
+  }
 
   // Send an info that user has logged-in to the server
 
