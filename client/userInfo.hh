@@ -1,8 +1,6 @@
 #ifndef __userinfo__
 #define __userinfo__
 
-#include <iostream>
-#include <list>
 #include "nodelist.hh"
 
 using namespace std;

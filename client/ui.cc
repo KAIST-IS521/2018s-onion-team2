@@ -1,5 +1,3 @@
-#include <iostream>
-#include <cstdlib>
 #include "ui.hh"
 #include "userInfo.hh"
 #include "heartbeat.hh"

@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ui.hh"
 #include "userInfo.hh"
 using namespace std;
