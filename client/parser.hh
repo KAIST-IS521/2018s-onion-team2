@@ -1,5 +1,6 @@
 #ifndef __parser__
 #define __parser__
+#include "userInfo.hh"
 
 namespace parser{
   bool streamParser(char* stream);
@@ -12,6 +13,7 @@ namespace parser{
   char* packMessage(message* src);
   char* packNode(node* src);
   char* packHeartBeat(heartbeat* src);
+  char* packListUpdate(char* mode, userInfo user);
 }
 
 #endif

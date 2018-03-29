@@ -40,9 +40,9 @@ void* tmd::tmdReciver(void* recvFd){
 
   buf = tmdReciver(recvFd);
   // decypt buf by pubkey
- string passphrase('asdfasdfa'); // example
- buf = gpg::decBytestream(buf,passphrase);
- switch(buf[0]){
+  string passphrase('asdfasdfa'); // example
+  buf = gpg::decBytestream(buf,passphrase);
+  switch(buf[0]){
     // 0x04(heartbeat) 여기서 발견되면 안됨.
     // MUTEX 잘 써야 함
     //pthread_mutex_lock(&m);

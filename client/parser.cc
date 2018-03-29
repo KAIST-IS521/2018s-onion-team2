@@ -1,5 +1,10 @@
 #include "parser.hh"
+#include "timestamp.hh"
 #include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <string>
 
 // parser::streamParser
 // Description - stream의 Flag를 확인하여 이어서 오는 char stream의 형태를 확인하고 각 형태의 Parser로 넘겨줌
@@ -58,3 +63,9 @@ char* parser::packHeartBeat(heartbeat* src){
 
 }
 
+char* parser::packListUpdate(char* mode, userInfo user){
+  time_t cur_time = 
+  unsigned char [4] 
+  return "\x02" + timestamp::timestamp2byte(timestamp::getTimestampNow()) + \
+    mode + user.getPubKeyID() + inet_addr(user.getIP())) + ;
+}
