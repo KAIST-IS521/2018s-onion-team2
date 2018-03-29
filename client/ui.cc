@@ -29,7 +29,7 @@ string ui::getIPAddr(){
 }
 
 userInfo ui::login(){
-  string GithubId, PublicKeyID, IP, Passphrase;
+  string GithubId, PubKeyID, IP, Passphrase;
   clearScreen();
   cout << "> Github ID: ";
   cin >> GithubId;
@@ -48,7 +48,7 @@ userInfo ui::login(){
 
   // Create a thread for the listening
 
-  return userInfo(GithubId, PublicKeyID, IP, Passphrase);
+  return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }
 
 void ui::clearScreen()
