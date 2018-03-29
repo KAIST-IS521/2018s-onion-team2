@@ -1,6 +1,9 @@
 #include "ui.hh"
 #include "userInfo.hh"
 #include "heartbeat.hh"
+#include <unistd.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -28,15 +31,15 @@ string ui::getIPAddr(){
 userInfo ui::login(){
   string GithubId, PublicKeyID, IP, Passphrase;
   clearScreen();
-  cout << "Please enter your Github ID: ";
+  cout << "> Github ID: ";
   cin >> GithubId;
-  cout << "Please enter your public key ID: ";
+  cout << "> Public key ID: ";
   cin >> PublicKeyID;
-  cout << "Please enter passphrase: ";
-  cin >> Passphrase;
+  Passphrase = getpass("> Passphrase: ");
 
-  if((IP = ui::getIPAddr()) == ""){
-    exit(-1)
+  if((IP = ui::getIPAddr()) == "") {
+    cout << "[!] Error in retrieving the ip address";
+    exit(-1);
   }
 
   // Send an info that user has logged-in to the server
@@ -62,17 +65,17 @@ void ui::printBanner(userInfo user){
   cout << "Welcome to Onion Messanger, " + user.getGithubID() + "!!!" << endl;
 
   // for node in node_list
-    cout << /*[node_idx] user githubID : N new messages*/ << endl;
+  //  cout << /*[node_idx] user githubID : N new messages*/ << endl;
 
   cout << "Select the one you want to chat with: ";
-  cin >> /* githubID */;
+  // cin >> /* githubID */;
   printMessages(githubID);
 }
 
 void ui::printMessages(string githubID){
   // for messages in the msg list, print messages
 
-  cin >> /* exit or send message */
+  // cin >> /* exit or send message */;
   // if exit => printBanner
   // else send message
 }

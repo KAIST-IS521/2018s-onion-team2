@@ -3,10 +3,11 @@
 #include "userInfo.hh"
 
 namespace ui{
+  string getIPAddr();
   void printBanner(userInfo user);
   userInfo login();
   void clearScreen();
-  void printMessage(string githubID);
+  void printMessages(string githubID);
 }
 
 #endif
