@@ -1,21 +1,13 @@
 #include "parser.hh"
-#include "timestamp.hh"
 #include <iostream>
-<<<<<<< HEAD
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string>
-=======
 #include <cstring>
 using namespace std;
->>>>>>> master
 
 
 // parser::messageParser
 // Description - 0x00(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
-message* parser::message㎩rser(char* stream){
+message* parser::messageParser(char* stream){
   message* temp = new message;
   if (steam[0] != 0){
     cout << "Wrong Parser" << endl;
@@ -223,8 +215,6 @@ char* parser::packHeartBeat(heartbeat* src){
 }
 
 char* parser::packListUpdate(char* mode, userInfo user){
-  time_t cur_time = 
-  unsigned char [4] 
   return "\x02" + timestamp::timestamp2byte(timestamp::getTimestampNow()) + \
-    mode + user.getPubKeyID() + inet_addr(user.getIP())) + ;
+    mode + user.getPubKeyID() + inet_addr(user.getIP()));
 }
