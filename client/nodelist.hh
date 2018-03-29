@@ -1,37 +1,40 @@
 #ifndef __nodelist__
 #define __nodelist__
 
+#include <iostream>
 #include <list>
+#include <vector>
+#include <cstdlib>
+#include <string>
+#include <ctime>
+#include <fstream>
+#define NL_GITHUBID 0
+#define NL_IP 1
 
 using namespace std;
 
-class node(){
+class node{
 private:
   string GithubID;
   string PubKeyID;
   string IP;
 public:
-  node();
-  node(char* datastream);
-  node(string _GithubID, String PubKeyID, String IP);
+  node(string _GithubID, string PubKeyID, string IP);
   string getGithubID();
   string getPubKeyID();
   string getIP();
-}
+};
 
-class nodelist(){
+class nodelist{
 private:
-  list<node> nodelist;
-  //time_t updatetime; // 필요 있을까...?
-public
-  nodelist(node first_node);
-  node* searchNode(string GithubID);
-  node* searchNode(string IP);
-  bool deleteNode(string GithubID);
-  bool deleteNode(string IP);
+  list<node*>* _nodelist;
+public:
+  nodelist();
+  node* searchNode(string value,int mode);
+  bool deleteNode(string value,int mode);
   int getNodelistLen();
-  list<node*> getRandomNode(int count);
-  //int getLastUpdateTime(); // 필요 있을까...?
-  bool appendNode(node append_node);
-}
+  node* getRandomNode();
+  bool appendNode(node* append_node);
+  vector<string>* getGithubIDList();
+};
 #endif
