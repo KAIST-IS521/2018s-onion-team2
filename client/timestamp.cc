@@ -8,21 +8,26 @@ time_t timestamp::getTimestampNow(){
 }
 
 string timestamp::timestamp2str(time_t _timestamp){
-  stringstream transfer;
-  transfer << _timestamp;
-  return transfer.str();
+  std::tm tm = *std::localtime(&_timestamp);
+  std::stringstream ss;
+  ss << std::put_time(&tm, "%F %T");
+  return ss.str();
 }
 
 char* timestamp::timestamp2byte(time_t _timestamp){
-  string retstr = timestamp::timestamp2str(_timestamp);
-  return const_cast<char*>(retstr.c_str());
+    size_t i;
+    char *str = new char[5];
+    bzero(str,5);
+    unsigned char *ptr = (unsigned char *)&_timestamp;
+    for(i = 0; i < sizeof(time_t)-4; i++) {
+       sprintf(&str[i], "%c", ptr[i]);
+    }
+    return str;
 }
 
 time_t timestamp::byte2timestamp(char* _timestamp){
-  string tmp_timestamp(_timestamp);
-  stringstream transfer(tmp_timestamp);
-  time_t ret_value;
-  transfer >> ret_value;
-  return ret_value;
+  time_t ret = 0;
+  strncpy((char*)&ret,_timestamp,4);
+  return (time_t)ret;
 }
   
