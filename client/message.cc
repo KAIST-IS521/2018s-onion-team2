@@ -58,6 +58,15 @@ message::message(){
   this->timestamp = 0;
   this->writable = true;
 }
+// message::message
+// Description - 해당 객체가 생성될 때 데이터를 세팅하고 writable 플래그 제거
+message::message(string _content,string _GithubID, char* _OneTimeKey, time_t _timestamp){
+  this->Content = _content;
+  this->GithubID = _GithubID;
+  this->OneTimeKey = _OneTimeKey;
+  this->timestamp = _timestamp;
+  this->writeable = false;
+}
 
 // message::getContents
 // Description - message 객체에서 Chatting Contents를 가져옴

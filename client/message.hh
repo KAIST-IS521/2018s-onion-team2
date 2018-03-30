@@ -23,7 +23,7 @@ private:
   bool writable;
 public:
   message();
-  bool setMessage();
+  message(string _content,string _GithubID, char* _OneTimeKey, time_t _timestamp);
   string getContents();
   string getGithubID();
   string getTimestamp();
