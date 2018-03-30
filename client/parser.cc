@@ -1,14 +1,11 @@
 #include "parser.hh"
-#include <iostream>
-#include <cstring>
-#include "timestamp.hh"
 using namespace std;
 
 
 // parser::messageParser
 // Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
-message* parser::message㎩rser(char* stream){
+message* parser::messageParser(char* stream){
   message* temp = new message();
   if (steam[0] != 1){
     cout << "Wrong Parser" << endl;
@@ -16,7 +13,7 @@ message* parser::message㎩rser(char* stream){
   }
 
   char OTK[4];
-  strncpy(OTK, &stream[5], 4);          // OTK가 5~8바이트가 되야함. (4바이트)
+  memcpy(OTK, &stream[5], 4);          // OTK가 5~8바이트가 되야함. (4바이트)
   if (!temp->setOneTimeKey(OTK)){
     cout << "Wrong OneTimeKey" << endl;
     return NULL;
@@ -54,7 +51,7 @@ message* parser::message㎩rser(char* stream){
 // parser::listParser
 // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
 // Return - Null(실패), node*
-node* parser::list㎩rser(char* stream){
+node* parser::listParser(char* stream){
   node* temp = new node();
   if (steam[0] != 2){
     cout << "Wrong Parser" << endl;
@@ -122,7 +119,7 @@ heartbeat* parser::hbParser(char* stream){
   }
 
   char OTK[4];
-  strncpy(OTK, &stream[1], 4);
+  memcpy(OTK, &stream[1], 4);
 
   if (!temp->setOneTimeKey(OTK)){
     cout << "Wrong OneTimeKey" << endl;
@@ -159,7 +156,7 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 
   unsigned int enc_data_length = stream[5];
   char* enc_data;
-  strncpy(enc_data, &stream[9], enc_data_length);
+  memcpy(enc_data, &stream[9], enc_data_length);
   if (!temp->setEncData(enc_data)){
     cout << "Wrong Encrypted Data" << endl;
     return NULL;
@@ -172,14 +169,23 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packEncMessage(encMessage* src){
-  char* stream = "0";
+  int msgSize = src->encMessage::EncData().size();
 
-  char IP[4] = src->getNextIP();
-  strcat(stream, IP);
-  int data_length = strlen(src->getEncData());
-  strncat(stream, (char)data_length, 4);
-  strcat(stream, src->getEncData());
-
+  char* stream = new char[17+msgSize+4+GithubIDSize];
+  try{
+    stream[0] = '\x01';
+    memcpy(stream[1], src->message::getIP(),4);                                  // IP to char*
+    memcpy(stream[5], src->message::getOneTimeKey(),4);
+    memcpy(stream[9], timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
+    memcpy(stream[13],util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream[17],src->message::getGithubID().c_str(),GithubIDSize);
+    memcpy(stream[17+GithubIDSize], util::int2byte(msgSize), 4);
+    memcpy(stream[17+GithubIDSize+4], src->message::getContents().c_str, msgSize);
+  }
+  catch(int exception){
+    delete stream;
+    return NULL;
+  }
   return stream;
 }
 
@@ -187,51 +193,64 @@ char* parser::packEncMessage(encMessage* src){
 // Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packMessage(message* src){
-  char* stream = "1";
-  strcat(stream, src->getNextIP());
-  strcat(stream, src->getOneTimeKey());
-  strcat(stream, src->getTimestamp());
+  int msgSize = src->message::getContents().size();
+  int GithubIDSize = src->message::getGithubID().size();
 
-  int ID_length = strlen(src->getGithubID());
-  strncat(stream, (char)ID_length, 4);
-
-  strcat(stream, src->getGithubID());
-
-  int con_length = strlen(src->getContents());
-  strncat(stream, (char)con_length, 4);
-
-  strcat(stream, src->getContents());
-
+  char* stream = new char[17+msgSize+4+GithubIDSize];
+  try{
+    stream[0] = '\x00';
+    memcpy(stream[1], src->message::getIP(),4);                                   // IP to char*
+    memcpy(stream[5], src->message::getOneTimeKey(),4);
+    memcpy(stream[9], timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
+    memcpy(stream[13],util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream[17],src->message::getGithubID().c_str(),GithubIDSize);
+    memcpy(stream[17+GithubIDSize], util::int2byte(msgSize), 4);
+    memcpy(stream[17+GithubIDSize+4], src->message::getContents().c_str, msgSize);
+  }
+  catch(int exception){
+    delete stream;
+    return NULL;
+  }
   return stream;
 }
 
 // parser::packNode
 // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
-char* parser::packNode(node* src){
-  char* stream = "2";
-  time_t TS = getTimestampNow();
-  strcat(stream, timestamp2byte(TS));
-  strcat(stream, "1");
-  strcat(stream, src->getPubKeyID());
-  strcat(stream, src->getIP());
-
-  int ID_length = strlen(src->getGithubID());
-  strncat(stream, (char)ID_length, 4);
-
-  strcat(stream, src->getGithubID());
-
+char* parser::packNode(node* src, char* mode){
+  if(src->getGithubID.empty()){
+    return NULL;
+  }
+  int GithubIDSize = src->node::getGithubID().size();
+  char* stream = new char[22+GithubIDSize];
+  try{
+    stream[0] = '\x01';
+    memcpy(stream[1], timestamp::timestamp2byte(src->timestamp::getTimestampNow()),4);
+    stream[5] = mode[0];
+    memcpy(stream[6],src->node::getPubkeyID().c_str(),8);
+    memcpy(stream[14],src->node::getIP(),4);                                 // STR to CHAR* 추가
+    memcpy(stream[18],util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream[22],src->node::getGithubID().c_str(),GithubIDSize);
+  }catch(int exception){
+    delete stream
+    return NULL;
+  }
   return stream;
-
 }
 
 // parser::packHeartBeat
 // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
-// Return - Null(실패), char(Packing 된 BYTE strea)
+// Return - Null(실패), char(Packing 된 BYTE stream)
 char* parser::packHeartBeat(heartbeat* src){
-  char* stream = "4";
-  strcat(stream, src->getOneTimeKey());
-  strcat(stream, src->getTimestamp());
-
+  char* stream = new char[9];
+  try{
+    stream[0] = '\x04'; 
+    memcpy(stream[1], src->heartbeat::getOneTimeKey(),4);
+    memcpy(stream[5], timestamp::timestamp2byte(src->heartbeat::getTimestamp()),4);
+  }
+  catch(int exception){
+    delete stream;
+    return NULL;
+  }
   return stream;
 }
