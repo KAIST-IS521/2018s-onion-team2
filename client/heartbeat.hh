@@ -5,7 +5,12 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
+#include <cstring>
+#include <iostream>
+
 #define HB_PORT 60750
+#define HB_SERVER_ADDR inet_addr("127.0.0.1")
 
 class heartbeat{
 private:
@@ -18,12 +23,12 @@ public:
   time_t getTimestamp();
   bool setOntTimeKey(char* _OneTimeKey);
   bool setTimestamp(time_t _timestamp);
-}
+};
 
 // hbd = heartbeat daemon
-using namespace hbd{
+namespace hbd{
   char* recvHeartbeat();
   void heartbeatListener();
-  bool sendHeartbeat(char* send_source);
+  bool sendHeartbeat(char* send_source, int send_size);
 }
 #endif
