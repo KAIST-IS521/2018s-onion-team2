@@ -20,7 +20,7 @@ string encMessage::getNextIP(){
 // encMessage::getEncData
 // Description - 해당 객체의 encData 변수의 값을 반환
 // Return - char* or Null
-char* encMessage::getEncData(){
+string encMessage::getEncData(){
   return this->encData;
 }
 
@@ -40,7 +40,7 @@ bool encMessage::setNextIP(String src){
 // encMessage::setNextIP
 // Description - 해당 객체의 encData 변수에 값을 세팅
 // Return - True / False
-bool encMessage::setEncData(char* src){
+bool encMessage::setEncData(string src){
   try{
     this->encData = src
   }

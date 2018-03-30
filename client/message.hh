@@ -5,13 +5,13 @@
 class encMessage{
 private:
   string nextIP;
-  char* encData;
+  string encData;
 publlic:
   encMessage();
   string getNextIP();
-  char* getEncData();
+  string getEncData();
   bool setNextIP(string src);
-  bool setEncData(char* src);
+  bool setEncData(string src);
  }
 
 class message{
