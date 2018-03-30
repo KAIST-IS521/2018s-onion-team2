@@ -6,106 +6,74 @@ using namespace std;
 // Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
 message* parser::messageParser(char* stream){
-  message* temp = new message();
-  if (steam[0] != 1){
+  message* temp;
+  if (steam[0] != '\x01'){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  char OTK[4];
-  memcpy(OTK, &stream[5], 4);          // OTK가 5~8바이트가 되야함. (4바이트)
-  if (!temp->setOneTimeKey(OTK)){
-    cout << "Wrong OneTimeKey" << endl;
-    return NULL;
-  }
+  char* tmpOTK = new char[4];
+  memcpy(tmpOTK, stream+5, 4)
 
-  time_t TS = stream[9];     // TS도 9~12바이트가 되야함. (4바이트)
-  if (!temp->setTimestamp(TS)){
-    cout << "Wrong Timestamp" << endl;
-    return NULL;
-  }
+  char* tmpTimestamp = new char[4];
+  memcpy(tmpTimestamp, stream+9, 4);
+  time_t tmpTstamp = timestamp::byte2timestamp(tmpTimestamp);
 
-  unsigned int ID_length = stream[13];     // GithubID의 length가 되야함. (4바이트)
-  String ID = "";
-  for (int i = 0; i<msg_length; i++){
-    ID += stream[17+i];
-  }
-  if (!temp->setGithubID(ID) || ID_length > 39){
-    cout << "Wrong GithubID" << endl;
-    return NULL;
-  }
+  int* tmpGithubIDLen = (int*)(stream+13);
+  char* tmpGithubID = new char[*tmpGithubIDLen];
+  memcpy(tmpGithubID,stream+17,*tmpGithubIDLen);
+  string ID = new string(tmpGithubID);
 
-  unsigned int msg_length = stream[17+ID_length];     // message의 length가 되야햠. (4바이트)
-  string msg = "";
-  for (int i = 0; i<msg_length; i++){
-    msg += stream[21+i];
-  }
-
-  if (!temp->setMessage(msg)){
-    cout << "Wrong Message" << endl;
-    return NULL;
-  }
-  return temp;
+  int* tmpMsgLen = (int*)(stream+17+*tmpGithubIDLen);
+  char* tmpMsg = new char[*tmpMsgLen];
+  memcpy(tmpMsg,stream+21+*tmpGithubIDLen,*tmpMsgLen);
+  string MSG = new string(tmpMsg);
+  
+  message* temp = new message(IP,tmpOTK,tmpTstamp,ID,MSG);
+  delete tmpOTK;
+  delete tmpTimestamp;
+  delete tmpGithubID;
+  delete ID;
+  delete tmpMsg;
+  delete MSG;
+  return temp; 
 }
 
 // parser::listParser
 // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
 // Return - Null(실패), node*
 node* parser::listParser(char* stream){
-  node* temp = new node();
-  if (steam[0] != 2){
+  node* temp;
+  if (steam[0] != '\x02'){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  if (stream[5] == 0){
-    string PK = "";
-    for (int i = 0; i<8; i++){
-      PK += stream[6+i];
-    }
+  char* tmpPK = new char[8];
+  memcpy(tmpPK,steam+7,8);
+  string PK = new string(tmpPK);
 
-    string IP = "";
-    for (int i = 0; i<8; i++){
-      IP += stream[14+i];
-    }
+  char* tmpAddr = new char[4];
+  memcpy(tmpAddr, steam+15, 4);
+  string IP = new string(??); // byte to IP
 
-    unsigned int ID_length = stream[18];
-    if (ID_length > 39){
-      cout << "Wrong GithubID length" << endl;
-      return NULL;
-    }
-    string ID = "";
-    for (int i = 0; i<ID_length; i++){
-      ID += stream[22+i];
-    }
+  int* GithubIDLen = (int*)(stream+18);
+  char* tmpGithubID = new char[*GithubIDLen]
+  memcpy(tmpGithubID,steam+22,*GithubIDLen);
+  string ID = new string(tmpGithubID);
+  temp = new node(ID, PK, IP);
 
-    *temp = node(ID, PK, IP);
-  }
-
-  else if (stream[5] == 1){                   // MODE가 삭제인 경우. 아직 코딩 못함.
-    string PK = "";
-    for (int i = 0; i<8; i++){
-      PK += stream[6+i];
-    }
-
-    string IP = "";
-    for (int i = 0; i<8; i++){
-      IP += stream[14+i];
-    }
-
-    unsigned int ID_length = stream[18];
-    if (ID_length > 39){
-      cout << "Wrong GithubID length" << endl;
-      return NULL;
-    }
-
-    string ID = "";
-    for (int i = 0; i<ID_length; i++){
-      ID += stream[22+i];
-    }
-  }
-
+  delete tmpPk;
+  delete tmpAddr;
+  delete tmpGithubID;
+  delete PK;
+  delete IP;
+  delete ID;
   return temp;
+}
+
+char parser::getListmode(char*stream){
+  return stream[5];
 }
 
 // parser::hbParser
@@ -113,55 +81,63 @@ node* parser::listParser(char* stream){
 // Return - Null(실패), heartbeat*
 heartbeat* parser::hbParser(char* stream){
   heartbeat* temp = new heartbeat();
-  if (stream[0] != 4){
+  if (stream[0] != '\x04'){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  char OTK[4];
-  memcpy(OTK, &stream[1], 4);
+  char* OTK = new char[4];
+  memcpy(OTK, stream+1, 4);
 
-  if (!temp->setOneTimeKey(OTK)){
+  if (!temp->heartbeat::setOneTimeKey(OTK)){
     cout << "Wrong OneTimeKey" << endl;
+    delete temp;
+    delete OTK;
     return NULL;
   }
+  delete OTK;
 
-  time_t TS = stream[9];     // TS도 9~12바이트가 되야함. (4바이트)
-  if (!temp->setTimestamp(TS)){
+  char* TS = new char[4];     // TS도 9~12바이트가 되야함. (4바이트)
+  memcpy(TS,stream+5,4);
+  if (!temp->heartbeat::setTimestamp(timestamp::byte2timestamp(TS))){
     cout << "Wrong Timestamp" << endl;
+    delete TS;
+    delete temp;
     return NULL;
   }
-
+  delete TS;
   return temp;
 }
 
 // parser::encMessageParser
 // Description - 0x00(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
 // Return - Null(실패), encMessage*
-encMessage* parser::encMessageParser(char* stream,string IP){
+encMessage* parser::encMessageParser(char* stream){
   encMessage* temp = new encMessage();
-  if (steam[0] != 0){
+  if (steam[0] != '\x00'){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
-  string next_IP = "";
-  for (int i = 0; i<4; i++){
-    next_IP += stream[1+i];
-  }
-  if (!temp->setNextIP(next_IP)){
+  char* tmpIP = new char[4];
+  memcpy(tmpIP,stream+1,4);
+  if (!temp->setNextIP(tmpIP)){           // char to IP String
     cout << "Wrong Next IP" << endl;
     return NULL;
   }
+  delete tmpIP
 
-  unsigned int enc_data_length = stream[5];
-  char* enc_data;
-  memcpy(enc_data, &stream[9], enc_data_length);
-  if (!temp->setEncData(enc_data)){
+  unsigned int* enc_data_length = stream+5;
+  char* enc_data_char = new char[enc_Data_length];
+  string tmp_str;
+  memcpy(enc_data, stream+9, enc_data_length);
+  tmp_str = new string(enc_data);
+  if (!temp->setEncData(tmp_str)){
     cout << "Wrong Encrypted Data" << endl;
     return NULL;
   }
-
+  delete enc_data_char;
+  delete tmp_str;
   return temp;
 }
 
@@ -169,18 +145,14 @@ encMessage* parser::encMessageParser(char* stream,string IP){
 // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packEncMessage(encMessage* src){
-  int msgSize = src->encMessage::EncData().size();
+  int msgSize = src->encMessage::getEncData().size();
 
-  char* stream = new char[17+msgSize+4+GithubIDSize];
+  char* stream = new char[9+msgSize];
   try{
     stream[0] = '\x01';
-    memcpy(stream[1], src->message::getIP(),4);                                  // IP to char*
-    memcpy(stream[5], src->message::getOneTimeKey(),4);
-    memcpy(stream[9], timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-    memcpy(stream[13],util::int2byte(GithubIDSize).c_str(),4);
-    memcpy(stream[17],src->message::getGithubID().c_str(),GithubIDSize);
-    memcpy(stream[17+GithubIDSize], util::int2byte(msgSize), 4);
-    memcpy(stream[17+GithubIDSize+4], src->message::getContents().c_str, msgSize);
+    memcpy(stream+1, src->message::getIP(),4);                                  // IP to char*
+    memcpy(stream+5, util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream+9, src->encMessage::getEncData(),msgSize);
   }
   catch(int exception){
     delete stream;
@@ -199,13 +171,13 @@ char* parser::packMessage(message* src){
   char* stream = new char[17+msgSize+4+GithubIDSize];
   try{
     stream[0] = '\x00';
-    memcpy(stream[1], src->message::getIP(),4);                                   // IP to char*
-    memcpy(stream[5], src->message::getOneTimeKey(),4);
-    memcpy(stream[9], timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-    memcpy(stream[13],util::int2byte(GithubIDSize).c_str(),4);
-    memcpy(stream[17],src->message::getGithubID().c_str(),GithubIDSize);
-    memcpy(stream[17+GithubIDSize], util::int2byte(msgSize), 4);
-    memcpy(stream[17+GithubIDSize+4], src->message::getContents().c_str, msgSize);
+    memcpy(stream+1, src->message::getIP(),4);                                   // IP to char*
+    memcpy(stream+5, src->message::getOneTimeKey(),4);
+    memcpy(stream+9, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
+    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream+17,src->message::getGithubID().c_str(),GithubIDSize);
+    memcpy(stream+17+GithubIDSize, util::int2byte(msgSize), 4);
+    memcpy(stream+17+GithubIDSize+4, src->message::getContents().c_str, msgSize);
   }
   catch(int exception){
     delete stream;
@@ -225,12 +197,12 @@ char* parser::packNode(node* src, char* mode){
   char* stream = new char[22+GithubIDSize];
   try{
     stream[0] = '\x01';
-    memcpy(stream[1], timestamp::timestamp2byte(src->timestamp::getTimestampNow()),4);
+    memcpy(stream+1, timestamp::timestamp2byte(src->timestamp::getTimestampNow()),4);
     stream[5] = mode[0];
-    memcpy(stream[6],src->node::getPubkeyID().c_str(),8);
-    memcpy(stream[14],src->node::getIP(),4);                                 // STR to CHAR* 추가
-    memcpy(stream[18],util::int2byte(GithubIDSize).c_str(),4);
-    memcpy(stream[22],src->node::getGithubID().c_str(),GithubIDSize);
+    memcpy(stream+6,src->node::getPubkeyID().c_str(),8);
+    memcpy(stream+14,src->node::getIP(),4);                                 // STR to CHAR* 추가
+    memcpy(stream+18,util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream+22,src->node::getGithubID().c_str(),GithubIDSize);
   }catch(int exception){
     delete stream
     return NULL;
@@ -245,8 +217,8 @@ char* parser::packHeartBeat(heartbeat* src){
   char* stream = new char[9];
   try{
     stream[0] = '\x04'; 
-    memcpy(stream[1], src->heartbeat::getOneTimeKey(),4);
-    memcpy(stream[5], timestamp::timestamp2byte(src->heartbeat::getTimestamp()),4);
+    memcpy(stream+1, src->heartbeat::getOneTimeKey(),4);
+    memcpy(stream+5, timestamp::timestamp2byte(src->heartbeat::getTimestamp()),4);
   }
   catch(int exception){
     delete stream;
