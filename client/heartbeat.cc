@@ -62,24 +62,27 @@ char* hbd::recvHeartbeat()
     socketFd = socket(AF_INET, SOCK_DGRAM,0);
     if(-1 == socketFd)
     { 
+      cout << "no socket" << endl;
       return NULL;
     }
     struct sockaddr_in server_info;
     memset(&server_info,0,sizeof(server_info)); // initalize server_info to 0
     server_info.sin_family=AF_INET;
-    server_info.sin_port = htons(HB_PORT);              // discuss about it ### PORT ###
-    server_info.sin_addr.s_addr=inet_addr("127.0.0.1"); // discuss about it ### SERVER IP ###
+    server_info.sin_port = htons(HB_PORT);             
+    server_info.sin_addr.s_addr=inet_addr("0.0.0.0");
 
     if(-1 == bind(socketFd,(struct sockaddr*)&server_info,sizeof(struct sockaddr))){
       close(socketFd);
+      cout << "bind failed" <<endl;
       return NULL;
     }
 
     socklen_t server_len = sizeof(struct sockaddr);
     buffer = new char[10];
     int recv_len = recvfrom(socketFd, buffer, 10,0,(struct sockaddr*)&server_info,&server_len);
-    if(buffer[0]!=0x04){
+    if(buffer[0]!='\x04'){
       close(socketFd);
+      cout <<"recv failed(wrong flag) - "<<buffer[0] << endl;
       delete buffer;
       return NULL; // check check check
     }
@@ -106,20 +109,23 @@ void hbd::heartbeatListener()
   char* gotData = NULL;
   heartbeat* parsedData = NULL;
   while(true){
+    sleep(1);
     try{
       gotData = hbd::recvHeartbeat();
       if(gotData!=NULL){
-     /* 
-        1. parsing gotData to heartbeat object
-        2. set new timestamp
-        3. pack to char* stream
-        4. send back to server
-    */
+	cout << gotData << endl;
+	parsedData = parser::hbParser(gotData);
+	if(parsedData!=NULL){
+	  char* newhb = new char[parser::getHeartBeatPackLen(parsedData)];
+          int newhbSize = packHeartBeat(newhb,parsedData);
+	  hbd::sendHeartbeat(newhb, newhbSize);
+	  delete newhb;
         }
-        else{
-          cout << "Wrong Flag Occured" << endl;
-        }        
       }
+      else{
+          cout << "recv Failed" << endl;
+      }        
+    }
     catch(int exception){
       cout << "Error Occured!" << endl;
     }
@@ -142,7 +148,7 @@ bool hbd::sendHeartbeat(char* send_source, int send_size)
   int conn_len = sizeof(conn_info);
   bzero((char*)&sock_info, sizeof(sock_info));
   sock_info.sin_family = AF_INET;
-  sock_info.sin_addr.s_addr = inet_addr("127.0.0.1");
+  sock_info.sin_addr.s_addr = HB_SERVER_ADDR;
   sock_info.sin_port = htons(HB_PORT);
 
   if (0 > connect(sockFd,(struct sockaddr *) &sock_info,sizeof(sock_info))){
