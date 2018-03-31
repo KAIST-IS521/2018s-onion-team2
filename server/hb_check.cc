@@ -68,16 +68,19 @@ bool	hb_check::checkNode(time_t _Timestamp) {
 	time_t currentTime = time(NULL);
 	time_t __Timestamp = _Timestamp;
 
+
 	for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
-		if((*recvlist)->getArrive() == false && (currentTime - (*recvlist)->getTimestamp()) >= 5) {
-			cout << "Test" << endl;
+		if(((*recvlist)->getArrive() == false) && (currentTime - (*recvlist)->getTimestamp()) >= 5) {
+			cout << "Over : " << (*recvlist)->getIP() << endl;
 		}
+		cout << (*recvlist)->getIP() << ":"  << (*recvlist)->getTimestamp() << endl;
+		cout << "Arrive : " <<  (*recvlist)->getArrive() << ":"  << currentTime - (*recvlist)->getTimestamp() << endl << endl;   
 	}
 	return false;
 }
 
 /*bool	hb_check::resendNode(hb_node* _rndNode) {
-//	*hb_node __rndNode = _rndNode;
+	*hb_node __rndNode = _rndNode;
 
 	return true;
 }*/
