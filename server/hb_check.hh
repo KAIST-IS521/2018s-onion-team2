@@ -15,7 +15,7 @@ class hb_check {
 		list<hb_node*>			recv_node;
 		list<hb_node*>::iterator	recvlist;
 		list<hb_node*>			resend_node;
-		list<hb_node*>::iterator	resendist;
+		list<hb_node*>::iterator	resendlist;
 		hb_check() {};
 		bool	updateNode(string _Onetimekey, string _IP, bool _Arrive);
 		bool	appendNode(BYTE _Flag, string _OTK, time_t _Timestamp, string _IP, bool _Arrive, int _Cnt);

@@ -38,7 +38,6 @@ int main() {
 
 	(*a).updateNode("cdecde", "192.168.100.4", false);
 
-
 	(*a).checkNode(time(NULL));
 		
 	return 0;	
