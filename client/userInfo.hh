@@ -10,7 +10,9 @@ private:
   string Passphrase;
   // Need a list that contains unread messages
 public:
-  userInfo(string GithubID, string PublicKeyID, string IP, string Passphrase);
+  userInfo();
+  userInfo(string GithubID, string PubKeyID, string IP, string Passphrase);
+  string getPassphrase();
 };
 
 #endif
