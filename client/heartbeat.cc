@@ -1,59 +1,23 @@
 #include "heartbeat.hh"
 using namespace std;
-// heartbeat::heartbeat
-// Description - heartbeat 생성자
-// return - None
-heartbeat::heartbeat(char* _OneTimeKey, time_t _timestamp){
-  this->OneTimeKey = _OneTimeKey;
-  this->timestamp = _timestamp;
+
+heartbeat::heartbeat(char* data){
+  memcpy(this->OneTimeKey, data+1, 4);
 }
 
-
-// heartbeat::getOneTimeKey
-// Description - heartbeat 객체에서 OntTimeKey를 가져옴
-// return - Null(실패), char*(OneTimeKey stream)
 char* heartbeat::getOneTimeKey(){
   return this->OneTimeKey;
 }
 
-// heartbeat::getTimestamp
-// Description - heartbeat 객체에서 Timestamp를 가져옴
-// return - Null(실패), time_t(Timestamp)
-time_t heartbeat::getTimestamp(){
-  return this->timestamp;
+void heartbeat::setHeartBeat(char* data, char* response){
+  char time_stamp[TIME_T_SIZE];
+  heartbeat hb = hb(data);
+  response[0] = data[0];
+  memcpy(response+1, hb.getOneTimeKey(), 4);
+  util::time_t2byte(timestamp::getTimestampNow(), time_stamp);
+  memcpy(response+5, time_stamp, 4);
 }
 
-
-// heartbeat::setOneTimeKey
-// Description - heartbeat 객체에 OntTimeKey를 세팅함
-// return - True(성공), False(실패)
-bool heartbeat::setOneTimeKey(char* _OneTimeKey){
-  try{
-    this->OneTimeKey = _OneTimeKey;
-    return true;
-  }
-  catch(int exception){
-    return false;
-  }
-} 
-
-
-// heartbeat::recvHeartbeat
-// Description - heartbeat 객체에 Timestamp를 세팅함
-// return - True(성공), False(실패)
-bool heartbeat::setTimestamp(time_t _timestamp){
-  try{
-    this->timestamp = _timestamp;
-    return true;
-  }
-  catch(int exception){
-    return false;
-  }
-}
-
-// hbd::recvHeartbeat
-// Description - 서버로부터 heartbeat 메시지를 받아 처리하는 함수
-// return - Null(실패), char*
 void* hbd::recvHeartbeat((void*)args)
 {
   string message = "";
