@@ -35,10 +35,10 @@ message* parser::messageParser(char* stream){
   return temp; 
 }
 
-// parser::listParser
+// parser::nodeParser
 // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
 // Return - Null(실패), node*
-node* parser::listParser(char* stream){
+node* parser::nodeParser(char* stream){
   node* temp;
   if (stream[0] != '\x02'){
     cout << "Wrong Parser" << endl;
@@ -46,12 +46,12 @@ node* parser::listParser(char* stream){
   }
 
   char* tmpPK = new char[8];
-  memcpy(tmpPK,stream+7,8);
+  memcpy(tmpPK,stream+6,8);
   string PK(tmpPK);
 
   char* tmpAddr = new char[4];
-  memcpy(tmpAddr, stream+15, 4);
-  string IP(??); // byte to IP
+  memcpy(tmpAddr, stream+14, 4);
+  string IP(util::byte2ip((unsigned char*)tmpAddr)); // byte to IP
 
   int* GithubIDLen = (int*)(stream+18);
   char* tmpGithubID = new char[*GithubIDLen];
@@ -100,9 +100,9 @@ encMessage* parser::encMessageParser(char* stream){
     return NULL;
   }
 
-  char* tmpIP = new char[4];
+  unsigned char* tmpIP = new unsigned char[4];
   memcpy(tmpIP,stream+1,4);
-  if (!temp->setNextIP(tmpIP)){           // char to IP String
+  if (!temp->setNextIP(util::byte2ip(tmpIP))){           // char to IP String
     cout << "Wrong Next IP" << endl;
     return NULL;
   }
@@ -123,77 +123,91 @@ encMessage* parser::encMessageParser(char* stream){
 // parser::packEncMessage
 // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
-char* parser::packEncMessage(encMessage* src){
+int parser::packEncMessage(char* stream,encMessage* src){
   int msgSize = src->encMessage::getEncData().size();
 
-  char* stream = new char[9+msgSize];
   try{
-    stream[0] = '\x01';
-    memcpy(stream+1, src->encMessage::getNextIP(),4);                                  // IP to char*
-    memcpy(stream+5, util::int2byte(msgSize).c_str(),4);
+    stream[0] = '\x00';
+    unsigned char* tmpIP = new unsigned char[4];
+    util::ip2byte(src->encMessage::getNextIP(),tmpIP);
+    memcpy(stream+1, tmpIP ,4);                                  // IP to char*
+//    memcpy(stream+5, util::int2byte(msgSize).c_str(),4);
+    util::int2byte(msgSize,stream+5);
     memcpy(stream+9, (src->encMessage::getEncData()).c_str(),msgSize);
+    delete tmpIP;
   }
   catch(int exception){
     delete stream;
-    return NULL;
+    return 0;
   }
-  return stream;
+  return 9+msgSize;
 }
 
 // parser::packMessage
 // Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
-// Return - Null(실패), char*(Packing 된 BYTE stream)
-char* parser::packMessage(message* src,string IP){
+// Return - return stream의 length
+int parser::packMessage(char* stream,message* src,string IP){
   int msgSize = src->message::getContents().size();
   int GithubIDSize = src->message::getGithubID().size();
 
-  char* stream = new char[17+msgSize+4+GithubIDSize];
+  unsigned char* tmpIP = new unsigned char[4];
+  util::ip2byte(IP.c_str(),tmpIP);
   try{
-    stream[0] = '\x00';
-    memcpy(stream+1, IP.c_str(),4);                                   // IP to char*
+    stream[0] = '\x01';
+    memcpy(stream+1, tmpIP,4);                                   // IP to char*
     memcpy(stream+5, src->message::getOneTimeKey(),4);
     memcpy(stream+9, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
+//    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
+    util::int2byte(GithubIDSize,stream+13);
     memcpy(stream+17,src->message::getGithubID().c_str(),GithubIDSize);
-    memcpy(stream+17+GithubIDSize, util::int2byte(msgSize), 4);
+//    memcpy(stream+17+GithubIDSize, util::int2byte(msgSize), 4);
+    util::int2byte(msgSize,stream+17+GithubIDSize);
     memcpy(stream+17+GithubIDSize+4, src->message::getContents().c_str(), msgSize);
   }
   catch(int exception){
+    delete tmpIP;
     delete stream;
-    return NULL;
+    return 0;
   }
-  return stream;
+  delete tmpIP;
+  return (21+GithubIDSize+msgSize);
 }
 
 // parser::packNode
 // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
 // Return - Null(실패), char*(Packing 된 BYTE stream)
-char* parser::packNode(node* src, char* mode){
+int parser::packNode(char* stream,node* src, char mode){
   if(src->getGithubID().empty()){
-    return NULL;
+    return 0;
   }
   int GithubIDSize = src->node::getGithubID().size();
-  char* stream = new char[22+GithubIDSize];
+  unsigned char* tmpIP = new unsigned char[4];
+  util::ip2byte(src->node::getIP().c_str(),tmpIP);
   try{
-    stream[0] = '\x01';
+    stream[0] = '\x02';
     memcpy(stream+1, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-    stream[5] = mode[0];
+    stream[5] = mode;
     memcpy(stream+6,src->node::getPubKeyID().c_str(),8);
-    memcpy(stream+14,src->node::getIP().c_str(),4);                                 // STR to CHAR* 추가
-    memcpy(stream+18,util::int2byte(GithubIDSize).c_str(),4);
+    memcpy(stream+14,tmpIP,4);                                 // STR to CHAR* 추가
+//    memcpy(stream+18,util::int2byte(GithubIDSize).c_str(),4);
+    util::int2byte(GithubIDSize,stream+18);
     memcpy(stream+22,src->node::getGithubID().c_str(),GithubIDSize);
   }catch(int exception){
     delete stream;
-    return NULL;
+    delete tmpIP;
+    return 0;
   }
-  return stream;
+  delete tmpIP;
+  return 22+GithubIDSize;
 }
 
 // parser::packHeartBeat
 // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
 // Return - Null(실패), char(Packing 된 BYTE stream)
-char* parser::packHeartBeat(heartbeat* src){
-  char* stream = new char[9];
+int parser::packHeartBeat(char* stream,heartbeat* src){
+  if(stream==NULL){
+    return 0;
+  }
   try{
     stream[0] = '\x04'; 
     memcpy(stream+1, src->heartbeat::getOneTimeKey(),4);
@@ -201,7 +215,23 @@ char* parser::packHeartBeat(heartbeat* src){
   }
   catch(int exception){
     delete stream;
-    return NULL;
+    return 0;
   }
-  return stream;
+  return 9;
+}
+
+int parser::getMessagePackLen(message* src){
+  return 21+(src->message::getGithubID().size())+(src->message::getContents().size());
+}
+
+int parser::getEncMessagePackLen(encMessage* src){
+  return 9+(src->encMessage::getEncData().size());
+}
+
+int parser::getNodePackLen(node* src){
+  return 22+(src->node::getGithubID().size());
+}
+
+int parser::getHeartBeatPackLen(heartbeat* src){
+  return 9;
 }

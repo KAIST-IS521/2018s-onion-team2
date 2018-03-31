@@ -7,18 +7,24 @@
 #include "nodelist.hh"
 #include "heartbeat.hh"
 #include "message.hh"
+#include "util.hh"
 
 namespace parser{
   message* messageParser(char* stream);
-  node* listParser(char* stream);
+  node* nodeParser(char* stream);
   char getListmode(char* stream);
   heartbeat* hbParser(char* stream);
   encMessage* encMessageParser(char* stream);
 
-  char* packEncMessage(encMessage* src);
-  char* packMessage(message* src,string IP);
-  char* packNode(node* src,char* mode);
-  char* packHeartBeat(heartbeat* src);
+  int packEncMessage(char* stream,encMessage* src);
+  int packMessage(char* stream,message* src,string IP);
+  int packNode(char* stream,node* src,char mode);
+  int packHeartBeat(char* stream,heartbeat* src);
+
+  int getMessagePackLen(message* src);
+  int getEncMessagePackLen(encMessage* src);
+  int getNodePackLen(node* src);
+  int getHeartBeatPackLen(heartbeat* src);
 }
 
 #endif
