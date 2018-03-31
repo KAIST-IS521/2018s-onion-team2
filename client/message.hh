@@ -1,18 +1,23 @@
-
 #ifndef __MESSAGE__
 #define __MESSAGE__
+
+#include <string>
+#include <ctime>
+#include <iostream>
+
+using namespace std;
 
 class encMessage{
 private:
   string nextIP;
-  char* encData;
-publlic:
+  string encData;
+public:
   encMessage();
   string getNextIP();
-  char* getEncData();
+  string getEncData();
   bool setNextIP(string src);
-  bool setEncData(char* src);
- }
+  bool setEncData(string src);
+};
 
 class message{
 private:
@@ -23,16 +28,16 @@ private:
   bool writable;
 public:
   message();
-  bool setMessage();
+  message(string _content,string _GithubID, char* _OneTimeKey, time_t _timestamp);
   string getContents();
   string getGithubID();
-  string getTimestamp();
+  time_t getTimestamp();
   char* getOneTimeKey();
-  bool isWriteable();
+  bool isWritable();
   bool setTimestamp(time_t timestamp);
   bool setGithubID(string githubID);
   bool setOneTimeKey(char* OneTimeKey);
   bool setContents(string content);
-}
+};
 
 #endif
