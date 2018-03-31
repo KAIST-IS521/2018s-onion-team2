@@ -54,82 +54,25 @@ bool heartbeat::setTimestamp(time_t _timestamp){
 // hbd::recvHeartbeat
 // Description - 서버로부터 heartbeat 메시지를 받아 처리하는 함수
 // return - Null(실패), char*
-char* hbd::recvHeartbeat()
+void* hbd::recvHeartbeat((void*)args)
 {
-  int socketFd=-1;
-  char* buffer=NULL;
-  try{
-    socketFd = socket(AF_INET, SOCK_DGRAM,0);
-    if(-1 == socketFd)
-    { 
-      cout << "no socket" << endl;
-      return NULL;
-    }
-    struct sockaddr_in server_info;
-    memset(&server_info,0,sizeof(server_info)); // initalize server_info to 0
-    server_info.sin_family=AF_INET;
-    server_info.sin_port = htons(HB_PORT);             
-    server_info.sin_addr.s_addr=inet_addr("0.0.0.0");
+  string message = "";
+  int n;
+  char data[HB_LEN];
+  struct arg_receiver *arguments = (struct arg_receiver *)args;
+  int recvFd = arguments->recvFd;
+  string IP = arguments->IP;
+  delete (struct arg_receiver *)args;
+  pthread_detach(pthread_self());
 
-    if(-1 == bind(socketFd,(struct sockaddr*)&server_info,sizeof(struct sockaddr))){
-      close(socketFd);
-      cout << "bind failed" <<endl;
-      return NULL;
-    }
+  n = read(recvFd, data, HB_LEN);
 
-    socklen_t server_len = sizeof(struct sockaddr);
-    buffer = new char[10];
-    int recv_len = recvfrom(socketFd, buffer, 10,0,(struct sockaddr*)&server_info,&server_len);
-    if(buffer[0]!='\x04'){
-      close(socketFd);
-      cout <<"recv failed(wrong flag) - "<<buffer[0] << endl;
-      delete buffer;
-      return NULL; // check check check
-    }
+  if(n == HB_LEN && IP == SERVER_ADDR && data[0] == '\x04'){
+    char response[HB_LEN];
+    hbd::setHeartBeat(data, response);
+    write(recvFd, response, HB_LEN);
   }
-  catch(int exception){
-    if (socketFd != -1){
-      close(socketFd);
-    }
-    if (buffer != NULL){
-      delete buffer;
-    }
-    return NULL;
-  }
-
-  close(socketFd);
-  return buffer;
-}
-
-// hbd::heartbeatListener
-// Description - heartbeat 메세지 송신대기 함수
-// return - None
-void hbd::heartbeatListener()
-{
-  char* gotData = NULL;
-  heartbeat* parsedData = NULL;
-  while(true){
-    sleep(1);
-    try{
-      gotData = hbd::recvHeartbeat();
-      if(gotData!=NULL){
-	cout << gotData << endl;
-	parsedData = parser::hbParser(gotData);
-	if(parsedData!=NULL){
-	  char* newhb = new char[parser::getHeartBeatPackLen(parsedData)];
-          int newhbSize = packHeartBeat(newhb,parsedData);
-	  hbd::sendHeartbeat(newhb, newhbSize);
-	  delete newhb;
-        }
-      }
-      else{
-          cout << "recv Failed" << endl;
-      }        
-    }
-    catch(int exception){
-      cout << "Error Occured!" << endl;
-    }
-  }
+  close(recvFd);
 }
 
 // hbd::SendHeartbeat
