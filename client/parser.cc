@@ -1,7 +1,7 @@
 #include "parser.hh"
+#include "timestamp.hh"
 #include <iostream>
 #include <cstring>
-#include "timestamp.hh"
 using namespace std;
 
 
@@ -236,7 +236,12 @@ char* parser::packHeartBeat(heartbeat* src){
   return stream;
 }
 
-char* parser::packListUpdate(char* mode, userInfo user){
-  return "\x02" + timestamp::timestamp2byte(timestamp::getTimestampNow()) + \
-    mode + user.getPubKeyID() + inet_addr(user.getIP()));
+void parser::packListUpdate(char* mode, userInfo user, char* protocol){
+  protocol[0] = '\x02';
+  memcpy(protocol+1, ui::time_t2byte(timestamp::getTimestampNow()), TIME_T_SIZE);
+  memcpy(protocol+1+TIME_T_SIZE, mode);
+  memcpy(protocol+2+TIME_T_SIZE, user.getPubKeyID().c_str(), 8);
+  memcpy(protocol+10+TIME_T_SIZE, util::ip2byte(user.getIP()), IP_SIZE);
+  memcpy(protocol+10+TIME_T_SIZE+IP_SIZE, util::int2byte(user.getGithubID().length()),INT_SIZE);
+  memcpy(protocol+10+TIME_T_SIZE+IP_SIZE+INT_SIZE, user.getGithubID().c_str(), user.getGithubID().length());
 }
