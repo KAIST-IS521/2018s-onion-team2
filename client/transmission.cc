@@ -52,11 +52,11 @@ void* tmd::tmdReciver(void* args){
   return NULL;
 }
 
-
 void* tmd::tmdReciverMain(void* args){
   int n, sockFd, caddrlen, recvFd;
   struct sockaddr_in saddr, caddr;
   struct arg_receiver* arg_recv;
+  struct hostent *h;
 
   struct arg_main* arguments = (struct arg_main*)args;
   userInfo user = arguments->user;
@@ -94,12 +94,23 @@ void* tmd::tmdReciverMain(void* args){
     cout << "Waiting connections ..." << endl;
     if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0)
       continue;
-    pthread_t tid;
+    h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
+    arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
     cout << "Creationg Thread" << endl;
+    pthread_t tid;
     pthread_create(&tid, NULL, func, (void *)arg_recv);
   }
   return NULL;
 }
+
+void tmd::msg_args(userInfo user, struct arg_main* arguments){
+  arguments->port = MESSAGE_PORT;
+  arguments->protocol = IPPROTO_TCP;
+  arguments->type = SOCK_STREAM;
+  arguments->user = user;
+  arguments->func = tmd::tmdReciver;
+}
+
 
 // // tmd::tmdPathSelecter
 // // Description - 타 클라이언트로 메세지 전송시 Path를 결정. nodes 만큼의 클라이언트를 거치도록 만들어줌

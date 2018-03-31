@@ -68,3 +68,11 @@ bool hbd::sendHeartbeat(char* send_source, int send_size)
   close(sockFd);
   return true;
 }
+
+void hbd::heartbeat_args(userInfo user, struct arg_main* arguments){
+  arguments->port = MESSAGE_PORT;
+  arguments->protocol = IPPROTO_UDP;
+  arguments->type = SOCK_DGRAM;
+  arguments->user = user;
+  arguments->func = hbd::recvHeartbeat;
+}
