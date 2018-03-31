@@ -2,19 +2,25 @@
 
 using namespace std;
 
-hb_node::hb_node(string _Onetimekey, string _Timestamp, string _IP, bool _Arrive, int _Cnt) {
+hb_node::hb_node(BYTE _Flag, string _Onetimekey, time_t _Timestamp, string _IP, bool _Arrive, int _Cnt) {
+	Flag		= _Flag;
 	Onetimekey	= _Onetimekey;
 	Timestamp	= _Timestamp;
 	IP		= _IP;
+	/* FOR MANAGEMENT */
 	Arrive		= _Arrive;
 	Cnt		= _Cnt;
+}
+
+BYTE	hb_node::getFlag() {
+	return Flag;
 }
 
 string hb_node::getOnetimekey() {
 	return Onetimekey;
 }
 
-string hb_node::getTimestamp() {
+time_t hb_node::getTimestamp() {
 	return Timestamp;
 }
 

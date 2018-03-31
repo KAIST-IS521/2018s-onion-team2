@@ -1,20 +1,26 @@
 #ifndef	__HB_NODE_HH__
 #define	__HB_NODE_HH__
+
+#define	BYTE	unsigned char
+
+#include <ctime>
 #include <string>
 
 using namespace std;
 
 class hb_node {
         private:
+		BYTE	Flag;		
                 string  Onetimekey;
-                string  Timestamp;
+                time_t  Timestamp;
                 string  IP;
                 bool    Arrive;
                 int     Cnt;
 	public:
-		hb_node(string _Onetimekey, string _Timestamp, string _IP, bool _Arrive, int _Cnt);
+		hb_node(BYTE _Flag, string _Onetimekey, time_t _Timestamp, string _IP, bool _Arrive, int _Cnt);
+		BYTE	getFlag();
 		string getOnetimekey();
-		string getTimestamp();
+		time_t getTimestamp();
 		string getIP();
 		bool	getArrive();
 		int	getCnt();

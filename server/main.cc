@@ -1,9 +1,10 @@
+#include "hb_check.hh"
 #include <iostream>
 #include <list>
-#include "hb_check.hh"
+#include <string>
+#include <ctime>
 
 using namespace std;
-
 
 // 테스트용 메인
 int main() {
@@ -12,9 +13,11 @@ int main() {
 	hb_node *temp = NULL;
 	list<hb_node*>::iterator iter;
 
-	(*a).appendNode("abcdabcd", "123451234","192.168.100.3", false, 3);
-	(*a).appendNode("cdecde", "56785678", "192.168.100.4", false, 4);
-	(*a).appendNode("vfrvfr", "908908", "192.168.100.2", false, 5);
+	cout << (char)0x04 << endl;
+
+	(*a).appendNode((char)0x04, "abcdabcd", time(NULL),"192.168.100.3", false, 3);
+	(*a).appendNode((char)0x04, "cdecde", time(NULL), "192.168.100.4", false, 4);
+	(*a).appendNode((char)0x04, "vfrvfr", time(NULL), "192.168.100.2", false, 5);
 
 	for(iter = (*a).recv_node.begin(); iter != (*a).recv_node.end(); iter++) {
 		cout << (*iter)->getIP() << endl;
@@ -23,6 +26,7 @@ int main() {
 	(*a).delNode("abcdabcd", "192.168.100.3");
 
 	for(iter = (*a).recv_node.begin(); iter != (*a).recv_node.end(); iter++) {
+		cout << (*iter)->getFlag() << endl;
 		cout << (*iter)->getIP() << endl;
 	}
 
