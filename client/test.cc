@@ -4,7 +4,7 @@
 using namespace std;
 
 // To compile this code:
-//    g++ test.cc util.cc ui.cc userInfo.cc heartbeat.cc nodelist.cc timestamp.cc -o test
+//    g++ test.cc util.cc ui.cc userInfo.cc heartbeat.cc nodelist.cc timestamp.cc -o test -std=c++11
 
 int main()
 {
