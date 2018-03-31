@@ -41,7 +41,6 @@ bool hb_check::delNode(string _Onetimekey, string _IP) {
 		if((*recvlist)->getIP() == __IP && (*recvlist)->getOnetimekey() == __OTK) {
 			delete(*recvlist);
 			recvlist = recv_node.erase(recvlist++);	
-//			cout << __IP << endl;
 		}
 		else
 			++recvlist;
@@ -55,10 +54,8 @@ hb_node*  hb_check::findNode(string _Onetimekey, string _IP) {
         string __IP     = _IP;
 
         for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
-//                if((*recvlist)->getIP() == __IP && (*recvlist)->getOnetimekey() == __OTK) {
 		if((*recvlist)->getIP() == __IP) {
                         return (*recvlist);
-//                      cout << __IP << endl;
                 }
         }
 	return NULL;
@@ -71,13 +68,11 @@ bool	hb_check::checkNode(time_t _Timestamp) {
 
 	for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
 		if(((*recvlist)->getArrive() == false) && (currentTime - (*recvlist)->getTimestamp()) >= 5) {
-			cout << "Before : " << (*recvlist)->getIP() << ":"  << (*recvlist)->getTimestamp() << endl;
-			resend_node.push_back((*recvlist));
-			resend_node.push_back((*recvlist));
-			cout << "After : " << (*resendlist)->getIP() << endl;
+//			cout << "Before : " << (*recvlist)->getIP() << ":"  << (*recvlist)->getTimestamp() << endl;
+			resend_node.push_back(*recvlist);
+			delete (*recvlist);
 		}
-//		cout << (*recvlist)->getIP() << ":"  << (*recvlist)->getTimestamp() << endl;
-//		cout << "Arrive : " <<  (*recvlist)->getArrive() << ":"  << currentTime - (*recvlist)->getTimestamp() << endl << endl;   
 	}
+
 	return false;
 }
