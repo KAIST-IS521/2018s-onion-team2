@@ -37,16 +37,13 @@ userInfo ui::login(){
   cin >> PubKeyID;
   Passphrase = getpass("> Passphrase: ");
 
-  if((IP = ui::getIPAddr()) == "") {
+  if(GithubId.length() > 40) {
+    cout << "[!] Your Github ID is too long";
+    exit(-1);
+  } else if((IP = ui::getIPAddr()) == "") {
     cout << "[!] Error in retrieving the ip address";
     exit(-1);
   }
-
-  // Send an info that user has logged-in to the server
-
-  // Retrieve client list from the Server
-
-  // Create a thread for the listening
 
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }
