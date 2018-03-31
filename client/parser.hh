@@ -1,9 +1,12 @@
 #ifndef __parser__
 #define __parser__
 #include <iostream>
+#include <string>
 #include <cstring>
 #include "timestamp.hh"
 #include "nodelist.hh"
+#include "heartbeat.hh"
+#include "message.hh"
 
 namespace parser{
   message* messageParser(char* stream);
@@ -13,7 +16,7 @@ namespace parser{
   encMessage* encMessageParser(char* stream);
 
   char* packEncMessage(encMessage* src);
-  char* packMessage(message* src);
+  char* packMessage(message* src,string IP);
   char* packNode(node* src,char* mode);
   char* packHeartBeat(heartbeat* src);
 }
