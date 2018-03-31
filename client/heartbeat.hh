@@ -17,11 +17,10 @@ private:
   char* OneTimeKey;
   time_t timestamp;
 public:
-  heartbeat(char* stream);
   heartbeat(char* _OneTimeKey,time_t timestamp);
   char* getOneTimeKey();
   time_t getTimestamp();
-  bool setOntTimeKey(char* _OneTimeKey);
+  bool setOneTimeKey(char* _OneTimeKey);
   bool setTimestamp(time_t _timestamp);
 };
 

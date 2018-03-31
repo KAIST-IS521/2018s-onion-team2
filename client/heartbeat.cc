@@ -24,10 +24,10 @@ time_t heartbeat::getTimestamp(){
 }
 
 
-// heartbeat::setOntTimeKey
+// heartbeat::setOneTimeKey
 // Description - heartbeat 객체에 OntTimeKey를 세팅함
 // return - True(성공), False(실패)
-bool heartbeat::setOntTimeKey(char* _OneTimeKey){
+bool heartbeat::setOneTimeKey(char* _OneTimeKey){
   try{
     this->OneTimeKey = _OneTimeKey;
     return true;

@@ -1,15 +1,16 @@
 #include "parser.hh"
 #include <iostream>
 #include <cstring>
+#include "timestamp.hh"
 using namespace std;
 
 
 // parser::messageParser
-// Description - 0x00(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
+// Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
 message* parser::messageParser(char* stream){
-  message* temp = new message;
-  if (steam[0] != 0){
+  message* temp = new message();
+  if (steam[0] != 1){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
@@ -53,19 +54,23 @@ message* parser::messageParser(char* stream){
 // parser::listParser
 // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
 // Return - Null(실패), node*
-node* parser::list㎩rser(char* stream){
-  node* temp;
+node* parser::listParser(char* stream){
+  node* temp = new node();
   if (steam[0] != 2){
     cout << "Wrong Parser" << endl;
     return NULL;
   }
 
   if (stream[5] == 0){
-    string PK = NULL;
-    memcpy(PK, &stream[6], 8);
+    string PK = "";
+    for (int i = 0; i<8; i++){
+      PK += stream[6+i];
+    }
 
-    string IP = NULL;
-    memcpy(PK, &stream[14], 4);
+    string IP = "";
+    for (int i = 0; i<8; i++){
+      IP += stream[14+i];
+    }
 
     unsigned int ID_length = stream[18];
     if (ID_length > 39){
@@ -81,9 +86,25 @@ node* parser::list㎩rser(char* stream){
   }
 
   else if (stream[5] == 1){                   // MODE가 삭제인 경우. 아직 코딩 못함.
-    string msg = "";
+    string PK = "";
     for (int i = 0; i<8; i++){
-      msg += stream[6+i];
+      PK += stream[6+i];
+    }
+
+    string IP = "";
+    for (int i = 0; i<8; i++){
+      IP += stream[14+i];
+    }
+
+    unsigned int ID_length = stream[18];
+    if (ID_length > 39){
+      cout << "Wrong GithubID length" << endl;
+      return NULL;
+    }
+
+    string ID = "";
+    for (int i = 0; i<ID_length; i++){
+      ID += stream[22+i];
     }
   }
 
@@ -94,7 +115,7 @@ node* parser::list㎩rser(char* stream){
 // Description - 0x04(heartbeat) char stream에 대한 Parsing을 실시하고 heartbeat형태로 반환
 // Return - Null(실패), heartbeat*
 heartbeat* parser::hbParser(char* stream){
-  heartbeat* temp;
+  heartbeat* temp = new heartbeat();
   if (stream[0] != 4){
     cout << "Wrong Parser" << endl;
     return NULL;
@@ -118,10 +139,10 @@ heartbeat* parser::hbParser(char* stream){
 }
 
 // parser::encMessageParser
-// Description - 0x01(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
+// Description - 0x00(Encrypted Message) char stream에 대한 Parser을 실시하고 encMessage 객체 형태로 반환
 // Return - Null(실패), encMessage*
 encMessage* parser::encMessageParser(char* stream,string IP){
-  encMessage* temp;
+  encMessage* temp = new encMessage();
   if (steam[0] != 0){
     cout << "Wrong Parser" << endl;
     return NULL;
@@ -189,8 +210,9 @@ char* parser::packMessage(message* src){
 // Return - Null(실패), char*(Packing 된 BYTE stream)
 char* parser::packNode(node* src){
   char* stream = "2";
-  strcat(stream, src->getTimestamp());        // node에는 timestamp 관련 변수나 함수가 없음.
-  //strcat(stream, src->);                    // mode관련 변수가 없음.
+  time_t TS = getTimestampNow();
+  strcat(stream, timestamp2byte(TS));
+  strcat(stream, "1");
   strcat(stream, src->getPubKeyID());
   strcat(stream, src->getIP());
 
