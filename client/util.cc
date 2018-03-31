@@ -1,5 +1,6 @@
 #include "util.hh"
 #include <cstring>
+#include <cassert>
 
 void util::int2byte(int integer, char* byte){
   union util::int_byte x;
@@ -25,18 +26,24 @@ time_t util::byte2time_t(char* t){
   return x.t;
 }
 
-void util::ip2byte(string IP, char* byte){
-  union util::in_addr_t_byte x;
-  struct sockaddr_in adr_inet;
-
-  inet_aton(IP.c_str(), &adr_inet.sin_addr);
-  x.IP[0] = inet_netof(adr_inet.sin_addr);
-  x.IP[1] = inet_lnaof(adr_inet.sin_addr);
-  memcpy(byte, x.byte, IP_SIZE);
+void util::ip2byte(string IP, unsigned char* byte){
+  int i = 0;
+  char *ch = strtok((char*)IP.c_str(), ".");
+  while (ch != NULL)
+  {
+    byte[i++]= atoi(ch);
+    ch = strtok(NULL, ".");
+  }
+  assert(i == IP_SIZE);
 }
 
-string util::byte2ip(char* byte){
-  union util::in_addr_t_byte x;
-  memcpy(x.byte, byte, IP_SIZE);
-  return inet_ntoa(inet_makeaddr(x.IP[0], x.IP[1]));
+string util::byte2ip(unsigned char* byte){
+  string IP;
+  for (int i = 0; i < IP_SIZE; ++i) {
+    if(i != IP_SIZE-1)
+      IP += to_string(byte[i]) + ".";
+    else
+      IP += to_string(byte[i]);
+  }
+  return IP;
 }

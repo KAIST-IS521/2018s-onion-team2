@@ -13,7 +13,7 @@ int main()
   */
   string IP = ui::getIPAddr();
   cout << IP << endl;
-  char ip_byte[IP_SIZE];
+  unsigned char ip_byte[IP_SIZE];
   util::ip2byte(IP, ip_byte);
   cout << util::byte2ip(ip_byte) << endl << endl;
 
