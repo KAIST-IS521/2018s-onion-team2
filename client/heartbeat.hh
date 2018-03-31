@@ -2,6 +2,7 @@
 #ifndef __HEARTBEAT__
 #define __HEARTBEAT__
 #include "timestamp.hh"
+#include "parser.hh"
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,6 +12,8 @@
 
 #define HB_PORT 60750
 #define HB_SERVER_ADDR inet_addr("127.0.0.1")
+
+using namespace parser;
 
 class heartbeat{
 private:
