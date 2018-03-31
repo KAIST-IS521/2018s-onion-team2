@@ -10,10 +10,10 @@ void* tmd::tmdReciver(void* args){
   string message = "";
   int n;
   char buf[MAX_LEN];
-  struct arg_struct *arguments = (struct arg_struct *)args;
+  struct arg_receiver *arguments = (struct arg_receiver *)args;
   int recvFd = arguments->recvFd;
   userInfo user = arguments->user;
-  delete (struct arg_struct *)args;
+  delete (struct arg_receiver *)args;
   pthread_detach(pthread_self());
 
   while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
@@ -52,21 +52,30 @@ void* tmd::tmdReciver(void* args){
   return NULL;
 }
 
+
 void* tmd::tmdReciverMain(void* args){
   int n, sockFd, caddrlen, recvFd;
-  struct hostent *h;
   struct sockaddr_in saddr, caddr;
-  struct arg_struct* arguments;
+  struct arg_receiver* arg_recv;
+
+  struct arg_main* arguments = (struct arg_main*)args;
+  userInfo user = arguments->user;
+  int port = arguments->port;
+  int protocol = arguments->protocol;
+  int type = arguments->type;
+  void*(*func)(void*) = arguments->func;
+
+  delete (struct arg_main*)args;
 
   cout << "socket creating ..." << endl;
-  if ((sockFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+  if ((sockFd = socket(AF_INET, type, protocol)) < 0) {
     throw "socket() failed.";
   }
 
   bzero((char *)&saddr, sizeof(saddr));
   saddr.sin_family = AF_INET;
   saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  saddr.sin_port = htons(MESSAGE_PORT);
+  saddr.sin_port = htons(port);
   
   cout << "binding ..." << endl;
   if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0) {
@@ -80,14 +89,14 @@ void* tmd::tmdReciverMain(void* args){
 
   while (1) {
     caddrlen = sizeof(caddr);
-    arguments = new struct arg_struct;
-    arguments->user = *((userInfo*)args);
+    arg_recv = new struct arg_receiver;
+    arg_recv->user = user;
     cout << "Waiting connections ..." << endl;
-    if ((arguments->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0)
+    if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0)
       continue;
     pthread_t tid;
     cout << "Creationg Thread" << endl;
-    pthread_create(&tid, NULL, tmd::tmdReciver, (void *)arguments);
+    pthread_create(&tid, NULL, func, (void *)arg_recv);
   }
   return NULL;
 }

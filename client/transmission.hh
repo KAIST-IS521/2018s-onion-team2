@@ -8,7 +8,15 @@
 #include <unistd.h>
 #include <strings.h>
 
-struct arg_struct {
+struct arg_main {
+  int protocol;
+  int port;
+  int type;
+  void*(*func)(void*);
+  userInfo user;
+};
+
+struct arg_receiver {
   int recvFd;
   userInfo user;
 };
