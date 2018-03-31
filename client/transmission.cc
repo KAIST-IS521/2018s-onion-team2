@@ -17,7 +17,7 @@ void* tmd::tmdReciver(void* args){
   pthread_detach(pthread_self());
 
   while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
-    write(recvFd, buf, n);
+    // write(recvFd, buf, n);
     message += buf;
   }
 
@@ -59,7 +59,7 @@ void* tmd::tmdReciverMain(void* args){
   struct arg_struct* arguments;
 
   cout << "socket creating ..." << endl;
-  if ((sockFd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+  if ((sockFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
     throw "socket() failed.";
   }
 
