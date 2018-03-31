@@ -34,7 +34,7 @@ userInfo ui::login(){
   cout << "> Github ID: ";
   cin >> GithubId;
   cout << "> Public key ID: ";
-  cin >> PublicKeyID;
+  cin >> PubKeyID;
   Passphrase = getpass("> Passphrase: ");
 
   if((IP = ui::getIPAddr()) == "") {
