@@ -2,12 +2,11 @@
 #define __HEARTBEAT__
 #include "timestamp.hh"
 #include "util.hh"
-#include "parser.hh"
+#include "userInfo.hh"
+#include "transmission.hh"
 
 #define HB_LEN 9
 #define SERVER_ADDR "127.0.0.1"
-
-using namespace parser;
 
 class heartbeat{
 private:
@@ -15,7 +14,7 @@ private:
 public:
   heartbeat(char* data);
   char* getOneTimeKey();
-  void setHeartBeat(char* buf, char* response);
+  void setHeartBeat(char* data, char* response);
 };
 
 // hbd = heartbeat daemon

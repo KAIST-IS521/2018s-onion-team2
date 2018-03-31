@@ -1,5 +1,6 @@
 #include "transmission.hh"
 #include "util.hh"
+#include <netdb.h>
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 

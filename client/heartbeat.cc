@@ -11,14 +11,13 @@ char* heartbeat::getOneTimeKey(){
 
 void heartbeat::setHeartBeat(char* data, char* response){
   char time_stamp[TIME_T_SIZE];
-  heartbeat hb = hb(data);
   response[0] = data[0];
-  memcpy(response+1, hb.getOneTimeKey(), 4);
+  memcpy(response+1, this->getOneTimeKey(), 4);
   util::time_t2byte(timestamp::getTimestampNow(), time_stamp);
   memcpy(response+5, time_stamp, 4);
 }
 
-void* hbd::recvHeartbeat((void*)args)
+void* hbd::recvHeartbeat(void* args)
 {
   string message = "";
   int n;
@@ -33,7 +32,8 @@ void* hbd::recvHeartbeat((void*)args)
 
   if(n == HB_LEN && IP == SERVER_ADDR && data[0] == '\x04'){
     char response[HB_LEN];
-    hbd::setHeartBeat(data, response);
+    heartbeat hb = heartbeat(data);
+    hb.setHeartBeat(data, response);
     write(recvFd, response, HB_LEN);
   }
   close(recvFd);
