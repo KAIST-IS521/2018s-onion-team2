@@ -19,6 +19,7 @@ private:
   string PubKeyID;
   string IP;
 public:
+  node();
   node(string _GithubID, string PubKeyID, string IP);
   string getGithubID();
   string getPubKeyID();

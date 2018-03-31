@@ -1,6 +1,9 @@
 #include "nodelist.hh"
 
 using namespace std;
+
+node::node(){};
+
 // node::node
 // Description - node 객체의 생성자 ( node의 각 요소를 직접 삽입하는 형태 )
 // return - None
@@ -34,6 +37,7 @@ string node::getPubKeyID(){
 string node::getIP(){
   return this->IP;
 }
+
 
 // nodelist::nodelist
 // Description - nodelist의 생성자 ( 첫 node를 받아서 이를 기반으로 리스트 생성 )
