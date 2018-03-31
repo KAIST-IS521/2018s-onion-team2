@@ -1,6 +1,6 @@
 #ifndef __parser__
 #define __parser__
-#define LIST_UPDATE 70
+#define LIST_UPDATE 66
 #include "userInfo.hh"
 
 namespace parser{
