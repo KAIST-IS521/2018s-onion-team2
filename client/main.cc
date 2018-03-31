@@ -6,17 +6,6 @@
 #include <netinet/in.h>
 using namespace std;
 
-
-void msg_args(userInfo user, struct arg_main* arguments){
-  arguments->port = MESSAGE_PORT;
-  arguments->protocol = IPPROTO_TCP;
-  arguments->type = SOCK_STREAM;
-  arguments->user = user;
-  arguments->func = tmd::tmdReciver;
-}
-
-
-
 int main(int argc, char const *argv[])
 {
   
