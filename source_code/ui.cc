@@ -16,7 +16,7 @@ string ui::getIPAddr(){
   if(!getifaddrs(&net_ifa)){
     cur_ifa = net_ifa;
     while(cur_ifa) {
-      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("docker0")) {
+      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("eth0")) {
         ip_addr = inet_ntoa(((struct sockaddr_in*)cur_ifa->ifa_addr)->sin_addr);
       }
       cur_ifa = cur_ifa->ifa_next;
