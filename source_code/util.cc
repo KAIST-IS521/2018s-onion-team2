@@ -4,6 +4,8 @@
 
 pthread_mutex_t m_node_list = PTHREAD_MUTEX_INITIALIZER;
 nodelist node_list;
+userInfo user;
+pthread_mutex_t m_user;
 
 // void packet::insertPkt(char* buf){
 //   char* data = new char[MAX_LEN];

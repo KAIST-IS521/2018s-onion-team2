@@ -13,12 +13,10 @@ namespace tmd{
     int port;
     int type;
     void*(*func)(void*);
-    userInfo user;
   };
 
   struct arg_receiver {
     int recvFd;
-    userInfo user;
     string IP;
     char buf[HB_LEN];
   };
@@ -31,8 +29,8 @@ namespace tmd{
 
   void* tmdReceiver(void* args);
   void* tmdReceiverMain(void* args);
-  void msg_args(userInfo user, struct tmd::arg_main* arguments);
-  void data_args(node* _node, char* data, struct tmd::arg_data* list_update_arguments);
+  void msg_args(struct tmd::arg_main* arguments);
+  void data_args(string IP, char* data, struct tmd::arg_data* list_update_arguments);
   list<node*> tmdPathSelecter();
   void* tmdSender(void* args);
   // char* tmdPackPacket(node* sender, node* reciver, BYTE* plain);

@@ -1,6 +1,7 @@
 #include "transmission.hh"
 #include "gpg.hh"
 #include "parser.hh"
+#include "message.hh"
 #include <netdb.h>
 #include <cstring>
 
@@ -10,52 +11,38 @@
 // Description - tmdReceiverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
 // Return - 정상종료 0, 이외 음수 < 통신부 테스트 완료 >
 void* tmd::tmdReceiver(void* args){
-  string message = "";
+  string data = "";
   int n;
   char buf[MAX_LEN];
   struct tmd::arg_receiver *arguments = (struct tmd::arg_receiver *)args;
   int recvFd = arguments->recvFd;
-  userInfo user = arguments->user;
   delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
 
-  // while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
-  //   // write(recvFd, buf, n);
-  //   message += buf;
-  // }
-
-  n = read(recvFd, buf, MAX_LEN);
-
+  while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
+    data += buf;
+  }
   string passphrase = user.getPassphrase();
-  char* stream = gpg::decBytestream(buf, &passphrase);
-  cout << "WTF" << endl;
-  switch(buf[0]){
-  //   // 0x04(heartbeat) 여기서 발견되면 안됨.
-  //   // MUTEX 잘 써야 함
-  //   //pthread_mutex_lock(&m);
-  //   //pthread_mutex_unlock(&m);
-  //   case '\x00':
-  //     // 평문 : message 객체로 만들고, storage에 저장
-  //     break;
-
-  //   case '\x01':
-  //     // 암호문 : 길이 및 메세지 따서 해당 서버로 재송신
-
-  //     break;
-
-    case '\x02':
-      node* new_node = parser::nodeParser(buf);
-      pthread_mutex_lock(&m_node_list);
-      node_list.appendNode(new_node);
-      pthread_mutex_unlock(&m_node_list);
-      vector<string>* id_list = node_list.getGithubIDList();
-      for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it)
-        cout << *it << endl;
-
-  //     break;
-  //   default:
-  //     // fail : 무시
-  //     break;
+  char* stream = gpg::decBytestream((char*)data.c_str(), &passphrase);
+  if(stream[0] == '\x00'){
+    encMessage* msg = parser::encMessageParser(stream);
+    struct tmd::arg_data* list_update_arguments = new struct tmd::arg_data();
+    tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), list_update_arguments);
+    pthread_t th_list_update;
+    pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
+    msg->getNextIP();
+    delete msg;
+  } else if(stream[0] == '\x01') {
+    message* msg = parser::messageParser(stream);
+    pthread_mutex_lock(&m_user);
+    user.addMessage(*msg);
+    pthread_mutex_unlock(&m_user);
+    delete msg;
+  } else if(stream[0] == '\x02'){
+    node* new_node = parser::nodeParser(stream);
+    pthread_mutex_lock(&m_node_list);
+    node_list.appendNode(new_node);
+    pthread_mutex_unlock(&m_node_list);
   }
   delete stream;
   close(recvFd);
@@ -69,7 +56,6 @@ void* tmd::tmdReceiverMain(void* args){
   struct hostent *h;
 
   struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
-  userInfo user = arguments->user;
   int port = arguments->port;
   int protocol = arguments->protocol;
   int type = arguments->type;
@@ -77,7 +63,6 @@ void* tmd::tmdReceiverMain(void* args){
 
   delete (struct tmd::arg_main*)args;
 
-  cout << "socket creating ..." << endl;
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
 
@@ -86,27 +71,22 @@ void* tmd::tmdReceiverMain(void* args){
   saddr.sin_addr.s_addr = htonl(INADDR_ANY);
   saddr.sin_port = htons(port);
   
-  cout << "binding ..." << endl;
   if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
     throw "bind() failed.";
 
   if(protocol == IPPROTO_TCP){
-    cout << "listening ..." << endl;
     if (listen(sockFd, MAX_QUEUE) < 0)
       throw "listen() failed.";
 
     while (1) {
       caddrlen = sizeof(caddr);
       arg_recv = new struct tmd::arg_receiver();
-      arg_recv->user = user;
-      cout << "Waiting connections ..." << endl;
       if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
         delete arg_recv;
         continue;
       }
       h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
       arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      cout << "Creationg Thread" << endl;
       pthread_t tid;
       pthread_create(&tid, NULL, func, (void *)arg_recv);
     }
@@ -114,8 +94,6 @@ void* tmd::tmdReceiverMain(void* args){
     while(1){
       caddrlen = sizeof(caddr);
       arg_recv = new struct tmd::arg_receiver();
-      arg_recv->user = user;
-      cout << "Waiting connections ..." << endl;
       if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
         delete arg_recv;
         continue;
@@ -130,16 +108,15 @@ void* tmd::tmdReceiverMain(void* args){
   return NULL;
 }
 
-void tmd::msg_args(userInfo user, struct tmd::arg_main* arguments){
+void tmd::msg_args(struct tmd::arg_main* arguments){
   arguments->port = MESSAGE_PORT;
   arguments->protocol = IPPROTO_TCP;
   arguments->type = SOCK_STREAM;
-  arguments->user = user;
   arguments->func = tmd::tmdReceiver;
 }
 
-void tmd::data_args(node* _node, char* data, struct tmd::arg_data* list_update_arguments){
-  list_update_arguments->IP = _node->getIP();
+void tmd::data_args(string IP, char* data, struct tmd::arg_data* list_update_arguments){
+  list_update_arguments->IP = IP;
   list_update_arguments->data = new char[MAX_LEN];
   memcpy(list_update_arguments->data, data, MAX_LEN);
   list_update_arguments->length = MAX_LEN;

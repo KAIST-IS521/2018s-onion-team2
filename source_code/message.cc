@@ -53,7 +53,7 @@ bool encMessage::setEncData(string src){
 message::message(){
   this->Content = "";
   this->GithubID = "";
-  this->OneTimeKey = "";
+  this->OneTimeKey = NULL;
   this->timestamp = 0;
   this->writable = true;
 }

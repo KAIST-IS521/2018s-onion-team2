@@ -5,13 +5,14 @@
 #define IP_SIZE 4
 #define HB_PORT 60750
 #define MESSAGE_PORT 56827
-#define MAX_LEN 512
+#define MAX_LEN 4096
 #define MAX_QUEUE 5
 #define HB_LEN 9
 #define SIGN_IN '0x00'
 #define SIGN_OUT '0x01'
-#define SERVER_ADDR "143.248.249.111"
+#define SERVER_ADDR "127.0.0.1"
 
+#include "userInfo.hh"
 #include "nodelist.hh"
 #include <time.h>
 #include <sys/socket.h>
@@ -24,25 +25,15 @@ using namespace std;
 
 extern nodelist node_list;
 extern pthread_mutex_t m_node_list;
-// class packet {
-// private:
-//   list<char*> pkt;
-// public:
-//   void insertPkt(char* buf);
-//   bool getPkt(char* buf);
-//   ~packet();
-// };
+
+extern userInfo user;
+extern pthread_mutex_t m_user;
 
 namespace util{
   union int_byte {
     int integer;
     char byte[INT_SIZE];
   };
-
-  // union time_t_byte {
-  //   time_t t;
-  //   char byte[TIME_T_SIZE];
-  // };
 
   void int2byte(int integer, char* byte);
   int byte2int(char* integer);

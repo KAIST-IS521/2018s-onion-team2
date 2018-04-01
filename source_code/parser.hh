@@ -19,8 +19,8 @@ namespace parser{
   int packEncMessage(char* stream,encMessage* src);
   int packMessage(char* stream,message* src,string IP);
   int packNode(char* stream,node* src,char mode);
-  int packHeartBeat(char* stream,heartbeat* src);
-  void packListUpdate(char mode, userInfo user, struct tmd::arg_data* args);
+  int packHeartBeat(char* stream, char* OTK);
+  void packListUpdate(char mode, struct tmd::arg_data* args);
 
   int getMessagePackLen(message* src);
   int getEncMessagePackLen(encMessage* src);

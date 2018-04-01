@@ -17,6 +17,6 @@ public:
 // hbd = heartbeat daemon
 namespace hbd{
   void* recvHeartbeat(void* args);
-  void heartbeat_args(userInfo user, struct tmd::arg_main* arguments);
+  void heartbeat_args(struct tmd::arg_main* arguments);
 }
 #endif
