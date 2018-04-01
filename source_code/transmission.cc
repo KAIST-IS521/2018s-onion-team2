@@ -39,15 +39,10 @@ void* tmd::tmdReceiver(void* args){
     pthread_mutex_unlock(&m_user);
     delete msg;
   } else if(stream[0] == '\x02'){
-    cout << "HERE" << endl;
     node* new_node = parser::nodeParser(stream);
-    cout << "THERE" << endl;
     pthread_mutex_lock(&m_node_list);
     node_list.appendNode(new_node);
     pthread_mutex_unlock(&m_node_list);
-    vector<string>* id_list = node_list.getGithubIDList();
-    for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it)
-      cout << *it << endl;
   }
   delete stream;
   close(recvFd);
@@ -68,7 +63,6 @@ void* tmd::tmdReceiverMain(void* args){
 
   delete (struct tmd::arg_main*)args;
 
-  cout << "socket creating ..." << endl;
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
 
@@ -77,26 +71,22 @@ void* tmd::tmdReceiverMain(void* args){
   saddr.sin_addr.s_addr = htonl(INADDR_ANY);
   saddr.sin_port = htons(port);
   
-  cout << "binding ..." << endl;
   if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
     throw "bind() failed.";
 
   if(protocol == IPPROTO_TCP){
-    cout << "listening ..." << endl;
     if (listen(sockFd, MAX_QUEUE) < 0)
       throw "listen() failed.";
 
     while (1) {
       caddrlen = sizeof(caddr);
       arg_recv = new struct tmd::arg_receiver();
-      cout << "Waiting connections ..." << endl;
       if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
         delete arg_recv;
         continue;
       }
       h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
       arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      cout << "Creationg Thread" << endl;
       pthread_t tid;
       pthread_create(&tid, NULL, func, (void *)arg_recv);
     }
@@ -104,7 +94,6 @@ void* tmd::tmdReceiverMain(void* args){
     while(1){
       caddrlen = sizeof(caddr);
       arg_recv = new struct tmd::arg_receiver();
-      cout << "Waiting connections ..." << endl;
       if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
         delete arg_recv;
         continue;
