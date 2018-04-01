@@ -3,6 +3,11 @@
 #define TIME_T_SIZE 8
 #define INT_SIZE 4
 #define IP_SIZE 4
+#define HB_PORT 60750
+#define MESSAGE_PORT 56827
+#define MAX_LEN 512
+#define MAX_QUEUE 5
+#define HB_LEN 9
 #include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

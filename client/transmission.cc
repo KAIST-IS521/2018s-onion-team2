@@ -1,5 +1,4 @@
 #include "transmission.hh"
-#include "util.hh"
 #include <netdb.h>
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
@@ -11,10 +10,10 @@ void* tmd::tmdReciver(void* args){
   string message = "";
   int n;
   char buf[MAX_LEN];
-  struct arg_receiver *arguments = (struct arg_receiver *)args;
+  struct tmd::arg_receiver *arguments = (struct tmd::arg_receiver *)args;
   int recvFd = arguments->recvFd;
   userInfo user = arguments->user;
-  delete (struct arg_receiver *)args;
+  delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
 
   while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
@@ -56,22 +55,21 @@ void* tmd::tmdReciver(void* args){
 void* tmd::tmdReciverMain(void* args){
   int n, sockFd, caddrlen, recvFd;
   struct sockaddr_in saddr, caddr;
-  struct arg_receiver* arg_recv;
+  struct tmd::arg_receiver* arg_recv;
   struct hostent *h;
 
-  struct arg_main* arguments = (struct arg_main*)args;
+  struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
   userInfo user = arguments->user;
   int port = arguments->port;
   int protocol = arguments->protocol;
   int type = arguments->type;
   void*(*func)(void*) = arguments->func;
 
-  delete (struct arg_main*)args;
+  delete (struct tmd::arg_main*)args;
 
   cout << "socket creating ..." << endl;
-  if ((sockFd = socket(AF_INET, type, protocol)) < 0) {
+  if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
-  }
 
   bzero((char *)&saddr, sizeof(saddr));
   saddr.sin_family = AF_INET;
@@ -79,32 +77,50 @@ void* tmd::tmdReciverMain(void* args){
   saddr.sin_port = htons(port);
   
   cout << "binding ..." << endl;
-  if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0) {
+  if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
     throw "bind() failed.";
+
+  if(protocol == IPPROTO_TCP){
+    cout << "listening ..." << endl;
+    if (listen(sockFd, MAX_QUEUE) < 0)
+      throw "listen() failed.";
+
+    while (1) {
+      caddrlen = sizeof(caddr);
+      arg_recv = new struct tmd::arg_receiver;
+      arg_recv->user = user;
+      cout << "Waiting connections ..." << endl;
+      if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
+        delete arg_recv;
+        continue;
+      }
+      h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
+      arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
+      cout << "Creationg Thread" << endl;
+      pthread_t tid;
+      pthread_create(&tid, NULL, func, (void *)arg_recv);
+    }
+  } else {
+    while(1){
+      caddrlen = sizeof(caddr);
+      arg_recv = new struct tmd::arg_receiver;
+      arg_recv->user = user;
+      cout << "Waiting connections ..." << endl;
+      if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
+        delete arg_recv;
+        continue;
+      }
+      h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
+      arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
+      pthread_t tid;
+      pthread_create(&tid, NULL, func, (void *)arg_recv);
+    }
   }
 
-  cout << "socket creating ..." << endl;
-  if (listen(sockFd, MAX_QUEUE) < 0) {
-    throw "listen() failed.";
-  }
-
-  while (1) {
-    caddrlen = sizeof(caddr);
-    arg_recv = new struct arg_receiver;
-    arg_recv->user = user;
-    cout << "Waiting connections ..." << endl;
-    if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0)
-      continue;
-    h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
-    arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-    cout << "Creationg Thread" << endl;
-    pthread_t tid;
-    pthread_create(&tid, NULL, func, (void *)arg_recv);
-  }
   return NULL;
 }
 
-void tmd::msg_args(userInfo user, struct arg_main* arguments){
+void tmd::msg_args(userInfo user, struct tmd::arg_main* arguments){
   arguments->port = MESSAGE_PORT;
   arguments->protocol = IPPROTO_TCP;
   arguments->type = SOCK_STREAM;

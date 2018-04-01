@@ -20,23 +20,37 @@ void heartbeat::setHeartBeat(char* data, char* response){
 void* hbd::recvHeartbeat(void* args)
 {
   string message = "";
-  int n;
   char data[HB_LEN];
-  struct arg_receiver *arguments = (struct arg_receiver *)args;
-  int recvFd = arguments->recvFd;
+  struct tmd::arg_receiver *arguments = (struct tmd::arg_receiver *)args;
   string IP = arguments->IP;
-  delete (struct arg_receiver *)args;
+  memcpy(data, arguments->buf, HB_LEN);
+  delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
 
-  n = read(recvFd, data, HB_LEN);
-
-  if(n == HB_LEN && IP == SERVER_ADDR && data[0] == '\x04'){
+  if(IP == SERVER_ADDR && data[0] == '\x04'){
     char response[HB_LEN];
     heartbeat hb = heartbeat(data);
     hb.setHeartBeat(data, response);
-    write(recvFd, response, HB_LEN);
+
+    struct sockaddr_in saddr;
+    int sockFd, saddrlen;
+
+    if ((sockFd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+      throw "socket() failed";
+
+    bzero((char*)&saddr, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    saddr.sin_port = htons(HB_PORT);
+    if (inet_aton(SERVER_ADDR, &saddr.sin_addr) == 0)
+      throw "inet_aton() failed";
+
+    saddrlen = sizeof(saddr);
+    if (sendto(sockFd, response, HB_LEN, 0, (struct sockaddr *)&saddr, (socklen_t)saddrlen) < 0)
+      throw "sendto() failed";
+
+    close(sockFd);
+    return 0;
   }
-  close(recvFd);
 }
 
 // // hbd::SendHeartbeat
@@ -69,7 +83,7 @@ void* hbd::recvHeartbeat(void* args)
 //   return true;
 // }
 
-void hbd::heartbeat_args(userInfo user, struct arg_main* arguments){
+void hbd::heartbeat_args(userInfo user, struct tmd::arg_main* arguments){
   arguments->port = HB_PORT;
   arguments->protocol = IPPROTO_UDP;
   arguments->type = SOCK_DGRAM;

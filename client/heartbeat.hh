@@ -5,7 +5,6 @@
 #include "userInfo.hh"
 #include "transmission.hh"
 
-#define HB_LEN 9
 #define SERVER_ADDR "127.0.0.1"
 
 class heartbeat{
@@ -20,6 +19,6 @@ public:
 // hbd = heartbeat daemon
 namespace hbd{
   void* recvHeartbeat(void* args);
-  void heartbeat_args(userInfo user, struct arg_main* arguments);
+  void heartbeat_args(userInfo user, struct tmd::arg_main* arguments);
 }
 #endif
