@@ -14,7 +14,7 @@ class list_node {
 		string IP;
 		time_t Timestamp;
 	public:
-		list_node(string _GithubID, string PubkeyID, string _IP);
+		list_node(string _GithubID, string PubkeyID, string _IP, time_t _Timestamp);
 		string	getGithubID();
 		string	getPubkeyID();
 		string	getIP();

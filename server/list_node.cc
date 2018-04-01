@@ -1,6 +1,6 @@
 #include "list_node.hh"
 
-string list_node::list_node(string _GithubID, string _PubkeyID, string _IP, time_t _Timestamp) {
+list_node::list_node(string _GithubID, string _PubkeyID, string _IP, time_t _Timestamp) {
 	GithubID = _GithubID;
 	PubkeyID = _PubkeyID;
 	IP	 = _IP;
