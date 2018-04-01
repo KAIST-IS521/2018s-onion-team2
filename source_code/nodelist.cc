@@ -72,21 +72,23 @@ node* nodelist::searchNode(string value, int mode){
 // Desciption - Nodelist의 node 중 주어진 GithubID/IP를 가진 노드의 포인터를 반환
 // return - True(성공), False(실패)
 bool nodelist::deleteNode(string value, int mode){
-  for(std::list<node*>::iterator pick = this->_nodelist->begin();pick!=this->_nodelist->end();pick++){
-    if(mode==0){
-      if(((*pick)->getGithubID()).compare(value)==0){
+  for(list<node*>::iterator pick = this->_nodelist->begin();pick!=this->_nodelist->end();pick++) {
+    if(mode == 0){
+      if(((*pick)->getGithubID()).compare(value) == 0){
+        node* tmp = *pick;
         this->_nodelist->erase(pick);
-       return true;
-     }
-   }
-   else if(mode==1){
-      if(((*pick)->getIP()).compare(value)==0){
-        this->_nodelist->erase(pick);
+        delete tmp;
         return true;
       }
-    }
-    else{
-    return false;
+    } else if(mode == 1) {
+      if(((*pick)->getIP()).compare(value)==0) {
+        node* tmp = *pick;
+        this->_nodelist->erase(pick);
+        delete tmp;
+        return true;
+      }
+    } else {
+      return false;
     }
   }
   return false;

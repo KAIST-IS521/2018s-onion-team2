@@ -10,11 +10,11 @@ char* heartbeat::getOneTimeKey(){
 }
 
 void heartbeat::setHeartBeat(char* data, char* response){
-  char time_stamp[TIME_T_SIZE];
-  response[0] = data[0];
-  memcpy(response+1, this->getOneTimeKey(), 4);
-  util::time_t2byte(timestamp::getTimestampNow(), time_stamp);
-  memcpy(response+5, time_stamp, 4);
+  // char time_stamp[TIME_T_SIZE];
+  // response[0] = data[0];
+  // memcpy(response+1, this->getOneTimeKey(), 4);
+  // util::time_t2byte(timestamp::getTimestampNow(), time_stamp);
+  // memcpy(response+5, time_stamp, 4);
 }
 
 void* hbd::recvHeartbeat(void* args)

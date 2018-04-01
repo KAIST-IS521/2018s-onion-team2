@@ -1,4 +1,6 @@
 #include "transmission.hh"
+#include "gpg.hh"
+#include "parser.hh"
 #include <netdb.h>
 #include <cstring>
 
@@ -17,18 +19,17 @@ void* tmd::tmdReceiver(void* args){
   delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
 
-  while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
-    // write(recvFd, buf, n);
-    message += buf;
-  }
+  // while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
+  //   // write(recvFd, buf, n);
+  //   message += buf;
+  // }
 
-  close(recvFd);
+  n = read(recvFd, buf, MAX_LEN);
 
-  cout << user.getGithubID() << endl;
-  cout << message << endl;
-
-  // buf = gpg::decBytestream(buf,passphrase);
-  // switch(buf[0]){
+  string passphrase = user.getPassphrase();
+  char* stream = gpg::decBytestream(buf, &passphrase);
+  cout << "WTF" << endl;
+  switch(buf[0]){
   //   // 0x04(heartbeat) 여기서 발견되면 안됨.
   //   // MUTEX 잘 써야 함
   //   //pthread_mutex_lock(&m);
@@ -42,14 +43,22 @@ void* tmd::tmdReceiver(void* args){
 
   //     break;
 
-  //   case '\x02':
-  //     // 리스트 업데이트 : 프로토콜에 맞게 파싱하여 리스트에 추가/삭제
+    case '\x02':
+      node* new_node = parser::nodeParser(buf);
+      pthread_mutex_lock(&m_node_list);
+      node_list.appendNode(new_node);
+      pthread_mutex_unlock(&m_node_list);
+      vector<string>* id_list = node_list.getGithubIDList();
+      for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it)
+        cout << *it << endl;
 
   //     break;
   //   default:
   //     // fail : 무시
   //     break;
-  // }
+  }
+  delete stream;
+  close(recvFd);
   return NULL;
 }
 
@@ -129,6 +138,13 @@ void tmd::msg_args(userInfo user, struct tmd::arg_main* arguments){
   arguments->func = tmd::tmdReceiver;
 }
 
+void tmd::data_args(node* _node, char* data, struct tmd::arg_data* list_update_arguments){
+  list_update_arguments->IP = _node->getIP();
+  list_update_arguments->data = new char[MAX_LEN];
+  memcpy(list_update_arguments->data, data, MAX_LEN);
+  list_update_arguments->length = MAX_LEN;
+}
+
 // // tmd::tmdPathSelecter
 // // Description - 타 클라이언트로 메세지 전송시 Path를 결정. nodes 만큼의 클라이언트를 거치도록 만들어줌
 // // Return - IP 배열  or Null(실패)
@@ -168,6 +184,7 @@ void* tmd::tmdSender(void* args){
   
   struct tmd::arg_data* arguments = (struct tmd::arg_data*) args;
   int length = arguments->length;
+  string IP = arguments->IP;
   char* data = new char[length];
   memcpy(data, arguments->data, length);
   
@@ -181,7 +198,7 @@ void* tmd::tmdSender(void* args){
     throw "socket() failed.";
   }
 
-  if ((h = gethostbyname(SERVER_ADDR)) == NULL){
+  if ((h = gethostbyname(IP.c_str())) == NULL){
     delete data;
     throw "gethostbyname() failed"; 
   }
@@ -202,4 +219,4 @@ void* tmd::tmdSender(void* args){
   delete data;
 
   return NULL;
-} 
+}

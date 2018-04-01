@@ -9,7 +9,7 @@ using namespace std;
 namespace gpg{
   char* encBytestream(char* src, string* PubKeyID);
   bool keyRefresh();
-  char* decBytestream(char* src, string* passphase);
+  char* decBytestream(char* src, string* passphrase);
   bool recvPubKey(string* PubKeyID);
 }
 

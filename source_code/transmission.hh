@@ -26,11 +26,13 @@ namespace tmd{
   struct arg_data {
     char* data;
     int length;
+    string IP;
   };
 
   void* tmdReceiver(void* args);
   void* tmdReceiverMain(void* args);
   void msg_args(userInfo user, struct tmd::arg_main* arguments);
+  void data_args(node* _node, char* data, struct tmd::arg_data* list_update_arguments);
   list<node*> tmdPathSelecter();
   void* tmdSender(void* args);
   // char* tmdPackPacket(node* sender, node* reciver, BYTE* plain);

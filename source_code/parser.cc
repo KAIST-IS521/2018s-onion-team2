@@ -35,35 +35,33 @@ using namespace std;
 //   return temp; 
 // }
 
-// // parser::nodeParser
-// // Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
-// // Return - Null(실패), node*
-// node* parser::nodeParser(char* stream){
-//   node* temp;
-//   if (stream[0] != '\x02'){
-//     cout << "Wrong Parser" << endl;
-//     return NULL;
-//   }
+// parser::nodeParser
+// Description - 0x02(리스트) char stream에 대한 Parsing을 실시하고 node 객체 형태로 반환
+// Return - Null(실패), node*
+node* parser::nodeParser(char* stream){
+  if (stream[0] != '\x02'){
+    cout << "Wrong Parser" << endl;
+    return NULL;
+  }
 
-//   char* tmpPK = new char[8];
-//   memcpy(tmpPK,stream+6,8);
-//   string PK(tmpPK);
+  char tmpPK[9];
+  bzero(tmpPK, 9);
+  memcpy(tmpPK, stream+6, 8);
+  string PK(tmpPK);
 
-//   char* tmpAddr = new char[4];
-//   memcpy(tmpAddr, stream+14, 4);
-//   string IP(util::byte2ip((unsigned char*)tmpAddr)); // byte to IP
+  unsigned char tmpAddr[4];
+  memcpy(tmpAddr, stream+14, 4);
+  string IP(util::byte2ip(tmpAddr));
 
-//   int* GithubIDLen = (int*)(stream+18);
-//   char* tmpGithubID = new char[*GithubIDLen];
-//   memcpy(tmpGithubID,stream+22,*GithubIDLen);
-//   string ID(tmpGithubID);
-//   temp = new node(ID, PK, IP);
+  int GithubIDLen = util::byte2int(stream+18);
+  char* tmpGithubID = new char[GithubIDLen+1];
+  bzero(tmpGithubID, GithubIDLen+1);
+  memcpy(tmpGithubID, stream+22, GithubIDLen);
+  string ID(tmpGithubID);
+  delete tmpGithubID;
 
-//   delete tmpPK;
-//   delete tmpAddr;
-//   delete tmpGithubID;
-//   return temp;
-// }
+  return new node(ID, PK, IP);
+}
 
 // char parser::getListmode(char*stream){
 //   return stream[5];
@@ -173,33 +171,33 @@ using namespace std;
 //   return (21+GithubIDSize+msgSize);
 // }
 
-// // parser::packNode
-// // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
-// // Return - Null(실패), char*(Packing 된 BYTE stream)
-// int parser::packNode(char* stream,node* src, char mode){
-//   if(src->getGithubID().empty()){
-//     return 0;
-//   }
-//   int GithubIDSize = src->node::getGithubID().size();
-//   unsigned char* tmpIP = new unsigned char[4];
-//   util::ip2byte(src->node::getIP().c_str(),tmpIP);
-//   try{
-//     stream[0] = '\x02';
-//     memcpy(stream+1, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-//     stream[5] = mode;
-//     memcpy(stream+6,src->node::getPubKeyID().c_str(),8);
-//     memcpy(stream+14,tmpIP,4);                                 // STR to CHAR* 추가
-// //    memcpy(stream+18,util::int2byte(GithubIDSize).c_str(),4);
-//     util::int2byte(GithubIDSize,stream+18);
-//     memcpy(stream+22,src->node::getGithubID().c_str(),GithubIDSize);
-//   }catch(int exception){
-//     delete stream;
-//     delete tmpIP;
-//     return 0;
-//   }
-//   delete tmpIP;
-//   return 22+GithubIDSize;
-// }
+// parser::packNode
+// Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
+// Return - Null(실패), char*(Packing 된 BYTE stream)
+int parser::packNode(char* stream, node* src, char mode){
+  if(src->getGithubID().empty()){
+    return 0;
+  }
+  int GithubIDSize = src->node::getGithubID().size();
+  unsigned char* tmpIP = new unsigned char[4];
+  util::ip2byte(src->node::getIP().c_str(),tmpIP);
+  try{
+    stream[0] = '\x02';
+    memcpy(stream+1, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
+    stream[5] = mode;
+    memcpy(stream+6,src->node::getPubKeyID().c_str(),8);
+    memcpy(stream+14,tmpIP,4);                                 // STR to CHAR* 추가
+//    memcpy(stream+18,util::int2byte(GithubIDSize).c_str(),4);
+    util::int2byte(GithubIDSize,stream+18);
+    memcpy(stream+22,src->node::getGithubID().c_str(),GithubIDSize);
+  }catch(int exception){
+    delete stream;
+    delete tmpIP;
+    return 0;
+  }
+  delete tmpIP;
+  return 22+GithubIDSize;
+}
 
 // // parser::packHeartBeat
 // // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
@@ -240,10 +238,15 @@ void parser::packListUpdate(char mode, userInfo user, struct tmd::arg_data* args
   args->length = 10 + TIME_T_SIZE + IP_SIZE + INT_SIZE + user.getGithubID().length();
   args->data = new char[args->length];
   args->data[0] = '\x02';
-  util::time_t2byte(timestamp::getTimestampNow(), args->data+1);
+  
+  char* time_stamp = timestamp::timestamp2byte(timestamp::getTimestampNow());
+  memcpy(args->data+1, time_stamp, TIME_T_SIZE);
+  delete time_stamp;
+
   args->data[1+TIME_T_SIZE] = mode;
   memcpy(args->data+2+TIME_T_SIZE, user.getPubKeyID().c_str(), 8);
   util::ip2byte(user.getIP(), (unsigned char*)args->data+10+TIME_T_SIZE);
   util::int2byte(user.getGithubID().length(), args->data+10+TIME_T_SIZE+IP_SIZE);
   memcpy(args->data+10+TIME_T_SIZE+IP_SIZE+INT_SIZE, user.getGithubID().c_str(), user.getGithubID().length());
+  args->IP = SERVER_ADDR;
 }

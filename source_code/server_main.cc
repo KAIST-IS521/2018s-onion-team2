@@ -5,17 +5,18 @@
 #include <pthread.h>
 
 int main() {
-	nodelist node_list;
 
   struct lstd::arg_main* list_update_arguments = new struct lstd::arg_main();
-  lstd::server_msg_args(node_list, list_update_arguments);
+  lstd::server_msg_args(list_update_arguments);
   
   pthread_t th_list_update;
   pthread_create(&th_list_update, NULL, lstd::listReceiverMain, (void*)list_update_arguments);
 
 	pthread_join(th_list_update, NULL);
 
+	// cout << node_list.searchNode("leeswimming", 0)->getIP() << endl;
 
+	// cout << "GOOD BYE 4" << endl;
 
 	// hb_check* a = new hb_check();
 	// hb_node* temp = NULL;

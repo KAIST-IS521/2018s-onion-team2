@@ -30,4 +30,3 @@ time_t timestamp::byte2timestamp(char* _timestamp){
   strncpy((char*)&ret,_timestamp,4);
   return (time_t)ret;
 }
-  
