@@ -28,8 +28,8 @@ namespace tmd{
     int length;
   };
 
-  void* tmdReciver(void* args);
-  void* tmdReciverMain(void* args);
+  void* tmdReceiver(void* args);
+  void* tmdReceiverMain(void* args);
   void msg_args(userInfo user, struct tmd::arg_main* arguments);
   list<node*> tmdPathSelecter();
   void* tmdSender(void* args);

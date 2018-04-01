@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 using namespace std;
 
-int main(int argc, char const *argv[])
+int main()
 {
   
   userInfo user = ui::login();
@@ -22,8 +22,8 @@ int main(int argc, char const *argv[])
   parser::packListUpdate(SIGN_IN, user, list_update_arguments);
   
   pthread_t th_msg, th_heartbeat, th_list_update;
-  pthread_create(&th_msg, NULL, tmd::tmdReciverMain, (void*)msg_arguments);
-  pthread_create(&th_heartbeat, NULL, tmd::tmdReciverMain, (void*)hearbeat_arguments);
+  pthread_create(&th_msg, NULL, tmd::tmdReceiverMain, (void*)msg_arguments);
+  pthread_create(&th_heartbeat, NULL, tmd::tmdReceiverMain, (void*)hearbeat_arguments);
   pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
 
   pthread_join(th_msg, NULL);

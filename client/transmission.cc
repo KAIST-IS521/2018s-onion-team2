@@ -1,13 +1,14 @@
 #include "transmission.hh"
+#include "list_checker.hh"
 #include <netdb.h>
 #include <cstring>
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
-// tmd::tmdReciver
-// Description - tmdReciverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
+// tmd::tmdReceiver
+// Description - tmdReceiverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
 // Return - 정상종료 0, 이외 음수 < 통신부 테스트 완료 >
-void* tmd::tmdReciver(void* args){
+void* tmd::tmdReceiver(void* args){
   string message = "";
   int n;
   char buf[MAX_LEN];
@@ -53,7 +54,7 @@ void* tmd::tmdReciver(void* args){
   return NULL;
 }
 
-void* tmd::tmdReciverMain(void* args){
+void* tmd::tmdReceiverMain(void* args){
   int n, sockFd, caddrlen, recvFd;
   struct sockaddr_in saddr, caddr;
   struct tmd::arg_receiver* arg_recv;
@@ -126,9 +127,8 @@ void tmd::msg_args(userInfo user, struct tmd::arg_main* arguments){
   arguments->protocol = IPPROTO_TCP;
   arguments->type = SOCK_STREAM;
   arguments->user = user;
-  arguments->func = tmd::tmdReciver;
+  arguments->func = tmd::tmdReceiver;
 }
-
 
 // // tmd::tmdPathSelecter
 // // Description - 타 클라이언트로 메세지 전송시 Path를 결정. nodes 만큼의 클라이언트를 거치도록 만들어줌
