@@ -16,7 +16,8 @@ string ui::getIPAddr(){
   if(!getifaddrs(&net_ifa)){
     cur_ifa = net_ifa;
     while(cur_ifa) {
-      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("eth0")) {
+      // if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("eth0")) {
+      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("enp0s31f6")) {
         ip_addr = inet_ntoa(((struct sockaddr_in*)cur_ifa->ifa_addr)->sin_addr);
       }
       cur_ifa = cur_ifa->ifa_next;
@@ -28,9 +29,40 @@ string ui::getIPAddr(){
   return ip_addr;
 }
 
+void ui::clearScreen()
+{
+  cout << "\e[1;1H\e[2J";
+}
+
+void ui::printBanner(){
+  cout << " /$$     /$$                                     " << endl;
+  cout << "|  $$   /$$/                                     " << endl;
+  cout << " \\  $$ /$$//$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$ " << endl;
+  cout << "  \\  $$$$//$$__  $$| $$  | $$| $$__  $$ /$$__  $$" << endl;
+  cout << "   \\  $$/| $$  \\ $$| $$  | $$| $$  \\ $$| $$  \\ $$" << endl;
+  cout << "    | $$ | $$  | $$| $$  | $$| $$  | $$| $$  | $$" << endl;
+  cout << "    | $$ |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$" << endl;
+  cout << "    |__/  \\______/  \\______/ |__/  |__/ \\____  $$" << endl;
+  cout << "                                        /$$  \\ $$" << endl;
+  cout << "                                       |  $$$$$$/" << endl;
+  cout << "                                        \\______/ " << endl;
+  cout << " /$$      /$$ /$$$$$$$$                                                                     " << endl;
+  cout << "| $$$    /$$$| $$_____/                                                                     " << endl;
+  cout << "| $$$$  /$$$$| $$        /$$$$$$$ /$$$$$$$  /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ " << endl;
+  cout << "| $$ $$/$$ $$| $$$$$    /$$_____//$$_____/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$" << endl;
+  cout << "| $$  $$$| $$| $$__/   |  $$$$$$|  $$$$$$ | $$$$$$$$| $$  \\ $$| $$  \\ $$| $$$$$$$$| $$  \\__/" << endl;
+  cout << "| $$\\  $ | $$| $$       \\____  $$\\____  $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$      " << endl;
+  cout << "| $$ \\/  | $$| $$$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$      " << endl;
+  cout << "|__/     |__/|________/|_______/|_______/  \\_______/|__/  |__/ \\____  $$ \\_______/|__/      " << endl;
+  cout << "                                                               /$$  \\ $$                    " << endl;
+  cout << "                                                              |  $$$$$$/                    " << endl;
+  cout << "                                                               \\______/                     " << endl;
+}
+
 userInfo ui::login(){
   string GithubId, PubKeyID, IP, Passphrase;
-  clearScreen();
+  ui::clearScreen();
+  ui::printBanner();
   cout << "> Github ID: ";
   cin >> GithubId;
   cout << "> Public key ID: ";
@@ -48,31 +80,11 @@ userInfo ui::login(){
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }
 
-void ui::clearScreen()
-{
-  cout << "\e[1;1H\e[2J";
-}
-
-// ui::printBanner
-// Description - 프로그램 시작시 Banner를 띄워줌
-// return - None
-void ui::printBanner(userInfo user){
-  clearScreen();
-  string githubID;
-  cout << "Welcome to Onion Messanger, " + user.getGithubID() + "!!!" << endl;
-
-  // for node in node_list
-  //  cout << /*[node_idx] user githubID : N new messages*/ << endl;
-
-  cout << "Select the one you want to chat with: ";
-  // cin >> /* githubID */;
-  printMessages(githubID);
-}
-
-void ui::printMessages(string githubID){
-  // for messages in the msg list, print messages
-
-  // cin >> /* exit or send message */;
-  // if exit => printBanner
-  // else send message
+void* ui::userInput(void* args){
+  string userInput;
+  while(true){
+    cin >> userInput;
+    cout << userInput << endl;
+  }
+  return NULL;
 }
