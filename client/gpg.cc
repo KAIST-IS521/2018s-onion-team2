@@ -34,9 +34,6 @@ char* gpg::encBytestream(char* src, string* PubKeyID){
 
         char* buf = new char[1024];
         FILE* pp = popen(full_cmd.c_str(),"r");
-	FILE* wpp = popen(full_cmd.c_str(),"w");
-	wpp.write(passpharse.stc
-
         string* result = NULL;
         if(pp==NULL){
                 cout << "Fail to exec gpg" << endl;
@@ -52,7 +49,7 @@ char* gpg::encBytestream(char* src, string* PubKeyID){
         }
         cout << *result << endl;
         delete buf;
-        delete pp;
+	pclose(pp);
         return (char*)(result->c_str());
 }
 
@@ -82,6 +79,7 @@ bool gpg::keyRefresh(){
         delete buf;
         delete result;
         delete pp;
+	pclose(pp);
 	return true;
 }
 
@@ -90,33 +88,16 @@ bool gpg::keyRefresh(){
 // Return - Plain char* or Null(실패 시)
 char* gpg::decBytestream(char* src, string* passphrase){
         string encData(src);
-        string prefix_cmd("echo -e \"");
-        string middle_cmd("\" | gpg --no-tty --batch --logger-fd 1 -d --passphrase-fd 0 ");
-        string suffix_cmd("2>/dev/null");
-
-        // checking src (prevent cmd injection)
-        if(not(std::regex_match(encData, std::regex("^([\-|a-z|A-Z|\+|\/|\=|0-9|\ |\n]*)$")))){
-                cout << "plain REGEX Fault" << endl;
-                return NULL;
-        }
+	string prefix_cmd("echo \'");
+        string middle_cmd("\' | gpg --no-tty --batch --logger-fd 1 -d --passphrase \'");
+        string suffix_cmd("\' 2>/dev/null");
 
          if(std::regex_search(*passphrase, std::regex("[;|\$\(|\)|\`]"))){
                 cout << "REGEX Fault" << endl;
                 return NULL;
         }
 
-	// change 0x0a to \n for echo
-        int count=0;
-        for(int i=0;i<encData.size()-count;i++){
-                if(src[i]=='\x0a' and (i>0 and src[i-1]!='\x5c')){
-                        encData.replace(i+count,1,"\x5cn");
-                        count++;
-                }
-        }
-	//cout << src << endl;
-	
         string full_cmd(prefix_cmd+encData+middle_cmd+*passphrase+suffix_cmd);
-	//cout << full_cmd << endl;
         char* buf = new char[1024];
         FILE* pp = popen(full_cmd.c_str(),"r");
         string* result = NULL;
@@ -124,9 +105,7 @@ char* gpg::decBytestream(char* src, string* passphrase){
                 cout << "Fail to exec gpg" << endl;
                 return NULL;
         }
-	//cout << "open" << endl;
         while(fgets(buf,1024,pp)){
-		cout << "aaaa"<< endl;
                 if(result==NULL){
                         result = new string(buf);
                 }
@@ -134,8 +113,13 @@ char* gpg::decBytestream(char* src, string* passphrase){
                         result->append(buf);
                 }
         }
+	for(int i=0;i<3;i++){
+		string ret = result->substr(result->find('\x0a')+1);
+		delete result;
+		result = new string(ret);
+	}
         delete buf;
-        delete pp;
+	pclose(pp);
 	return (char*)(result->c_str());
 }
 
@@ -183,7 +167,7 @@ bool gpg::recvPubKey(string* PubKeyID){
         }
         delete buf;
         delete result;
-        delete pp;
+	pclose(pp);
         return true;
 }
 
