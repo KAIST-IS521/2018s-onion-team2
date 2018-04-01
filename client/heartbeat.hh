@@ -5,8 +5,6 @@
 #include "userInfo.hh"
 #include "transmission.hh"
 
-#define SERVER_ADDR "127.0.0.1"
-
 class heartbeat{
 private:
   char OneTimeKey[4];

@@ -8,6 +8,10 @@
 #define MAX_LEN 512
 #define MAX_QUEUE 5
 #define HB_LEN 9
+#define SIGN_IN '0x00'
+#define SIGN_OUT '0x01'
+#define SERVER_ADDR "127.0.0.1"
+
 #include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
