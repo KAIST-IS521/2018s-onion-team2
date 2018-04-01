@@ -3,8 +3,10 @@
 // hbchecker::setOneTimeKey
 // Description - 생성된 OneTimeKey를 할당
 // return - 없음
-void hbchecker::setOneTimeKey(char* _OneTimeKey) {
-	OneTimeKey = _OneTimeKey;
+void hbchecker::setOneTimeKey() {
+	std::ifstream urand("/dev/urandom");
+  urand.read(this->OneTimeKey, sizeof(OTK_SIZE));
+  urand.close();
 }
 
 // hbchecker::setTimestamp

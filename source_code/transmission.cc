@@ -1,5 +1,4 @@
 #include "transmission.hh"
-#include "list_checker.hh"
 #include <netdb.h>
 #include <cstring>
 

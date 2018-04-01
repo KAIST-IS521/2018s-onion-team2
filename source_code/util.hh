@@ -10,14 +10,27 @@
 #define HB_LEN 9
 #define SIGN_IN '0x00'
 #define SIGN_OUT '0x01'
-#define SERVER_ADDR "127.0.0.1"
+#define SERVER_ADDR "143.248.249.183"
 
 #include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string>
+#include <pthread.h>
+// #include <list>
 using namespace std;
+
+pthread_mutex_t m_node_list = PTHREAD_MUTEX_INITIALIZER;
+
+// class packet {
+// private:
+//   list<char*> pkt;
+// public:
+//   void insertPkt(char* buf);
+//   bool getPkt(char* buf);
+//   ~packet();
+// };
 
 namespace util{
   union int_byte {

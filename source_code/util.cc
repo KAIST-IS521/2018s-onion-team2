@@ -2,6 +2,27 @@
 #include <cstring>
 #include <cassert>
 
+// void packet::insertPkt(char* buf){
+//   char* data = new char[MAX_LEN];
+//   memcpy(data, buf, MAX_LEN);
+//   this->pkt.push_back(data);
+// }
+
+// bool packet::getPkt(char* buf){
+//   if (this->pkt.empty())
+//     return false;
+//   char* data = this->pkt.front();
+//   memcpy(buf, data, MAX_LEN);
+//   delete data;
+//   this->pkt.pop_front();
+//   return true;
+// }
+
+// packet::~packet(){
+//   for(list<char*>::iterator it = this->pkt.begin(); it != this->pkt.end(); ++it)
+//     delete *it;  
+// }
+
 void util::int2byte(int integer, char* byte){
   union util::int_byte x;
   x.integer = integer;

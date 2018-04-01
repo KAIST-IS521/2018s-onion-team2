@@ -6,17 +6,15 @@
 using namespace std;
 
 bool hb_check::updateNode(string _Onetimekey, string _IP, bool _Arrive) {
-//        string __OTK    = _Onetimekey;
-	string __OTK	= _Onetimekey;
-        string __IP     = _IP;
-	bool __Arrive	= _Arrive;
+  string __OTK	= _Onetimekey;
+  string __IP     = _IP;
+  bool __Arrive	= _Arrive;
 
-        for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
-                if((*recvlist)->getIP() == __IP && (*recvlist)->getOnetimekey() == __OTK) {
-			(*recvlist)->setArrive(__Arrive);
-//                      cout << __IP << endl;
-                }
-        }
+  for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
+    if((*recvlist)->getIP() == __IP && (*recvlist)->getOnetimekey() == __OTK) {
+      (*recvlist)->setArrive(__Arrive);
+    }
+  }
 	return true;
 }
 
@@ -49,26 +47,24 @@ bool hb_check::delNode(string _Onetimekey, string _IP) {
 	return true;
 }
 
-hb_node*  hb_check::findNode(string _Onetimekey, string _IP) {
-        string __OTK    = _Onetimekey;
-        string __IP     = _IP;
+hb_node* hb_check::findNode(string _Onetimekey, string _IP) {
+  string __OTK    = _Onetimekey;
+  string __IP     = _IP;
 
-        for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
-		if((*recvlist)->getIP() == __IP) {
-                        return (*recvlist);
-                }
-        }
+  for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
+    if((*recvlist)->getIP() == __IP) {
+      return (*recvlist);
+    }
+  }
 	return NULL;
 }
 
-bool	hb_check::checkNode(time_t _Timestamp) {
+bool hb_check::checkNode(time_t _Timestamp) {
 	time_t currentTime = time(NULL);
 	time_t __Timestamp = _Timestamp;
 
-
 	for(recvlist = recv_node.begin(); recvlist != recv_node.end(); ++recvlist) {
 		if(((*recvlist)->getArrive() == false) && (currentTime - (*recvlist)->getTimestamp()) >= 5) {
-//			cout << "Before : " << (*recvlist)->getIP() << ":"  << (*recvlist)->getTimestamp() << endl;
 			resend_node.push_back(*recvlist);
 			delete (*recvlist);
 		}

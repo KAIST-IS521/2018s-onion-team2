@@ -18,6 +18,7 @@
 #define	HBHDR_FLAG		0x04
 #define HBHDR_OTK		8
 #define HBHDR_TIME		4
+#define OTK_SIZE 4
 
 struct HB_HDR
 {
@@ -32,7 +33,7 @@ using namespace std;
 class hbchecker {
 private:
   sockaddr_in serv_addr;
-  char* OneTimeKey;
+  char OneTimeKey[OTK_SIZE];
   time_t timestamp;
   int serv_fd;
 public:

@@ -31,11 +31,11 @@ private:
   list<node*>* _nodelist;
 public:
   nodelist();
-  node* searchNode(string value,int mode);
-  bool deleteNode(string value,int mode);
+  node* searchNode(string value, int mode);
+  bool appendNode(node* append_node);
+  bool deleteNode(string value, int mode);
   int getNodelistLen();
   node* getRandomNode();
-  bool appendNode(node* append_node);
   vector<string>* getGithubIDList();
 };
 #endif
