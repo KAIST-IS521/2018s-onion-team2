@@ -21,67 +21,33 @@ void* lstd::listReceiver(void* args){
   int recvFd = arguments->recvFd;
   string IP = arguments->IP;
   delete arguments;
-  // pthread_detach(pthread_self());
+  pthread_detach(pthread_self());
 
-  // struct packet pkt;
   bzero(buf, MAX_LEN);
   n = read(recvFd, buf, MAX_LEN);
-  switch(buf[0]){
-    case '\x02':
-      node* new_node = parser::nodeParser(buf);
-      pthread_mutex_lock(&m_node_list);
-      node_list.appendNode(new_node);
-      string pubKeyID = new_node->getPubKeyID();
-      gpg::recvPubKey(&pubKeyID);
-      vector<string>* id_list = node_list.getGithubIDList();
-      for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it){
-        node* _node = node_list.searchNode(*it, 0);
-        char stream[MAX_LEN];
-        parser::packNode(stream, _node, SIGN_IN);
-
-        char* encStream =  gpg::encBytestream(stream, &pubKeyID);
-        struct tmd::arg_data* list_update_arguments = new struct tmd::arg_data();
-        tmd::data_args(_node, encStream, list_update_arguments);
-        delete encStream;
-        pthread_t th_list_update;
-        pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
-      }
-      pthread_mutex_unlock(&m_node_list);
-      delete id_list;
-    
-
+  if(buf[0] == '\x02'){
+    node* new_node = parser::nodeParser(buf);
+    pthread_mutex_lock(&m_node_list);
+    node_list.appendNode(new_node);
+    string pubKeyID = new_node->getPubKeyID();
+    gpg::recvPubKey(&pubKeyID);
+    vector<string>* id_list = node_list.getGithubIDList();
+    for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it){
+      node* _node = node_list.searchNode(*it, 0);
+      char stream[MAX_LEN];
+      int length = parser::packNode(stream, _node, SIGN_IN);
+      char* encStream =  gpg::encBytestream(stream, &pubKeyID, length);
+      struct tmd::arg_data* list_update_arguments = new struct tmd::arg_data();
+      tmd::data_args(_node->getIP(), encStream, list_update_arguments);
+      delete encStream;
+      pthread_t th_list_update;
+      pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
+    }
+    pthread_mutex_unlock(&m_node_list);
+    delete id_list;
   }
 
   close(recvFd);
-  // while(pkt.getPkt(buf))
-  //   for (int i = 0; i < MAX_LEN; ++i)
-  //     cout << buf[i];
-  // cout << endl;
-  // cout << message.length() << endl;
-
-  // buf = gpg::decBytestream(buf,passphrase);
-  // switch(buf[0]){
-  //   // 0x04(heartbeat) 여기서 발견되면 안됨.
-  //   // MUTEX 잘 써야 함
-  //   //pthread_mutex_lock(&m);
-  //   //pthread_mutex_unlock(&m);
-  //   case '\x00':
-  //     // 평문 : message 객체로 만들고, storage에 저장
-  //     break;
-
-  //   case '\x01':
-  //     // 암호문 : 길이 및 메세지 따서 해당 서버로 재송신
-
-  //     break;
-
-  //   case '\x02':
-  //     // 리스트 업데이트 : 프로토콜에 맞게 파싱하여 리스트에 추가/삭제
-
-  //     break;
-  //   default:
-  //     // fail : 무시
-  //     break;
-  // }
   return NULL;
 }
 
@@ -99,7 +65,6 @@ void* lstd::listReceiverMain(void* args){
 
   delete (struct lstd::arg_main*)args;
 
-  cout << "socket creating ..." << endl;
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
 
@@ -108,44 +73,26 @@ void* lstd::listReceiverMain(void* args){
   saddr.sin_addr.s_addr = htonl(INADDR_ANY);
   saddr.sin_port = htons(port);
   
-  cout << "binding ..." << endl;
   if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
     throw "bind() failed.";
 
   if(protocol == IPPROTO_TCP){
-    cout << "listening ..." << endl;
     if (listen(sockFd, MAX_QUEUE) < 0)
       throw "listen() failed.";
 
-    // while (1) {
+    while (1) {
       caddrlen = sizeof(caddr);
       arg_recv = new struct lstd::arg_data();
-      cout << "Waiting connections ..." << endl;
       if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
         delete arg_recv;
-        // continue;
+        continue;
       }
       h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
       arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      cout << "Creationg Thread" << endl;
       pthread_t tid;
       pthread_create(&tid, NULL, func, (void *)arg_recv);
       pthread_join(tid, NULL);
-    // }
-  // } else {
-  //   while(1){
-  //     caddrlen = sizeof(caddr);
-  //     arg_recv = new struct lstd::arg_data();
-  //     cout << "Waiting connections ..." << endl;
-  //     if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
-  //       delete arg_recv;
-  //       continue;
-  //     }
-  //     h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
-  //     arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-  //     pthread_t tid;
-  //     pthread_create(&tid, NULL, func, (void *)arg_recv);
-  //   }
+    }
   }
 
   return NULL;
