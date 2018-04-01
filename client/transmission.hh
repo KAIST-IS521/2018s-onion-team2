@@ -23,12 +23,17 @@ namespace tmd{
     char buf[HB_LEN];
   };
 
+  struct arg_data {
+    char* data;
+    int length;
+  };
+
   void* tmdReciver(void* args);
   void* tmdReciverMain(void* args);
   void msg_args(userInfo user, struct tmd::arg_main* arguments);
   list<node*> tmdPathSelecter();
+  void* tmdSender(void* args);
   // char* tmdPackPacket(node* sender, node* reciver, BYTE* plain);
-  // bool tmdSender(string IP,char* scheme);
 }
 
 #endif

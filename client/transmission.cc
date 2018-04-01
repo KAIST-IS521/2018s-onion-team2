@@ -1,5 +1,6 @@
 #include "transmission.hh"
 #include <netdb.h>
+#include <cstring>
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
@@ -87,7 +88,7 @@ void* tmd::tmdReciverMain(void* args){
 
     while (1) {
       caddrlen = sizeof(caddr);
-      arg_recv = new struct tmd::arg_receiver;
+      arg_recv = new struct tmd::arg_receiver();
       arg_recv->user = user;
       cout << "Waiting connections ..." << endl;
       if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
@@ -103,7 +104,7 @@ void* tmd::tmdReciverMain(void* args){
   } else {
     while(1){
       caddrlen = sizeof(caddr);
-      arg_recv = new struct tmd::arg_receiver;
+      arg_recv = new struct tmd::arg_receiver();
       arg_recv->user = user;
       cout << "Waiting connections ..." << endl;
       if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
@@ -161,57 +162,45 @@ void tmd::msg_args(userInfo user, struct tmd::arg_main* arguments){
 //   return encPr;
 // }
 
-// // tmd::tmdSender
-// // Description - char stream을 특정 IP로 전송함.
-// // Return - True(성공), False(실패)      <test 완료>
-// bool tmd::tmdSender(string IP, char* scheme, int scheme_len){
-//   char* buf;
-//   int recvFd;
-//   int sockFd = socket(AF_INET, SOCK_STREAM,0);
+void* tmd::tmdSender(void* args){
+  int n, cfd;
+  struct hostent *h;
+  struct sockaddr_in saddr;
+  
+  struct tmd::arg_data* arguments = (struct tmd::arg_data*) args;
+  int length = arguments->length;
+  char* data = new char[length];
+  memcpy(data, arguments->data, length);
+  
+  delete arguments->data;
+  delete arguments;
 
-//   if (sockFd < 0){
-//     return -1;
-//   }
-//   struct sockaddr_in sock_info, conn_info;
-//   int conn_len = sizeof(conn_info);
-//   bzero((char*)&sock_info, sizeof(sock_info));
-//   sock_info.sin_family = AF_INET;
-//   sock_info.sin_addr.s_addr = inet_addr(IP.c_str());
-//   sock_info.sin_port = htons(MESSAGE_PORT);
+  pthread_detach(pthread_self());
 
-//   if (0 > connect(sockFd,(struct sockaddr *) &sock_info,sizeof(sock_info))){
-//     return -2;
-//   }
+  if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
+    delete data;
+    throw "socket() failed.";
+  }
 
-//   if (0 >  send(sockFd,scheme,scheme_len,0)){
-//     return -3;
-//   }
-//   close(sockFd);
-//   return 0;
-// }
+  if ((h = gethostbyname(SERVER_ADDR)) == NULL){
+    delete data;
+    throw "gethostbyname() failed"; 
+  }
 
-// bool tmd::tmdSender(string IP, char* scheme, int scheme_len){
-//   char* buf;
-//   int recvFd;
-//   int sockFd = socket(AF_INET, SOCK_STREAM,0);
+  bzero((char *)&saddr, sizeof(saddr));
+  saddr.sin_family = AF_INET;
+  bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
+  saddr.sin_port = htons(MESSAGE_PORT);
 
-//   if (sockFd < 0){
-//     return -1;
-//   }
-//   struct sockaddr_in sock_info, conn_info;
-//   int conn_len = sizeof(conn_info);
-//   bzero((char*)&sock_info, sizeof(sock_info));
-//   sock_info.sin_family = AF_INET;
-//   sock_info.sin_addr.s_addr = inet_addr(IP.c_str());
-//   sock_info.sin_port = htons(MESSAGE_PORT);
+  if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
+    delete data;
+    throw "connect() failed.";
+  }
 
-//   if (0 > connect(sockFd,(struct sockaddr *) &sock_info,sizeof(sock_info))){
-//     return -2;
-//   }
+  write(cfd, data, length);
+  close(cfd);
 
-//   if (0 >  send(sockFd,scheme,scheme_len,0)){
-//     return -3;
-//   }
-//   close(sockFd);
-//   return 0;
-// }
+  delete data;
+
+  return NULL;
+} 
