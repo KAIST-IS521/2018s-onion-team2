@@ -11,10 +11,10 @@ int main(int argc, char const *argv[])
   
   userInfo user = ui::login();
   
-  struct arg_main* msg_arguments = new struct arg_main;
+  struct tmd::arg_main* msg_arguments = new struct tmd::arg_main;
   tmd::msg_args(user, msg_arguments);
 
-  struct arg_main* hearbeat_arguments = new struct arg_main;
+  struct tmd::arg_main* hearbeat_arguments = new struct tmd::arg_main;
   hbd::heartbeat_args(user, hearbeat_arguments);
   
   pthread_t th_msg, th_heartbeat;
@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
 
   pthread_join(th_msg, NULL);
   pthread_join(th_heartbeat, NULL);
+
   // Send an info that user has logged-in to the server
 
   // Retrieve client list from the Server
