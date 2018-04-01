@@ -204,7 +204,7 @@ int parser::packNode(char* stream,node* src, char mode){
 // parser::packHeartBeat
 // Description - heartbeat의 요소들을 송신 규격에 맞게 packing하여 char*로 반환
 // Return - Null(실패), char(Packing 된 BYTE stream)
-int parser::packHeartBeat(char* stream,heartbeat* src){
+int parser::packHeartBeat(char* stream, heartbeat* src){
   if(stream==NULL){
     return 0;
   }
@@ -236,12 +236,14 @@ int parser::getHeartBeatPackLen(heartbeat* src){
   return 9;
 }
 
-void parser::packListUpdate(char* mode, userInfo user, char* protocol){
-  protocol[0] = '\x02';
-  memcpy(protocol+1, ui::time_t2byte(timestamp::getTimestampNow()), TIME_T_SIZE);
-  memcpy(protocol+1+TIME_T_SIZE, mode);
-  memcpy(protocol+2+TIME_T_SIZE, user.getPubKeyID().c_str(), 8);
-  memcpy(protocol+10+TIME_T_SIZE, util::ip2byte(user.getIP()), IP_SIZE);
-  memcpy(protocol+10+TIME_T_SIZE+IP_SIZE, util::int2byte(user.getGithubID().length()),INT_SIZE);
-  memcpy(protocol+10+TIME_T_SIZE+IP_SIZE+INT_SIZE, user.getGithubID().c_str(), user.getGithubID().length());
+void parser::packListUpdate(char mode, userInfo user, struct tmd::arg_data* args){
+  args->length = 10 + TIME_T_SIZE + IP_SIZE + INT_SIZE + user.getGithubID().length();
+  args->data = new char[args->length];
+  args->data[0] = '\x02';
+  util::time_t2byte(timestamp::getTimestampNow(), args->data+1);
+  args->data[1+TIME_T_SIZE] = mode;
+  memcpy(args->data+2+TIME_T_SIZE, user.getPubKeyID().c_str(), 8);
+  util::ip2byte(user.getIP(), (unsigned char*)args->data+10+TIME_T_SIZE);
+  util::int2byte(user.getGithubID().length(), args->data+10+TIME_T_SIZE+IP_SIZE);
+  memcpy(args->data+10+TIME_T_SIZE+IP_SIZE+INT_SIZE, user.getGithubID().c_str(), user.getGithubID().length());
 }
