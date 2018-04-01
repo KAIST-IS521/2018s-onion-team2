@@ -8,7 +8,7 @@ using namespace gpg;
 char* gpg::encBytestream(char* src, string* PubKeyID){
   string plain(src);
   string prefix_cmd("echo \"");
-  string middle_cmd("\" | gpg --no-tty --batch --logger-fd 1 -ear ");
+  string middle_cmd("\" | gpg --no-tty --batch --always-trust --logger-fd 1 -ear ");
   string suffix_cmd(" 2>/dev/null");
 
   // checking PUBKEYID
@@ -114,9 +114,9 @@ char* gpg::decBytestream(char* src, string* passphrase){
     }
   }
   for(int i=0;i<3;i++){
-  string ret = result->substr(result->find('\x0a')+1);
-  delete result;
-  result = new string(ret);
+    string ret = result->substr(result->find('\x0a')+1);
+    delete result;
+    result = new string(ret);
   }
   delete buf;
   pclose(pp);
