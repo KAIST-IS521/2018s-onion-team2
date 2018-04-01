@@ -2,7 +2,7 @@
 using namespace std;
 
 heartbeat::heartbeat(char* data){
-  memcpy(this->OneTimeKey, data+1, 4);
+  memcpy(this->OneTimeKey, data, 4);
 }
 
 char* heartbeat::getOneTimeKey(){
@@ -29,7 +29,7 @@ void* hbd::recvHeartbeat(void* args)
 
   if(IP == SERVER_ADDR && data[0] == '\x04'){
     char response[HB_LEN];
-    heartbeat hb = heartbeat(data);
+    heartbeat hb = heartbeat(data+1);
     hb.setHeartBeat(data, response);
 
     struct sockaddr_in saddr;
