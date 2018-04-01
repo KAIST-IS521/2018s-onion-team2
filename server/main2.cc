@@ -1,4 +1,3 @@
-//#include "hb_check.hh"
 #include "list_check.hh"
 #include <iostream>
 #include <list>
@@ -46,7 +45,15 @@ int main() {
 	list<list_node*>::iterator bter;
 
 	(*b).appendOnion("elmisty", "1234123412341234", "192.168.100.5", time(NULL));
+	(*b).appendOnion("hooohly", "4567456745674567", "192.168.100.4", time(NULL));
+	(*b).appendOnion("elmisty23", "8901890189018901", "192.168.100.7", time(NULL));
 
+	for(bter = (*b).onion_node.begin(); bter != (*b).onion_node.end(); bter++) {
+		cout << (*bter)->getGithubID() << endl;
+	}
+
+	(*b).delOnion("elmisty", "192.168.100.5");
+	cout << endl;
 	for(bter = (*b).onion_node.begin(); bter != (*b).onion_node.end(); bter++) {
 		cout << (*bter)->getGithubID() << endl;
 	}
