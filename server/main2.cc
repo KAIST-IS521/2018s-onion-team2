@@ -1,4 +1,4 @@
-#include "hb_check.hh"
+#include "list_check.hh"
 #include <iostream>
 #include <list>
 #include <string>
@@ -8,7 +8,7 @@ using namespace std;
 
 // 테스트용 메인
 int main() {
-
+/*
 	hb_check *a = new hb_check();
 	hb_node *temp = NULL;
 	list<hb_node*>::iterator iter;
@@ -39,7 +39,25 @@ int main() {
 	(*a).updateNode("cdecde", "192.168.100.4", false);
 
 	(*a).checkNode(time(NULL));
-		
+*/
+	list_check *b = new list_check();
+	list_node *temp = NULL;
+	list<list_node*>::iterator bter;
+
+	(*b).appendOnion("elmisty", "1234123412341234", "192.168.100.5", time(NULL));
+	(*b).appendOnion("hooohly", "4567456745674567", "192.168.100.4", time(NULL));
+	(*b).appendOnion("elmisty23", "8901890189018901", "192.168.100.7", time(NULL));
+
+	for(bter = (*b).onion_node.begin(); bter != (*b).onion_node.end(); bter++) {
+		cout << (*bter)->getGithubID() << endl;
+	}
+
+	(*b).delOnion("elmisty", "192.168.100.5");
+	cout << endl;
+	for(bter = (*b).onion_node.begin(); bter != (*b).onion_node.end(); bter++) {
+		cout << (*bter)->getGithubID() << endl;
+	}
+
 	return 0;	
 }
 
