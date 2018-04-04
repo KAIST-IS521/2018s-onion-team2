@@ -5,7 +5,8 @@
 using namespace std;
 
 void printHelp(char* const argv[]){
-  cout << "Usage: " + string(argv[0]) + " -p [PORT] -m [MESSAGE] -k [PUBKEYID] -P [PASSPHRASE]" << endl;
+  cout << "Usage: " + string(argv[0]) + " -p [PORT] -m [MESSAGE] -k [PUBKEYID] -P [PASSPHRASE] -r [PATH TO RECEIVER]" << endl;
+  cout << "Using ':' as a delimiter, routing path should be specified with port numbers" << endl;
   exit(0);
 };
 
@@ -15,8 +16,9 @@ int main(int argc, char* const argv[]){
   string message = "";
   string pubKeyId = "";
   string passphrase = "";
+  string path = "";
   
-  while((opt = getopt(argc, argv, "p:m:k:P:h")) != -1){
+  while((opt = getopt(argc, argv, "p:m:k:P:r:h")) != -1){
     switch(opt){
       case 'p':
         // Set a port
@@ -41,7 +43,7 @@ int main(int argc, char* const argv[]){
   }
   
   // Wrong use of arguments
-  if(port == -1 || message == "" || pubKeyId == "" || passphrase == "") {
+  if(port == -1 || message == "" || pubKeyId == "" || passphrase == "" || path == "") {
     printHelp(argv);
     return 1;
   }
