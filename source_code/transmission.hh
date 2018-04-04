@@ -25,6 +25,7 @@ namespace tmd{
     char* data;
     int length;
     string IP;
+    string path;
   };
 
   void* tmdReceiver(void* args);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string>
+#include <cstring>
 #include "../source_code/transmission.hh"
 using namespace std;
 
@@ -52,7 +53,7 @@ int main(int argc, char* const argv[]){
     }
   }
   
-  if(port == -1 || || pubKeyId == "" || passphrase == "") {
+  if(port == -1 || pubKeyId == "" || passphrase == "") {
     /* Mandatory options */
     printHelp(argv);
     return 1;
@@ -65,7 +66,7 @@ int main(int argc, char* const argv[]){
   }
 
   // Set a dummy user info
-  user = UserInfo("dummy", pubKeyId, "127.0.0.1", passphrase);
+  user = userInfo("dummy", pubKeyId, "127.0.0.1", passphrase);
 
   if(message == ""){
     // Create an argument setting for the listening thread
