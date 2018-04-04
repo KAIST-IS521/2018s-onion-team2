@@ -5,7 +5,7 @@
 using namespace std;
 
 void printHelp(char* const argv[]){
-  cout << "Usage: " + string(argv[0]) + " -p [PORT] -m [MESSAGE]" << endl;
+  cout << "Usage: " + string(argv[0]) + " -p [PORT] -m [MESSAGE] -k [PUBKEYID] -P [PASSPHRASE]" << endl;
   exit(0);
 };
 
@@ -13,8 +13,10 @@ int main(int argc, char* const argv[]){
   int opt;
   int port = -1;
   string message = "";
+  string pubKeyId = "";
+  string passphrase = "";
   
-  while((opt = getopt(argc, argv, "p:m:h")) != -1){
+  while((opt = getopt(argc, argv, "p:m:k:P:h")) != -1){
     switch(opt){
       case 'p':
         // Set a port
@@ -24,6 +26,13 @@ int main(int argc, char* const argv[]){
         // Set a message
         message = optarg;
         break;
+      case 'k':
+        // Set a user's pubkeyid
+        pubKeyId = optarg;
+        break;
+      case 'P':
+        passphrase = optarg;
+        break;
       case 'h':
         // Print help message
         printHelp(argv);
@@ -32,7 +41,7 @@ int main(int argc, char* const argv[]){
   }
   
   // Wrong use of arguments
-  if(port == -1 || message == "") {
+  if(port == -1 || message == "" || pubKeyId == "" || passphrase == "") {
     printHelp(argv);
     return 1;
   }
