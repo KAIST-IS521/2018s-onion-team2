@@ -45,7 +45,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
   parser::packMessage(stream, &_msg, ip_list.front());
 
   // Encrypting the message
-  node* node = nodelist.searchNode(ip_list.front(), 1);
+  node* node = nodelist->searchNode(ip_list.front(), 1);
   string pubKeyId = node->getPubKeyID();
   stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
   delete tmp_stream;
@@ -63,7 +63,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     parser::packEncMessage(stream, &encMsg);
 
     // Encrypting the message
-    node = nodelist.searchNode(*it, 1);
+    node = nodelist->searchNode(*it, 1);
     pubKeyId = node->getPubKeyID();
     tmp_stream = stream;
     stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
@@ -92,7 +92,7 @@ int main(int argc, char* const argv[]){
 
   node_list->appendNode(node1);
   node_list->appendNode(node2);
-  node_list->appendNode(node3):
+  node_list->appendNode(node3);
   node_list->appendNode(node4);
   node_list->appendNode(node5);
   
