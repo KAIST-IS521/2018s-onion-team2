@@ -95,7 +95,7 @@ int main(int argc, char* const argv[]){
   node_list->appendNode(node3);
   node_list->appendNode(node4);
   node_list->appendNode(node5);
-  
+
   while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
     switch(opt){
       case 'm':
@@ -116,7 +116,7 @@ int main(int argc, char* const argv[]){
     }
   }
 
-  if((message != "" && path != "") || (passphrase != "")){
+  if(!(message != "" && path != "") && !(passphrase != "")){
     /* 
         Receiver should specify passphrase
         Sender should specify message, path
