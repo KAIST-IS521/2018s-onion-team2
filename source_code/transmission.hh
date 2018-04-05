@@ -25,7 +25,6 @@ namespace tmd{
     char* data;
     int length;
     string IP;
-    int port;
   };
 
   void* tmdReceiver(void* args);

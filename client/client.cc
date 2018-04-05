@@ -3,26 +3,60 @@
 #include <string>
 #include <cstring>
 #include "../source_code/transmission.hh"
+#include "../source_code/timestamp.hh"
+#include "../source_code/parser.hh"
 using namespace std;
 
 void printHelp(char* const argv[]){
-  cout << "Usage: " + string(argv[0]) + " -p PORT -k PUBKEYID -P PASSPHRASE [-m MESSAGE -r PATH TO RECEIVER]" << endl;
-  cout << "Using ':' as a delimiter, routing path should be specified with port numbers" << endl;
+  cout << "Usage: " + string(argv[0]) + " [-p PASSPHRASE] [-k PUBKEYID(RECEIVER) -m MESSAGE -r PATH TO RECEIVER]" << endl;
+  cout << "Using ':' as a delimiter, routing path should be specified with ip addresses" << endl;
+  cout << "Do not include  sender's ip address in the routing path" << endl;
   exit(0);
 }
 
 // Set dummy arguments
-void setDummyArgs(struct tmd::arg_data* send_args, string message, string path){
-  send_args->IP = "127.0.0.1";
-  send_args->port = atoi(path.substr(0, path.find(':')).c_str());
-  send_args->length = message.length();
+void setDummyArgs(struct tmd::arg_data* send_args, string msg, string path){
+  list<string> ip_list;
+  char *ch = strtok((char*)path.c_str(), ":");
+
+  while (ch != NULL)
+  {
+    // parse the path and store it as a stack
+    ip_list.push_front(ch);
+    ch = strtok(NULL, ":");
+  }
+
+  // For the final client
+  send_args->IP = ip_list.back();
+  ip_list.pop_back();
+
+  message _msg;
+  _msg.setContents(msg);
+  _msg.setGithubID("leeswimming");
+  _msg.setOneTimeKey();
+  _msg.setTimestamp(timestamp::getTimestampNow());
+
+  char* stream = new char[parser::getMessagePackLen(&_msg)];
+  parser::packMessage(stream, &_msg, ip_list.front());
+
+  // For clients in the routing path excluding the final clients
+  encMessage encMsg;
+  for(list<string>::iterator it = ip_list.begin(); it != ip_list.end(); it++){
+    encMsg.setNextIP(*it);
+    encMsg.setEncData(stream);
+    delete stream;
+    stream = new char[parser::getEncMessagePackLen(&encMsg)];
+    parser::packEncMessage(stream, &encMsg);
+  }
+  
+  send_args->length = parser::getEncMessagePackLen(&encMsg);
   send_args->data = new char[send_args->length];
-  memcpy(send_args->data, message.c_str(), send_args->length);
+  memcpy(send_args->data, stream, send_args->length);
+  delete stream;
 }
 
 int main(int argc, char* const argv[]){
   int opt;
-  int port = -1;
   string message = "";
   string pubKeyId = "";
   string passphrase = "";
@@ -30,10 +64,6 @@ int main(int argc, char* const argv[]){
   
   while((opt = getopt(argc, argv, "p:m:k:P:r:h")) != -1){
     switch(opt){
-      case 'p':
-        // Set a port
-        port = atoi(optarg);
-        break;
       case 'm':
         // Set a message
         message = optarg;
@@ -42,7 +72,7 @@ int main(int argc, char* const argv[]){
         // Set an user's pubkeyid
         pubKeyId = optarg;
         break;
-      case 'P':
+      case 'p':
         // Set a passphrase
         passphrase = optarg;
         break;
@@ -56,21 +86,17 @@ int main(int argc, char* const argv[]){
     }
   }
 
-  if(port == -1 || pubKeyId == "" || passphrase == "") {
-    /* Mandatory options */
-    printHelp(argv);
-    return 1;
-  } else if((message == "" && path != "") || (message != "" && path == "")){
+  if((pubKeyId != "" && message != "" && path != "") || (passphrase != "")){
     /* 
-        Optional options
-        Sender should specify both a message and a path
+        Receiver should specify passphrase
+        Sender should specify message, path and receiver's pubKeyID
     */
     printHelp(argv);
-    return 2;
+    return 1;
   }
 
   // Set a dummy user info
-  user = userInfo("dummy", pubKeyId, "127.0.0.1", passphrase);
+  user = userInfo("leeswimming", pubKeyId, "", passphrase);
 
   if(message == ""){
     // Create an argument setting for the listening thread

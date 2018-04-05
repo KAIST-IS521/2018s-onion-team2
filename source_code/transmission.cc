@@ -165,8 +165,6 @@ void* tmd::tmdSender(void* args){
   char* data = new char[length];
   memcpy(data, arguments->data, length);
 
-  int port = arguments->port;
-  
   delete arguments->data;
   delete arguments;
 
@@ -185,8 +183,7 @@ void* tmd::tmdSender(void* args){
     bzero((char *)&saddr, sizeof(saddr));
     saddr.sin_family = AF_INET;
     bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
-    // saddr.sin_port = htons(MESSAGE_PORT);
-    saddr.sin_port = htons(port);
+    saddr.sin_port = htons(MESSAGE_PORT);
 
     if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
       delete data;
@@ -196,7 +193,7 @@ void* tmd::tmdSender(void* args){
     cout << "Unreachable: " + string(e) << endl;
     cout << "Terminating the program ..." << endl;
     close(cfd);
-    exit(3);
+    exit(2);
   }
 
   write(cfd, data, length);

@@ -219,13 +219,13 @@ int parser::packHeartBeat(char* stream, char* OTK){
   return 9;
 }
 
-// int parser::getMessagePackLen(message* src){
-//   return 21+(src->message::getGithubID().size())+(src->message::getContents().size());
-// }
+int parser::getMessagePackLen(message* src){
+  return 21+(src->message::getGithubID().size())+(src->message::getContents().size());
+}
 
-// int parser::getEncMessagePackLen(encMessage* src){
-//   return 9+(src->encMessage::getEncData().size());
-// }
+int parser::getEncMessagePackLen(encMessage* src){
+  return 9+(src->encMessage::getEncData().size());
+}
 
 // int parser::getNodePackLen(node* src){
 //   return 22+(src->node::getGithubID().size());
