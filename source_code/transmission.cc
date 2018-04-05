@@ -169,7 +169,6 @@ void* tmd::tmdSender(void* args){
   delete arguments;
 
   // pthread_detach(pthread_self());
-  cout << "Message start" << endl;
   try{
     if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
       delete data;
@@ -190,9 +189,9 @@ void* tmd::tmdSender(void* args){
       delete data;
       throw "connect() failed.";
     }
-  } catch (string e){
-    cout << "Unreachable: " + e << endl;
-    cout << "Terminating the program" << endl;
+  } catch (char const* e){
+    cout << "Unreachable: " + string(e) << endl;
+    cout << "Terminating the program ..." << endl;
     close(cfd);
     exit(3);
   }
