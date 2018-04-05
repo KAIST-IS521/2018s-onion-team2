@@ -154,7 +154,7 @@ int parser::packMessage(char* stream,message* src,string IP){
     stream[0] = '\x01';
     memcpy(stream+1, tmpIP,4);                                   // IP to char*
     memcpy(stream+5, src->message::getOneTimeKey(),4);
-    memcpy(stream+9, src->message::getTimestamp(),4);
+    memcpy(stream+9, timestamp::timestamp2byte(src->message::getTimestamp()),4);
 //    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
     util::int2byte(GithubIDSize,stream+13);
     memcpy(stream+17,src->message::getGithubID().c_str(),GithubIDSize);
