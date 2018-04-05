@@ -146,11 +146,10 @@ bool message::setContents(string Content){
 }
 
 bool message::setOneTimeKey() {
-  std::ifstream urand("/dev/urandom");
-  urand.read(OneTimeKey, 4);
-  urand.close();
   this->OneTimeKey = new char[4];
-  memcpy(this->OneTimeKey, OneTimeKey, 4);
+  std::ifstream urand("/dev/urandom");
+  urand.read(this->OneTimeKey, 4);
+  urand.close();
 }
 
 message::~message(){

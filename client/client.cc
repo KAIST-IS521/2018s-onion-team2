@@ -34,7 +34,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
 
   message _msg;
   _msg.setContents(msg);
-  _msg.setGithubID("leeswimming");
+  _msg.setGithubID("Donovan");
   _msg.setOneTimeKey();
   _msg.setTimestamp(timestamp::getTimestampNow());
 
@@ -126,7 +126,7 @@ int main(int argc, char* const argv[]){
   }
 
   // Set a dummy user info
-  user = userInfo("leeswimming", "", "", passphrase);
+  user = userInfo("Donovan", "", "", passphrase);
 
   if(message == ""){
     // Create an argument setting for the listening thread
