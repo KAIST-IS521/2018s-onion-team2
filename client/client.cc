@@ -82,19 +82,6 @@ int main(int argc, char* const argv[]){
   string pubKeyId = "";
   string passphrase = "";
   string path = "";
-  nodelist* node_list = new nodelist();
-
-  node* node1 = new node("Donovan","9932355F","172.20.0.2");
-  node* node2 = new node("Marvin","704DB4C6","172.20.0.3");
-  node* node3 = new node("Stanton","BBB8EA0C","172.20.0.5");
-  node* node4 = new node("Sandra","60003972","172.20.0.4");
-  node* node5 = new node("Jason","BC1B3BC4","172.20.0.6");
-
-  node_list->appendNode(node1);
-  node_list->appendNode(node2);
-  node_list->appendNode(node3);
-  node_list->appendNode(node4);
-  node_list->appendNode(node5);
 
   while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
     switch(opt){
@@ -124,6 +111,20 @@ int main(int argc, char* const argv[]){
     printHelp(argv);
     return 1;
   }
+
+  nodelist* node_list = new nodelist();
+
+  node* node1 = new node("Donovan","9932355F","172.20.0.2");
+  node* node2 = new node("Marvin","704DB4C6","172.20.0.3");
+  node* node3 = new node("Stanton","BBB8EA0C","172.20.0.5");
+  node* node4 = new node("Sandra","60003972","172.20.0.4");
+  node* node5 = new node("Jason","BC1B3BC4","172.20.0.6");
+
+  node_list->appendNode(node1);
+  node_list->appendNode(node2);
+  node_list->appendNode(node3);
+  node_list->appendNode(node4);
+  node_list->appendNode(node5);
 
   // Set a dummy user info
   user = userInfo("Donovan", "", "", passphrase);
