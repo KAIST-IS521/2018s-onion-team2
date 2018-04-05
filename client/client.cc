@@ -30,7 +30,6 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
 
   // For the final client
   send_args->IP = ip_list.back();
-  ip_list.pop_back();
 
   message _msg;
   _msg.setContents(msg);
@@ -51,7 +50,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
   delete tmp_stream;
 
   encMessage encMsg;
-  for(list<string>::iterator it = ip_list.begin(); it != ip_list.end(); it++){
+  for(list<string>::iterator it = ip_list.begin(); (++it)-- != ip_list.end(); it++){
     // For clients in the routing path excluding the final clients
     encMsg.setNextIP(*it);
     encMsg.setEncData(stream);
@@ -63,7 +62,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     parser::packEncMessage(stream, &encMsg);
 
     // Encrypting the message
-    node = node_list->searchNode(*it, 1);
+    node = node_list->searchNode(*((++it)--), 1);
     pubKeyId = node->getPubKeyID();
     tmp_stream = stream;
     stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
