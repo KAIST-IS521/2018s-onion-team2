@@ -14,7 +14,7 @@ void printHelp(char* const argv[]){
 // Set dummy arguments
 void setDummyArgs(struct tmd::arg_data* send_args, string message, string path){
   send_args->IP = "127.0.0.1";
-  send_args->path = path;  
+  send_args->port = atoi(path.substr(0, path.find(':')).c_str());
   send_args->length = message.length();
   send_args->data = new char[send_args->length];
   memcpy(send_args->data, message.c_str(), send_args->length);
