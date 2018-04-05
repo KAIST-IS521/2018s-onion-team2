@@ -46,18 +46,21 @@ int main(int argc, char* const argv[]){
         // Set a passphrase
         passphrase = optarg;
         break;
+      case 'r':
+        path = optarg;
+        break;
       case 'h':
         // Print help message
         printHelp(argv);
         break;
     }
   }
-  
+
   if(port == -1 || pubKeyId == "" || passphrase == "") {
     /* Mandatory options */
     printHelp(argv);
     return 1;
-  } else if((message == "" and path != "") or (message != "" and path == "")){
+  } else if((message == "" && path != "") || (message != "" && path == "")){
     /* 
         Optional options
         Sender should specify both a message and a path
@@ -85,5 +88,6 @@ int main(int argc, char* const argv[]){
     pthread_t th_send;
     pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
   }
+
   return 0;
 }
