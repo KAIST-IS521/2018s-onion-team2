@@ -118,58 +118,58 @@ encMessage* parser::encMessageParser(char* stream){
   return temp;
 }
 
-// // parser::packEncMessage
-// // Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
-// // Return - Null(실패), char*(Packing 된 BYTE stream)
-// int parser::packEncMessage(char* stream,encMessage* src){
-//   int msgSize = src->encMessage::getEncData().size();
+// parser::packEncMessage
+// Description - encMessage의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
+// Return - Null(실패), char*(Packing 된 BYTE stream)
+int parser::packEncMessage(char* stream,encMessage* src){
+  int msgSize = src->encMessage::getEncData().size();
 
-//   try{
-//     stream[0] = '\x00';
-//     unsigned char* tmpIP = new unsigned char[4];
-//     util::ip2byte(src->encMessage::getNextIP(),tmpIP);
-//     memcpy(stream+1, tmpIP ,4);                                  // IP to char*
-// //    memcpy(stream+5, util::int2byte(msgSize).c_str(),4);
-//     util::int2byte(msgSize,stream+5);
-//     memcpy(stream+9, (src->encMessage::getEncData()).c_str(),msgSize);
-//     delete tmpIP;
-//   }
-//   catch(int exception){
-//     delete stream;
-//     return 0;
-//   }
-//   return 9+msgSize;
-// }
+  try{
+    stream[0] = '\x00';
+    unsigned char* tmpIP = new unsigned char[4];
+    util::ip2byte(src->encMessage::getNextIP(),tmpIP);
+    memcpy(stream+1, tmpIP ,4);                                  // IP to char*
+//    memcpy(stream+5, util::int2byte(msgSize).c_str(),4);
+    util::int2byte(msgSize,stream+5);
+    memcpy(stream+9, (src->encMessage::getEncData()).c_str(),msgSize);
+    delete tmpIP;
+  }
+  catch(int exception){
+    delete stream;
+    return 0;
+  }
+  return 9+msgSize;
+}
 
-// // parser::packMessage
-// // Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
-// // Return - return stream의 length
-// int parser::packMessage(char* stream,message* src,string IP){
-//   int msgSize = src->message::getContents().size();
-//   int GithubIDSize = src->message::getGithubID().size();
+// parser::packMessage
+// Description - message의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
+// Return - return stream의 length
+int parser::packMessage(char* stream,message* src,string IP){
+  int msgSize = src->message::getContents().size();
+  int GithubIDSize = src->message::getGithubID().size();
 
-//   unsigned char* tmpIP = new unsigned char[4];
-//   util::ip2byte(IP.c_str(),tmpIP);
-//   try{
-//     stream[0] = '\x01';
-//     memcpy(stream+1, tmpIP,4);                                   // IP to char*
-//     memcpy(stream+5, src->message::getOneTimeKey(),4);
-//     memcpy(stream+9, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
-// //    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
-//     util::int2byte(GithubIDSize,stream+13);
-//     memcpy(stream+17,src->message::getGithubID().c_str(),GithubIDSize);
-// //    memcpy(stream+17+GithubIDSize, util::int2byte(msgSize), 4);
-//     util::int2byte(msgSize,stream+17+GithubIDSize);
-//     memcpy(stream+17+GithubIDSize+4, src->message::getContents().c_str(), msgSize);
-//   }
-//   catch(int exception){
-//     delete tmpIP;
-//     delete stream;
-//     return 0;
-//   }
-//   delete tmpIP;
-//   return (21+GithubIDSize+msgSize);
-// }
+  unsigned char* tmpIP = new unsigned char[4];
+  util::ip2byte(IP.c_str(),tmpIP);
+  try{
+    stream[0] = '\x01';
+    memcpy(stream+1, tmpIP,4);                                   // IP to char*
+    memcpy(stream+5, src->message::getOneTimeKey(),4);
+    memcpy(stream+9, timestamp::timestamp2byte(timestamp::getTimestampNow()),4);
+//    memcpy(stream+13,util::int2byte(GithubIDSize).c_str(),4);
+    util::int2byte(GithubIDSize,stream+13);
+    memcpy(stream+17,src->message::getGithubID().c_str(),GithubIDSize);
+//    memcpy(stream+17+GithubIDSize, util::int2byte(msgSize), 4);
+    util::int2byte(msgSize,stream+17+GithubIDSize);
+    memcpy(stream+17+GithubIDSize+4, src->message::getContents().c_str(), msgSize);
+  }
+  catch(int exception){
+    delete tmpIP;
+    delete stream;
+    return 0;
+  }
+  delete tmpIP;
+  return (21+GithubIDSize+msgSize);
+}
 
 // parser::packNode
 // Description - node의 요소들을 송신 규격에 맞게 packing 하여 char*으로 반환
