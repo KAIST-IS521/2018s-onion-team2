@@ -10,7 +10,7 @@
 #define HB_LEN 9
 #define SIGN_IN '0x00'
 #define SIGN_OUT '0x01'
-#define SERVER_ADDR "127.0.0.1"
+#define SERVER_ADDR "0.0.0.0"
 
 #include "userInfo.hh"
 #include "nodelist.hh"

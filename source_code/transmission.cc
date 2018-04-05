@@ -26,16 +26,17 @@ void* tmd::tmdReceiver(void* args){
   char* stream = gpg::decBytestream((char*)data.c_str(), &passphrase);
   if(stream[0] == '\x00'){
     encMessage* msg = parser::encMessageParser(stream);
-    struct tmd::arg_data* list_update_arguments = new struct tmd::arg_data();
-    tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), list_update_arguments);
-    pthread_t th_list_update;
-    pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
-    msg->getNextIP();
+    struct tmd::arg_data* msg_argument = new struct tmd::arg_data();
+    tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), msg_argument);
+    pthread_t th_forward;
+    pthread_create(&th_forward, NULL, tmd::tmdSender, (void*)msg_argument);
+    cout << "Forwarding packets to " + msg->getNextIP() << endl;
     delete msg;
   } else if(stream[0] == '\x01') {
     message* msg = parser::messageParser(stream);
     pthread_mutex_lock(&m_user);
-    user.addMessage(*msg);
+    cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
+    // user.addMessage(*msg);
     pthread_mutex_unlock(&m_user);
     delete msg;
   } else if(stream[0] == '\x02'){
@@ -164,34 +165,42 @@ void* tmd::tmdSender(void* args){
   string IP = arguments->IP;
   char* data = new char[length];
   memcpy(data, arguments->data, length);
-  
+
   delete arguments->data;
   delete arguments;
 
-  pthread_detach(pthread_self());
+  // pthread_detach(pthread_self());
+  try{
+    if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
+      delete data;
+      throw "socket() failed.";
+    }
 
-  if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
-    delete data;
-    throw "socket() failed.";
-  }
+    if ((h = gethostbyname(IP.c_str())) == NULL){
+      delete data;
+      throw "gethostbyname() failed";
+    }
 
-  if ((h = gethostbyname(IP.c_str())) == NULL){
-    delete data;
-    throw "gethostbyname() failed"; 
-  }
+    bzero((char *)&saddr, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
+    saddr.sin_port = htons(MESSAGE_PORT);
 
-  bzero((char *)&saddr, sizeof(saddr));
-  saddr.sin_family = AF_INET;
-  bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
-  saddr.sin_port = htons(MESSAGE_PORT);
-
-  if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
-    delete data;
-    throw "connect() failed.";
+    if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
+      delete data;
+      throw "connect() failed.";
+    }
+  } catch (char const* e){
+    cout << "Unreachable: " + string(e) << endl;
+    cout << "Terminating the program ..." << endl;
+    close(cfd);
+    exit(2);
   }
 
   write(cfd, data, length);
   close(cfd);
+
+  cout << "Message sent" << endl;
 
   delete data;
 
