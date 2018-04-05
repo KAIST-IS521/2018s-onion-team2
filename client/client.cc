@@ -5,17 +5,19 @@
 #include "../source_code/transmission.hh"
 #include "../source_code/timestamp.hh"
 #include "../source_code/parser.hh"
+#include "../source_code/gpg.hh"
+#include "../source_code/nodelist.hh"
 using namespace std;
 
 void printHelp(char* const argv[]){
-  cout << "Usage: " + string(argv[0]) + " [-p PASSPHRASE] [-k PUBKEYID(RECEIVER) -m MESSAGE -r PATH TO RECEIVER]" << endl;
+  cout << "Usage: " + string(argv[0]) + " [-p PASSPHRASE] [-m MESSAGE -r PATH TO RECEIVER]" << endl;
   cout << "Using ':' as a delimiter, routing path should be specified with ip addresses" << endl;
   cout << "Do not include  sender's ip address in the routing path" << endl;
   exit(0);
 }
 
 // Set dummy arguments
-void setDummyArgs(struct tmd::arg_data* send_args, string msg, string path){
+void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string path){
   list<string> ip_list;
   char *ch = strtok((char*)path.c_str(), ":");
 
@@ -36,20 +38,36 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, string path){
   _msg.setOneTimeKey();
   _msg.setTimestamp(timestamp::getTimestampNow());
 
-  char* stream = new char[parser::getMessagePackLen(&_msg)];
+  int stream_len = parser::getMessagePackLen(&_msg);
+  char* stream = new char[stream_len];
+  char* tmp_stream = stream;
   parser::packMessage(stream, &_msg, ip_list.front());
 
-  // For clients in the routing path excluding the final clients
+  // Encrypting the message
+  node* node = nodelist.searchNode(ip_list.front(), 1);
+  string pubKeyId = node->getPubKeyID();
+  stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
+  delete tmp_stream;
+
   encMessage encMsg;
   for(list<string>::iterator it = ip_list.begin(); it != ip_list.end(); it++){
+    // For clients in the routing path excluding the final clients
     encMsg.setNextIP(*it);
     encMsg.setEncData(stream);
     delete stream;
-    stream = new char[parser::getEncMessagePackLen(&encMsg)];
+    stream_len = parser::getEncMessagePackLen(&encMsg);
+    stream = new char[stream_len];
     parser::packEncMessage(stream, &encMsg);
+
+    // Encrypting the message
+    node = nodelist.searchNode(*it, 1);
+    pubKeyId = node->getPubKeyID();
+    tmp_stream = stream;
+    stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
+    delete tmp_stream;
   }
   
-  send_args->length = parser::getEncMessagePackLen(&encMsg);
+  send_args->length = stream_len;
   send_args->data = new char[send_args->length];
   memcpy(send_args->data, stream, send_args->length);
   delete stream;
@@ -61,16 +79,25 @@ int main(int argc, char* const argv[]){
   string pubKeyId = "";
   string passphrase = "";
   string path = "";
+  nodelist* node_list = new nodelist();
+
+  node* node1 = new node("Donovan","9932355F","172.20.0.2");
+  node* node2 = new node("Marvin","704DB4C6","172.20.0.3");
+  node* node3 = new node("Stanton","BBB8EA0C","172.20.0.5");
+  node* node4 = new node("Sandra","60003972","172.20.0.4");
+  node* node5 = new node("Jason","BC1B3BC4","172.20.0.6");
+
+  node_list->appendNode(node1);
+  node_list->appendNode(node2);
+  node_list->appendNode(node3):
+  node_list->appendNode(node4);
+  node_list->appendNode(node5);
   
-  while((opt = getopt(argc, argv, "p:m:k:P:r:h")) != -1){
+  while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
     switch(opt){
       case 'm':
         // Set a message
         message = optarg;
-        break;
-      case 'k':
-        // Set an user's pubkeyid
-        pubKeyId = optarg;
         break;
       case 'p':
         // Set a passphrase
@@ -86,17 +113,17 @@ int main(int argc, char* const argv[]){
     }
   }
 
-  if((pubKeyId != "" && message != "" && path != "") || (passphrase != "")){
+  if((message != "" && path != "") || (passphrase != "")){
     /* 
         Receiver should specify passphrase
-        Sender should specify message, path and receiver's pubKeyID
+        Sender should specify message, path
     */
     printHelp(argv);
     return 1;
   }
 
   // Set a dummy user info
-  user = userInfo("leeswimming", pubKeyId, "", passphrase);
+  user = userInfo("leeswimming", "", "", passphrase);
 
   if(message == ""){
     // Create an argument setting for the listening thread
@@ -110,13 +137,20 @@ int main(int argc, char* const argv[]){
   } else {
     // Create an argument seting for the sending thread
     struct tmd::arg_data* send_args  = new struct tmd::arg_data();
-    setDummyArgs(send_args, message, path);
+    setDummyArgs(send_args, message, node_list, path);
 
     // Create a thread for the listening
     pthread_t th_send;
     pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
     pthread_join(th_send, NULL);
   }
+
+  delete node1;
+  delete node2;
+  delete node3;
+  delete node4;
+  delete node5;
+  delete node_list;
 
   return 0;
 }
