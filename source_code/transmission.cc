@@ -164,6 +164,8 @@ void* tmd::tmdSender(void* args){
   string IP = arguments->IP;
   char* data = new char[length];
   memcpy(data, arguments->data, length);
+
+  string port = arguments->port;
   
   delete arguments->data;
   delete arguments;
@@ -183,7 +185,8 @@ void* tmd::tmdSender(void* args){
     bzero((char *)&saddr, sizeof(saddr));
     saddr.sin_family = AF_INET;
     bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
-    saddr.sin_port = htons(MESSAGE_PORT);
+    // saddr.sin_port = htons(MESSAGE_PORT);
+    saddr.sin_port = htons(port)
 
     if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
       delete data;
