@@ -1,4 +1,6 @@
 #include "message.hh"
+#include <cstring>
+#include <fstream>
 using namespace std;
 
 // encMessage::encMessage
@@ -130,19 +132,6 @@ bool message::setGithubID(string GithubID){
   }
 }
 
-// message::setOneTimeKey
-// Description - Writable Flag가 켜져있을 때 OneTimeKey를 message 객체에 기록
-// Return - true = 성공, false = 실패
-bool message::setOneTimeKey(char* OneTimeKey){
-  if (isWritable()){
-    this->OneTimeKey = OneTimeKey;
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-
 // message::setContents
 // Description - Writable Flag가 켜져있을 때 GithubID를 message 객체에 기록
 // Return - true = 성공, false = 실패
@@ -154,4 +143,16 @@ bool message::setContents(string Content){
   else{
     return false;
   }
+}
+
+bool message::setOneTimeKey() {
+  std::ifstream urand("/dev/urandom");
+  urand.read(OneTimeKey, 4);
+  urand.close();
+  this->OneTimeKey = new char[4];
+  memcpy(this->OneTimeKey, OneTimeKey, 4);
+}
+
+message::~message(){
+  delete this->OneTimeKey;
 }

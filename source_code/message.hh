@@ -29,6 +29,7 @@ private:
 public:
   message();
   message(string _content,string _GithubID, char* _OneTimeKey, time_t _timestamp);
+  ~message();
   string getContents();
   string getGithubID();
   time_t getTimestamp();
@@ -36,7 +37,7 @@ public:
   bool isWritable();
   bool setTimestamp(time_t timestamp);
   bool setGithubID(string githubID);
-  bool setOneTimeKey(char* OneTimeKey);
+  bool setOneTimeKey();
   bool setContents(string content);
 };
 
