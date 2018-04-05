@@ -70,7 +70,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     delete tmp_stream;
   }
   
-  send_args->length = stream_len;
+  send_args->length = string(stream).length();
   send_args->data = new char[send_args->length];
   memcpy(send_args->data, stream, send_args->length);
   delete stream;
