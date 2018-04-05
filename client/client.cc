@@ -38,6 +38,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
   _msg.setOneTimeKey();
   _msg.setTimestamp(timestamp::getTimestampNow());
 
+  // Convert the message into a protocol
   int stream_len = parser::getMessagePackLen(&_msg);
   char* stream = new char[stream_len];
   char* tmp_stream = stream;
@@ -55,6 +56,8 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     encMsg.setNextIP(*it);
     encMsg.setEncData(stream);
     delete stream;
+
+    // Convert the message into a protocol
     stream_len = parser::getEncMessagePackLen(&encMsg);
     stream = new char[stream_len];
     parser::packEncMessage(stream, &encMsg);
