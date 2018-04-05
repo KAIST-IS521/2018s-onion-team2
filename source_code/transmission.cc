@@ -168,30 +168,39 @@ void* tmd::tmdSender(void* args){
   delete arguments->data;
   delete arguments;
 
-  pthread_detach(pthread_self());
+  // pthread_detach(pthread_self());
+  cout << "Message start" << endl;
+  try{
+    if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
+      delete data;
+      throw "socket() failed.";
+    }
 
-  if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
-    delete data;
-    throw "socket() failed.";
-  }
+    if ((h = gethostbyname(IP.c_str())) == NULL){
+      delete data;
+      throw "gethostbyname() failed";
+    }
 
-  if ((h = gethostbyname(IP.c_str())) == NULL){
-    delete data;
-    throw "gethostbyname() failed"; 
-  }
+    bzero((char *)&saddr, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
+    saddr.sin_port = htons(MESSAGE_PORT);
 
-  bzero((char *)&saddr, sizeof(saddr));
-  saddr.sin_family = AF_INET;
-  bcopy((char *)h->h_addr, (char *)&saddr.sin_addr.s_addr, h->h_length);
-  saddr.sin_port = htons(MESSAGE_PORT);
-
-  if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
-    delete data;
-    throw "connect() failed.";
+    if (connect(cfd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0){
+      delete data;
+      throw "connect() failed.";
+    }
+  } catch (string e){
+    cout << "Unreachable: " + e << endl;
+    cout << "Terminating the program" << endl;
+    close(cfd);
+    exit(3);
   }
 
   write(cfd, data, length);
   close(cfd);
+
+  cout << "Message sent" << endl;
 
   delete data;
 

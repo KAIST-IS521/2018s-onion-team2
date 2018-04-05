@@ -79,6 +79,7 @@ int main(int argc, char* const argv[]){
     // Create a thread for the listening
     pthread_t th_listen;
     pthread_create(&th_listen, NULL, tmd::tmdReceiverMain, (void*)listen_args);
+    pthread_join(th_listen, NULL);
   } else {
     // Create an argument seting for the sending thread
     struct tmd::arg_data* send_args  = new struct tmd::arg_data();
@@ -87,6 +88,7 @@ int main(int argc, char* const argv[]){
     // Create a thread for the listening
     pthread_t th_send;
     pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
+    pthread_join(th_send, NULL);
   }
 
   return 0;
