@@ -65,6 +65,7 @@ int main(int argc, char* const argv[]){
         Optional options
         Sender should specify both a message and a path
     */
+    printHelp(argv);
     return 2;
   }
 
