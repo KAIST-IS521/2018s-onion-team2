@@ -26,16 +26,17 @@ void* tmd::tmdReceiver(void* args){
   char* stream = gpg::decBytestream((char*)data.c_str(), &passphrase);
   if(stream[0] == '\x00'){
     encMessage* msg = parser::encMessageParser(stream);
-    struct tmd::arg_data* list_update_arguments = new struct tmd::arg_data();
-    tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), list_update_arguments);
-    pthread_t th_list_update;
-    pthread_create(&th_list_update, NULL, tmd::tmdSender, (void*)list_update_arguments);
-    msg->getNextIP();
+    struct tmd::arg_data* msg_argument = new struct tmd::arg_data();
+    tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), msg_argument);
+    pthread_t th_forward;
+    pthread_create(&th_forward, NULL, tmd::tmdSender, (void*)msg_argument);
+    cout << "Forwarding packets to " + msg->getNextIP() << endl;
     delete msg;
   } else if(stream[0] == '\x01') {
     message* msg = parser::messageParser(stream);
     pthread_mutex_lock(&m_user);
-    user.addMessage(*msg);
+    cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
+    // user.addMessage(*msg);
     pthread_mutex_unlock(&m_user);
     delete msg;
   } else if(stream[0] == '\x02'){
