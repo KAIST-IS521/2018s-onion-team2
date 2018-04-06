@@ -172,7 +172,7 @@ void* msg_ui::input_listener(void* args){
       ichar = getchar();
       continue;
     }
-    if( ichar == 0x7f || ichar == 8 && ibuffer.empty() == false ) {
+    if(( ichar == 0x7f || ichar == 8) && ibuffer.empty() == false ) {
       printf("\b");
       printf(" ");
       printf("\b");
