@@ -62,7 +62,8 @@ void* tmd::tmdReceiverMain(void* args){
   int type = arguments->type;
   void*(*func)(void*) = arguments->func;
 
-  delete (struct tmd::arg_main*)args;
+  delete arguments;
+  pthread_detach(pthread_self());
 
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
