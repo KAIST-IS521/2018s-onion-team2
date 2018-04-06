@@ -2,6 +2,8 @@
 #define __MESSAGE__
 
 #include <string>
+#include <cstring>
+#include <fstream>
 #include <ctime>
 #include <iostream>
 

@@ -1,9 +1,5 @@
 #include "transmission.hh"
-#include "gpg.hh"
 #include "parser.hh"
-#include "message.hh"
-#include <netdb.h>
-#include <cstring>
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
@@ -16,6 +12,7 @@ void* tmd::tmdReceiver(void* args){
   char buf[MAX_LEN];
   struct tmd::arg_receiver *arguments = (struct tmd::arg_receiver *)args;
   int recvFd = arguments->recvFd;
+  string you = arguments->you;
   delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
 
@@ -35,8 +32,9 @@ void* tmd::tmdReceiver(void* args){
   } else if(stream[0] == '\x01') {
     message* msg = parser::messageParser(stream);
     pthread_mutex_lock(&m_user);
-    cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
-    // user.addMessage(*msg);
+    //string recvmsg(msg->getGithubID()+" -> (YOU) "+you+" : "+msg->getContents());
+    //cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
+    user.addMessage(*msg);
     pthread_mutex_unlock(&m_user);
     delete msg;
   } else if(stream[0] == '\x02'){
@@ -60,6 +58,7 @@ void* tmd::tmdReceiverMain(void* args){
   int port = arguments->port;
   int protocol = arguments->protocol;
   int type = arguments->type;
+  string you = arguments->you;
   void*(*func)(void*) = arguments->func;
 
   delete arguments;
@@ -102,6 +101,7 @@ void* tmd::tmdReceiverMain(void* args){
       }
       h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
       arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
+      arg_recv->you = you;
       pthread_t tid;
       pthread_create(&tid, NULL, func, (void *)arg_recv);
     }
@@ -110,11 +110,12 @@ void* tmd::tmdReceiverMain(void* args){
   return NULL;
 }
 
-void tmd::msg_args(struct tmd::arg_main* arguments){
+void tmd::msg_args(struct tmd::arg_main* arguments,string hostid){
   arguments->port = MESSAGE_PORT;
   arguments->protocol = IPPROTO_TCP;
   arguments->type = SOCK_STREAM;
   arguments->func = tmd::tmdReceiver;
+  arguments->you = hostid;
 }
 
 void tmd::data_args(string IP, char* data, struct tmd::arg_data* list_update_arguments){
@@ -166,6 +167,8 @@ void* tmd::tmdSender(void* args){
   string IP = arguments->IP;
   char* data = new char[length];
   memcpy(data, arguments->data, length);
+  
+  cout << data << endl;
 
   delete arguments->data;
   delete arguments;

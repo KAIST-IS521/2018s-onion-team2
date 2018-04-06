@@ -1,6 +1,4 @@
 #include "message.hh"
-#include <cstring>
-#include <fstream>
 using namespace std;
 
 // encMessage::encMessage

@@ -3,6 +3,7 @@
 
 #include "nodelist.hh"
 #include "message.hh"
+#include <iostream>
 #include <list>
 #define IDLE 0
 #define CHAT 1
@@ -17,7 +18,7 @@ public:
   userInfo();
   userInfo(string GithubID, string PubKeyID, string IP, string Passphrase);
   void addMessage(message msg);
-  message readMessage();
+  message* readMessage();
   string getPassphrase();
   void setMode(int mode);
   int getMode();

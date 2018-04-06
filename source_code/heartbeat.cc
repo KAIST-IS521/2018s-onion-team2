@@ -1,4 +1,5 @@
 #include "heartbeat.hh"
+#include "timestamp.hh"
 using namespace std;
 
 heartbeat::heartbeat(char* data){

@@ -1,6 +1,6 @@
 #include "nodelist.hh"
-#include "ui.hh"
 #include "util.hh"
+#include "ui.hh"
 
 using namespace std;
 

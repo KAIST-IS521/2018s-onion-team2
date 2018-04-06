@@ -1,11 +1,9 @@
 #include "util.hh"
-#include <cstring>
-#include <cassert>
 
 pthread_mutex_t m_node_list = PTHREAD_MUTEX_INITIALIZER;
 nodelist node_list;
 userInfo user;
-pthread_mutex_t m_user;
+pthread_mutex_t m_user = PTHREAD_MUTEX_INITIALIZER;
 
 string util::getContainerIP(){
    int    iSocket = -1;

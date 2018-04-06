@@ -1,13 +1,13 @@
-#ifndef __parser__
-#define __parser__
+#ifndef __PARSER__
+#define __PARSER__
+#include "util.hh"
+#include "timestamp.hh"
+#include "transmission.hh" 
 #include <iostream>
 #include <string>
 #include <cstring>
-#include "timestamp.hh"
-#include "nodelist.hh"
-#include "heartbeat.hh"
-#include "message.hh"
-#include "util.hh"
+
+class heartbeat;
 
 namespace parser{
   message* messageParser(char* stream);
@@ -17,7 +17,7 @@ namespace parser{
   encMessage* encMessageParser(char* stream);
 
   int packEncMessage(char* stream,encMessage* src);
-  int packMessage(char* stream,message* src,string IP);
+  int packMessage(char* stream, message* src,string IP);
   int packNode(char* stream,node* src,char mode);
   int packHeartBeat(char* stream, char* OTK);
   void packListUpdate(char mode, struct tmd::arg_data* args);

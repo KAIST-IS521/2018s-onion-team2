@@ -1,6 +1,6 @@
 #include "parser.hh"
+#include "heartbeat.hh"
 using namespace std;
-
 
 // parser::messageParser
 // Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환

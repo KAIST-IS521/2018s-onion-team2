@@ -1,6 +1,4 @@
-#include <iostream>
 #include "userInfo.hh"
-#include "nodelist.hh"
 using namespace std;
 
 userInfo::userInfo(string GithubID, string PubKeyID, string IP, string Passphrase)
@@ -28,9 +26,13 @@ void userInfo::addMessage(message msg){
   // UI
 }
 
-message userInfo::readMessage(){
-  message tmp = this->msg_list.front();
-  this->msg_list.pop_front();
+message* userInfo::readMessage(){
+  message* tmp=NULL;
+  if(this->msg_list.size()!=0){
+    tmp = &(this->msg_list.front());
+    this->msg_list.pop_front();
+  }
   // UI
   return tmp;
 }
+

@@ -13,7 +13,7 @@
 #define SERVER_ADDR "0.0.0.0"
 
 #include "userInfo.hh"
-#include "nodelist.hh"
+
 #include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -21,6 +21,7 @@
 #include <string>
 #include <pthread.h>
 
+#include <cassert>
 #include <cstring>
 #include <cerrno>
 #include <unistd.h>

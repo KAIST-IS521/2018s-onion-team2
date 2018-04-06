@@ -1,6 +1,11 @@
 #ifndef __ui__
 #define __ui__
-#include "userInfo.hh"
+#include "heartbeat.hh"
+#include <unistd.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <string>
+
 
 namespace ui{
   void printBanner();

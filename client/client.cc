@@ -2,12 +2,15 @@
 #include <unistd.h>
 #include <string>
 #include <cstring>
+
 #include "../source_code/transmission.hh"
+#include "../source_code/util.hh"
 #include "../source_code/timestamp.hh"
 #include "../source_code/parser.hh"
 #include "../source_code/gpg.hh"
 #include "../source_code/nodelist.hh"
-#include "../source_code/util.hh"
+#include "../source_code/msg_ui.hh"
+
 using namespace std;
 
 void printHelp(char* const argv[]){
@@ -17,6 +20,7 @@ void printHelp(char* const argv[]){
   exit(0);
 }
 
+/*
 // Set dummy arguments
 void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){//string path){
   list<string> ip_list;
@@ -86,15 +90,15 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
   send_args->data = new char[send_args->length];
   memcpy(send_args->data, stream, send_args->length);
   delete stream;
-}
+}*/
 
 int main(int argc, char* const argv[]){
   int opt;
   string message = "";
   string pubKeyId = "";
   string passphrase = "";
-  string path = "";
-
+  string to = "";
+  /*
   while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
     switch(opt){
       case 'm':
@@ -106,7 +110,7 @@ int main(int argc, char* const argv[]){
         passphrase = optarg;
         break;
       case 'r':
-        path = optarg;
+        to = optarg;
         break;
       case 'h':
         // Print help message
@@ -114,15 +118,16 @@ int main(int argc, char* const argv[]){
         break;
     }
   }
+*/
 
-  if(!(message != "" && path != "") && !(passphrase != "")){
+//  if(!(message != "" && to != "") && !(passphrase != "")){
     /* 
         Receiver should specify passphrase
         Sender should specify message, path
     */
-    printHelp(argv);
-    return 1;
-  }
+    //printHelp(argv);
+  //  return 1;
+//  }
 
   nodelist* node_list = new nodelist();
 
@@ -139,12 +144,12 @@ int main(int argc, char* const argv[]){
   node_list->appendNode(node5);
 
   // Set a dummy user info
-  user = userInfo("Donovan", "", "", passphrase);
+  user = userInfo("Donovan", "9932355F", util::getContainerIP(), passphrase);
 
 
   // Create an argument setting for the listening thread
   struct tmd::arg_main* listen_args = new struct tmd::arg_main();
-  tmd::msg_args(listen_args);
+  tmd::msg_args(listen_args,user.getGithubID());
 
   // Create a thread for the listening
   pthread_t th_listen;
@@ -152,13 +157,22 @@ int main(int argc, char* const argv[]){
   // pthread_join(th_listen, NULL); /* This thread is detached */
   
   // Create an argument seting for the sending thread
+  /*
   struct tmd::arg_data* send_args  = new struct tmd::arg_data();
-  setDummyArgs(send_args, message, node_list, path);
-
+  setDummyArgs(send_args, message, node_list, to);
+  */
   // Create a thread for the listening
-  pthread_t th_send;
-  pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
-  pthread_join(th_send, NULL);
+  //pthread_t th_send;
+  //pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
+
+  struct msg_ui::arg_info* main_info= new struct msg_ui::arg_info();
+  main_info->senderID = user.getGithubID();
+  main_info->node_list=node_list;
+
+  pthread_t th_msg_ui;
+  pthread_create(&th_msg_ui, NULL, msg_ui::input_listener, (void*)main_info);
+  pthread_join(th_msg_ui,NULL);
+  //pthread_join(th_send, NULL);
 
   while(true){
     /*

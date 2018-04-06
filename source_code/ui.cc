@@ -1,9 +1,4 @@
 #include "ui.hh"
-#include "userInfo.hh"
-#include "heartbeat.hh"
-#include <unistd.h>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
 
 using namespace std;
 

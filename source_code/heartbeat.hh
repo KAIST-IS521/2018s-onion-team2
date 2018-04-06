@@ -1,8 +1,5 @@
 #ifndef __HEARTBEAT__
 #define __HEARTBEAT__
-#include "timestamp.hh"
-#include "util.hh"
-#include "userInfo.hh"
 #include "transmission.hh"
 
 class heartbeat{
