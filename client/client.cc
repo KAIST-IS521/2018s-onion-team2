@@ -17,8 +17,9 @@ void printHelp(char* const argv[]){
 }
 
 // Set dummy arguments
-void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string path){
+void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){//string path){
   list<string> ip_list;
+  /*
   char *ch = strtok((char*)path.c_str(), ":");
 
   while (ch != NULL)
@@ -27,6 +28,33 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     ip_list.push_front(ch);
     ch = strtok(NULL, ":");
   }
+  */
+
+  string senderIP = "172.20.0.2"; // get ip code needs
+
+  string receiverIP = (node_list->searchNode(recvID, 0))->getIP();
+  int middle_nodes = 3; // changeable
+
+  while(true){
+    string tmp((node_list->getRandomNode())->getIP());
+    if((ip_list.size()==0 && senderIP.compare(tmp)==0) or (ip_list.size()==middle_nodes-1 && receiverIP.compare(tmp)==0)){
+      continue;
+    }
+    if(ip_list.size()!=0 && (ip_list.begin())->compare(tmp)==0){
+      continue;
+    }
+    ip_list.push_front(tmp);
+    cout << "GET : " << tmp << endl;
+    if(ip_list.size() == middle_nodes){
+      break;
+    }
+  }
+  ip_list.push_front(receiverIP);
+  cout << "LIST : <FRONT> ";
+  for(list<string>::iterator it = ip_list.begin(); it != ip_list.end(); it++){
+    cout << *it << " ";
+  }
+  cout << " <BACK>"<<endl;
 
   // For the final client
   send_args->IP = ip_list.back();
@@ -46,6 +74,7 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
   // Encrypting the message
   node* node = node_list->searchNode(ip_list.front(), 1);
   string pubKeyId = node->getPubKeyID();
+  cout << "ENC << " << ip_list.front();
   stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
   delete tmp_stream;
 
@@ -65,9 +94,11 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
     node = node_list->searchNode(*((++it)--), 1);
     pubKeyId = node->getPubKeyID();
     tmp_stream = stream;
+    cout << node->getIP() << " ";
     stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
     delete tmp_stream;
   }
+  cout << endl;
   
   send_args->length = string(stream).length();
   send_args->data = new char[send_args->length];
