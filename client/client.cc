@@ -128,24 +128,33 @@ int main(int argc, char* const argv[]){
   // Set a dummy user info
   user = userInfo("Donovan", "", "", passphrase);
 
-  if(message == ""){
-    // Create an argument setting for the listening thread
-    struct tmd::arg_main* listen_args = new struct tmd::arg_main();
-    tmd::msg_args(listen_args);
 
-    // Create a thread for the listening
-    pthread_t th_listen;
-    pthread_create(&th_listen, NULL, tmd::tmdReceiverMain, (void*)listen_args);
-    pthread_join(th_listen, NULL);
-  } else {
-    // Create an argument seting for the sending thread
-    struct tmd::arg_data* send_args  = new struct tmd::arg_data();
-    setDummyArgs(send_args, message, node_list, path);
+  // Create an argument setting for the listening thread
+  struct tmd::arg_main* listen_args = new struct tmd::arg_main();
+  tmd::msg_args(listen_args);
 
-    // Create a thread for the listening
-    pthread_t th_send;
-    pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
-    pthread_join(th_send, NULL);
+  // Create a thread for the listening
+  pthread_t th_listen;
+  pthread_create(&th_listen, NULL, tmd::tmdReceiverMain, (void*)listen_args);
+  // pthread_join(th_listen, NULL); /* This thread is detached */
+  
+  // Create an argument seting for the sending thread
+  struct tmd::arg_data* send_args  = new struct tmd::arg_data();
+  setDummyArgs(send_args, message, node_list, path);
+
+  // Create a thread for the listening
+  pthread_t th_send;
+  pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
+  pthread_join(th_send, NULL);
+
+  while(true){
+    /*
+      This is a dummy inifinite loop
+      to prevent other threads from being terminated
+      due to termination of the main thread.
+
+      This loop can be replaced to get user inputs from stdin.
+    */
   }
 
   delete node1;
