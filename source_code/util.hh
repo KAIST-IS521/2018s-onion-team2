@@ -20,6 +20,14 @@
 #include <arpa/inet.h>
 #include <string>
 #include <pthread.h>
+
+#include <cstring>
+#include <cerrno>
+#include <unistd.h>
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+
 // #include <list>
 using namespace std;
 
@@ -34,6 +42,8 @@ namespace util{
     int integer;
     char byte[INT_SIZE];
   };
+
+  string getContainerIP();
 
   void int2byte(int integer, char* byte);
   int byte2int(char* integer);

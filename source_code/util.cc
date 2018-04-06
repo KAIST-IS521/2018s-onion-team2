@@ -7,6 +7,39 @@ nodelist node_list;
 userInfo user;
 pthread_mutex_t m_user;
 
+string util::getContainerIP(){
+   int    iSocket = -1;
+   struct if_nameindex* pIndex = 0;
+   struct if_nameindex* pIndex2 = 0;
+   string tmpName;
+
+   if ((iSocket = socket(PF_INET, SOCK_DGRAM, 0)) < 0){
+      return NULL;
+   }
+
+   pIndex = pIndex2 = if_nameindex();
+
+   while ((pIndex != NULL) && (pIndex->if_name != NULL)){
+      struct ifreq req;
+      strncpy(req.ifr_name, pIndex->if_name, IFNAMSIZ);
+      if (ioctl(iSocket, SIOCGIFADDR, &req) < 0){
+         if (errno == EADDRNOTAVAIL){
+            ++pIndex;
+            continue;
+         }
+         close(iSocket);
+         return NULL;
+      }
+      tmpName = inet_ntoa(((struct sockaddr_in*)&req.ifr_addr)->sin_addr);
+      if(tmpName.compare("127.0.0.1")!=0){
+        break;
+      }
+      ++pIndex;
+   }
+   close(iSocket);
+   return tmpName;
+}
+
 // void packet::insertPkt(char* buf){
 //   char* data = new char[MAX_LEN];
 //   memcpy(data, buf, MAX_LEN);
