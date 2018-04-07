@@ -144,7 +144,7 @@ void* msg_ui::input_listener(void* args){
   int char_cnt = 0; // For limitation of the character
   static struct termios	oldtio, newtio; // Using for Synchronous 
 
-  struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
+  //struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
   string sender = arguments->senderID;
   nodelist* node_list = arguments->node_list;
   /*
@@ -156,11 +156,11 @@ void* msg_ui::input_listener(void* args){
 
   */
 
-  tcgetattr(0, &oldtio);
-  newtio = oldtio;
-  newtio.c_lflag &= ~ICANON; 
-  newtio.c_lflag &= ~ECHO;
-  tcsetattr(0, TCSANOW, &newtio);
+  //tcgetattr(0, &oldtio);
+  //newtio = oldtio;
+  //newtio.c_lflag &= ~ICANON; 
+  //newtio.c_lflag &= ~ECHO;
+  //tcsetattr(0, TCSANOW, &newtio);
 
   msg_ui::refresh_messages(ibuffer,sender);
   while(true){
