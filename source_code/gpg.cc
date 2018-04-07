@@ -20,7 +20,7 @@ string encodeblock(unsigned char in[],int len) {
 }
 
 /* encode - base64 encode a stream, adding padding if needed */
-void b64_encode(char *clrstr,string b64dst,int length) {
+void b64_encode(char *clrstr,string* b64dst,int length) {
   unsigned char in[3];
   int i, len = 0;
   int j = 0;
@@ -35,7 +35,7 @@ void b64_encode(char *clrstr,string b64dst,int length) {
       else in[i] = 0;
     }
     if( len ) {
-      b64dst.append(encodeblock( in , len));
+      b64dst->append(encodeblock( in , len));
     }
   }
 }
@@ -82,7 +82,7 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
     }
   }
   string base64_dst("");
-  b64_encode(plain,base64_dst, length+count);
+  b64_encode(plain,&base64_dst, length+count);
   string full_cmd(prefix_cmd+base64_dst+middle_cmd+*PubKeyID+suffix_cmd);
   char* buf = new char[1024];
   FILE* pp = popen(full_cmd.c_str(),"r");
