@@ -7,14 +7,16 @@ using namespace gpg;
 char b64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 /* encodeblock - encode 3 8-bit binary bytes as 4 '6-bit' characters */
 string encodeblock(unsigned char in[],int len) {
-    string out;
+    char* out = new char[5];
     out[0] = b64[ in[0] >> 2 ];
     out[1] = b64[ ((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4) ];
     out[2] = (unsigned char) (len > 1 ? b64[ ((in[1] & 0x0f) << 2) |
              ((in[2] & 0xc0) >> 6) ] : '=');
     out[3] = (unsigned char) (len > 2 ? b64[ in[2] & 0x3f ] : '=');
     out[4] = '\0';
-    return out;
+    string ret_str(out);
+    delete out;
+    return ret_str;
 }
 
 /* encode - base64 encode a stream, adding padding if needed */
