@@ -10,7 +10,7 @@
 class heartbeat;
 
 namespace parser{
-  message* messageParser(char* stream);
+  void messageParser(char* stream, message* dest);
   node* nodeParser(char* stream);
   char getListmode(char* stream);
   heartbeat* hbParser(char* stream);

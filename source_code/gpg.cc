@@ -25,6 +25,7 @@ void b64_encode(char *clrstr,string* b64dst,int length) {
   int i, len = 0;
   int j = 0;
 
+  //b64dst[0] = '\0';
   while(j<length){
     len = 0;
     for(i=0; i<3; i++) {
@@ -45,8 +46,8 @@ void b64_encode(char *clrstr,string* b64dst,int length) {
 // Description - src의 char stream을 fork-exec를 통하여 gpg encryption을 수행하고 결과를 반환
 // Return - Encrypted Byte* or Null(실패 시)
 char* gpg::encBytestream(char* src,string* PubKeyID,int length){
-  string prefix_cmd("echo '");
-  string middle_cmd("' | base64 -d | gpg --no-tty --batch --logger-fd 1 --always-trust -ear ");
+  string prefix_cmd("echo \"");
+  string middle_cmd("\" | base64 -d | gpg --no-tty --batch --logger-fd 1 --always-trust -ear ");
   string suffix_cmd(" 2>/dev/null");
 
   std::regex exp ("[0-9|A-F]*");

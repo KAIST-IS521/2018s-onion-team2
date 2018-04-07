@@ -15,7 +15,6 @@ void* tmd::tmdReceiver(void* args){
   string you = arguments->you;
   delete (struct tmd::arg_receiver *)args;
   pthread_detach(pthread_self());
-
   while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
     data += buf;
   }
@@ -27,16 +26,18 @@ void* tmd::tmdReceiver(void* args){
     tmd::data_args(msg->getNextIP(), (char*)(msg->getEncData().c_str()), msg_argument);
     pthread_t th_forward;
     pthread_create(&th_forward, NULL, tmd::tmdSender, (void*)msg_argument);
+
     cout << "Forwarding packets to " + msg->getNextIP() << endl;
     delete msg;
   } else if(stream[0] == '\x01') {
-    message* msg = parser::messageParser(stream);
+    message msg;
+    parser::messageParser(stream,&msg);
     pthread_mutex_lock(&m_user);
     //string recvmsg(msg->getGithubID()+" -> (YOU) "+you+" : "+msg->getContents());
     //cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
-    user.addMessage(*msg);
+    user.addMessage(msg);
     pthread_mutex_unlock(&m_user);
-    delete msg;
+    //delete msg;
   } else if(stream[0] == '\x02'){
     node* new_node = parser::nodeParser(stream);
     pthread_mutex_lock(&m_node_list);
@@ -61,6 +62,7 @@ void* tmd::tmdReceiverMain(void* args){
   string you = arguments->you;
   void*(*func)(void*) = arguments->func;
 
+
   delete arguments;
   pthread_detach(pthread_self());
 
@@ -78,7 +80,6 @@ void* tmd::tmdReceiverMain(void* args){
   if(protocol == IPPROTO_TCP){
     if (listen(sockFd, MAX_QUEUE) < 0)
       throw "listen() failed.";
-
     while (1) {
       caddrlen = sizeof(caddr);
       arg_recv = new struct tmd::arg_receiver();
@@ -168,8 +169,6 @@ void* tmd::tmdSender(void* args){
   char* data = new char[length];
   memcpy(data, arguments->data, length);
   
-  cout << data << endl;
-
   delete arguments->data;
   delete arguments;
 

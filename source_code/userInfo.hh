@@ -18,7 +18,7 @@ public:
   userInfo();
   userInfo(string GithubID, string PubKeyID, string IP, string Passphrase);
   void addMessage(message msg);
-  message* readMessage();
+  message readMessage();
   string getPassphrase();
   void setMode(int mode);
   int getMode();

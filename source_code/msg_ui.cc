@@ -10,11 +10,9 @@ void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist*
   list<string> ip_list;
 
   string senderIP = user.getIP(); // get ip code needs
-  cout << senderIP << endl;
   string receiverIP = (node_list->searchNode(recvID, 0))->getIP();
   int middle_nodes = 3; // changeable
 
-  cout << senderIP << endl;
 
   while(true){
     string tmp((node_list->getRandomNode())->getIP());
@@ -40,23 +38,20 @@ void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist*
   _msg.setOneTimeKey();
   _msg.setTimestamp(timestamp::getTimestampNow());
 
-  cout << "_msg.getContents()" <<  _msg.getContents() << endl;
   // Convert the message into a protocol
   int stream_len = parser::getMessagePackLen(&_msg);
   char* stream = new char[stream_len];
   char* tmp_stream = stream;
   parser::packMessage(stream, &_msg, ip_list.front());
 
-  cout << "PACKED" << endl;
 
   // Encrypting the message
   node* node = node_list->searchNode(ip_list.front(), 1);
   string pubKeyId = node->getPubKeyID();
   stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
 
-  cout << "ENC" << endl;
+  cout << "tmp_stream delete in"<< endl;
   delete tmp_stream;
-
   encMessage encMsg;
   for(list<string>::iterator it = ip_list.begin(); (++it)-- != ip_list.end(); it++){
     // For clients in the routing path excluding the final clients
@@ -64,24 +59,26 @@ void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist*
     encMsg.setEncData(stream);
     delete stream;
 
+
     // Convert the message into a protocol
     stream_len = parser::getEncMessagePackLen(&encMsg);
     stream = new char[stream_len];
     parser::packEncMessage(stream, &encMsg);
-    cout << "LOOP PACKED" << endl;
     // Encrypting the message
     node = node_list->searchNode(*((++it)--), 1);
     pubKeyId = node->getPubKeyID();
     tmp_stream = stream;
     stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
-    cout << "LOOP ENC" << endl;
+    cout << "tmp_stream delete in in loop"<< endl;
     delete tmp_stream;
+
   }
 
   send_args->length = string(stream).length();
   send_args->data = new char[send_args->length];
   memcpy(send_args->data, stream, send_args->length);
   delete stream;
+
 }
 
 
@@ -112,9 +109,11 @@ void msg_ui::cmd_execute(string ibuffer){
 
 void msg_ui::getRecvToMessageQueue(string you){
   pthread_mutex_lock(&m_user);
-  message* tmp = user.readMessage();
-  while(tmp!=NULL){
-    string recvmsg(tmp->getGithubID()+" -> (YOU) "+you+" : "+tmp->getContents());
+  message tmp = user.readMessage();
+  
+  while(!(tmp.getGithubID().size()==0)){
+    string recvmsg(tmp.getGithubID()+" -> (YOU) "+you+" : "+tmp.getContents());
+    cout << recvmsg << endl;
     msgqueue->push_back(recvmsg);
     tmp = user.readMessage();
   }
@@ -124,7 +123,6 @@ void msg_ui::getRecvToMessageQueue(string you){
 void msg_ui::sendWrapper(string message, nodelist* node_list, string to){
   struct tmd::arg_data* send_args  = new struct tmd::arg_data();
   msg_ui::setDummyArgs(send_args, message, node_list, to);
-  cout << "pass" << endl;
   tmd::tmdSender(send_args);
 }
 

@@ -5,34 +5,40 @@ using namespace std;
 // parser::messageParser
 // Description - 0x01(평문) char stream에 대한 Parsing을 실시하고 message 객체 형태로 반환
 // Return - Null(실패), message*
-message* parser::messageParser(char* stream){
+void parser::messageParser(char* stream, message* dest){
   message* temp;
   if (stream[0] != '\x01'){
     cout << "Wrong Parser" << endl;
-    return NULL;
+//    return NULL;
+      return;
   }
 
   char* tmpOTK = new char[4];
   memcpy(tmpOTK, stream+5, 4);
+  //dest->setOneTimeKey(tmpOTK);
 
   char* tmpTimestamp = new char[4];
   memcpy(tmpTimestamp, stream+9, 4);
   time_t tmpTstamp = timestamp::byte2timestamp(tmpTimestamp);
+  dest->setTimestamp(tmpTstamp);
 
-  int* tmpGithubIDLen = (int*)(stream+13);
-  char* tmpGithubID = new char[*tmpGithubIDLen];
-  memcpy(tmpGithubID,stream+17,*tmpGithubIDLen);
+  int tmpGithubIDLen = util::byte2int(stream+13);
+  char* tmpGithubID = new char[tmpGithubIDLen];
+  memcpy(tmpGithubID,stream+17,tmpGithubIDLen);
   string ID(tmpGithubID);
+  dest->setGithubID(ID);
 
-  int* tmpMsgLen = (int*)(stream+17+*tmpGithubIDLen);
-  char* tmpMsg = new char[*tmpMsgLen];
-  memcpy(tmpMsg,stream+21+*tmpGithubIDLen,*tmpMsgLen);
+  int tmpMsgLen = util::byte2int(stream+17+tmpGithubIDLen);
+  char* tmpMsg = new char[tmpMsgLen];
+  memcpy(tmpMsg,stream+21+tmpGithubIDLen,tmpMsgLen);
   string MSG(tmpMsg);
-  temp = new message(MSG,ID,tmpOTK,tmpTstamp);
-  delete tmpTimestamp;
-  delete tmpGithubID;
-  delete tmpMsg;
-  return temp; 
+  dest->setContents(MSG);
+  //dest = new message(MSG,ID,tmpOTK,tmpTstamp);
+  
+  //delete tmpTimestamp;
+  //delete tmpGithubID;
+  //delete tmpMsg;
+  //return temp; 
 }
 
 // parser::nodeParser
@@ -106,9 +112,9 @@ encMessage* parser::encMessageParser(char* stream){
   }
   delete tmpIP;
 
-  unsigned int* enc_data_length = (unsigned int*)(stream+5);
-  char* enc_data_char = new char[*enc_data_length];
-  memcpy(enc_data_char, stream+9, *enc_data_length);
+  int enc_data_length = util::byte2int(stream+5);
+  char* enc_data_char = new char[enc_data_length];
+  memcpy(enc_data_char, stream+9, enc_data_length);
   string tmp_str(enc_data_char);
   if (!temp->setEncData(tmp_str)){
     cout << "Wrong Encrypted Data" << endl;
