@@ -25,7 +25,6 @@ void b64_encode(char *clrstr,string b64dst,int length) {
   int i, len = 0;
   int j = 0;
 
-  b64dst[0] = '\0';
   while(j<length){
     len = 0;
     for(i=0; i<3; i++) {
