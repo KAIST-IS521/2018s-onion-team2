@@ -142,9 +142,9 @@ void msg_ui::refresh_messages(string ibuffer,string senderID){
 // Edited by elmisty
 void* msg_ui::input_listener(void* args){
   int char_cnt = 0; // For limitation of the character
-  static struct termios	oldtio, newtio; // Using for Synchronous 
+  //static struct termios	oldtio, newtio; // Using for Synchronous 
 
-  //struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
+  struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
   string sender = arguments->senderID;
   nodelist* node_list = arguments->node_list;
   /*
