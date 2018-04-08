@@ -25,7 +25,8 @@ message* parser::messageParser(char* stream){
   string ID(tmpGithubID);
 
   int* tmpMsgLen = (int*)(stream+17+*tmpGithubIDLen);
-  char* tmpMsg = new char[*tmpMsgLen];
+  char* tmpMsg = new char[*tmpMsgLen+1];
+  bzero(tmpMsg, *tmpMsgLen+1);
   memcpy(tmpMsg,stream+21+*tmpGithubIDLen,*tmpMsgLen);
   string MSG(tmpMsg);
   temp = new message(MSG,ID,tmpOTK,tmpTstamp);
