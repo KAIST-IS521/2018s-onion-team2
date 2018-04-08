@@ -24,7 +24,7 @@ void parser::messageParser(char* stream, message* dest){
 
   int tmpGithubIDLen = util::byte2int(stream+13);
   char* tmpGithubID = new char[tmpGithubIDLen+1];
-  bzero(tmpGithubId,tmpGithubIDLen+1);
+  bzero(tmpGithubID,tmpGithubIDLen+1);
   memcpy(tmpGithubID,stream+17,tmpGithubIDLen);
   string ID(tmpGithubID);
   dest->setGithubID(ID);
