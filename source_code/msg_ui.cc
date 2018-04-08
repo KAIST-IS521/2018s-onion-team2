@@ -151,7 +151,7 @@ void msg_ui::sendWrapper(string message, nodelist* node_list, string to){
   tmd::tmdSender(send_args);
 }
 
-void msg_ui::refresh_messages(string ibuffer,string senderID){
+void msg_ui::refresh_messages(string senderID){
   fflush(stdout);
   system("clear"); // awful...
   msg_ui::getRecvToMessageQueue(senderID);
@@ -197,7 +197,7 @@ void* msg_ui::input_listener(void* args){
   newtio.c_lflag &= ~ECHO;
   tcsetattr(0, TCSANOW, &newtio);
 
-  msg_ui::refresh_messages(ibuffer,sender);
+  msg_ui::refresh_messages(sender);
   while(true){
     char ichar = getchar();
     string input_char (1,ichar);
@@ -222,7 +222,7 @@ void* msg_ui::input_listener(void* args){
       else{
         node* tmp = node_list->searchNode(receiver,0);
         if(tmp == NULL){
-          msg_ui::refresh_messages("",sender);
+          msg_ui::refresh_messages(sender);
           msgqueue->push_back("[!] No Receiever Setted.. use /to command");
           ibuffer.clear();
           continue;
@@ -239,7 +239,7 @@ void* msg_ui::input_listener(void* args){
     else{
       ibuffer.append(input_char);
     }
-    msg_ui::refresh_messages(ibuffer,sender);
+    msg_ui::refresh_messages(sender);
   }
 }
 

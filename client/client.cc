@@ -100,7 +100,7 @@ int main(int argc, char* const argv[]){
   char key;
 
 //  ui::printBanner();
-  ui::login();
+  user = ui::login();
   key = getchar();
 
   string message = "";
@@ -154,7 +154,7 @@ int main(int argc, char* const argv[]){
   node_list->appendNode(node5);
 
   // Set a dummy user info
-  user = userInfo("Donovan", "9932355F", util::getContainerIP(), passphrase);
+//  user = userInfo("Donovan", "9932355F", util::getContainerIP(), passphrase);
 
 
   // Create an argument setting for the listening thread
@@ -182,7 +182,7 @@ int main(int argc, char* const argv[]){
   pthread_t th_msg_ui;
   pthread_create(&th_msg_ui, NULL, msg_ui::input_listener, (void*)main_info);
   pthread_join(th_msg_ui,NULL);
-  //pthread_join(th_send, NULL);
+  pthread_join(th_listen, NULL);
 
   while(true){
     /*
