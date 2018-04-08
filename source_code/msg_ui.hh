@@ -32,7 +32,7 @@ namespace msg_ui{
   void moveCursorLoc(int Y);
   void sendWrapper(string message, nodelist* node_list, string to);
   void cmd_execute(string ibuffer, nodelist* node_list, string you);
-  void refresh_messages(string ibuffer,string sender);
+  void refresh_messages(string sender);
   void* input_listener(void* args);
 }
 #endif

@@ -1,5 +1,6 @@
 #include "transmission.hh"
 #include "parser.hh"
+#include "msg_ui.hh"
 
 // pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
@@ -37,6 +38,8 @@ void* tmd::tmdReceiver(void* args){
     //cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
     user.addMessage(msg);
     pthread_mutex_unlock(&m_user);
+    cout << user.getGithubID() << endl;
+    msg_ui::refresh_messages(user.getGithubID());
     //delete msg;
   } else if(stream[0] == '\x02'){
     node* new_node = parser::nodeParser(stream);
@@ -64,7 +67,7 @@ void* tmd::tmdReceiverMain(void* args){
 
 
   delete arguments;
-  pthread_detach(pthread_self());
+//  pthread_detach(pthread_self());
 
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
