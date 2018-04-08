@@ -36,29 +36,29 @@ void ui::clearScreen()
 void ui::printBanner(){
  // system("clear");
   cout << endl;
-  cout << setw(100) <<  " /$$     /$$                                     " << endl;
-  cout << setw(100) << "|  $$   /$$/                                     " << endl;
-  cout << setw(100) << " \\  $$ /$$//$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$ " << endl;
-  cout << setw(100) << "  \\  $$$$//$$__  $$| $$  | $$| $$__  $$ /$$__  $$" << endl;
-  cout << setw(100) << "   \\  $$/| $$  \\ $$| $$  | $$| $$  \\ $$| $$  \\ $$" << endl;
-  cout << setw(100) << "    | $$ | $$  | $$| $$  | $$| $$  | $$| $$  | $$" << endl;
-  cout << setw(100) << "    | $$ |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$" << endl;
-  cout << setw(100) << "    |__/  \\______/  \\______/ |__/  |__/ \\____  $$" << endl;
-  cout << setw(100) << "                                        /$$  \\ $$" << endl;
-  cout << setw(100) << "                                       |  $$$$$$/" << endl;
-  cout << setw(100) << "                                        \\______/ " << endl;
-  cout << setw(130) << " /$$      /$$ /$$$$$$$$                                                                     " << endl;
-  cout << setw(130) << "| $$$    /$$$| $$_____/                                                                     " << endl;
-  cout << setw(130) << "| $$$$  /$$$$| $$        /$$$$$$$ /$$$$$$$  /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ " << endl;
-  cout << setw(130) << "| $$ $$/$$ $$| $$$$$    /$$_____//$$_____/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$" << endl;
-  cout << setw(130) << "| $$  $$$| $$| $$__/   |  $$$$$$|  $$$$$$ | $$$$$$$$| $$  \\ $$| $$  \\ $$| $$$$$$$$| $$  \\__/" << endl;
-  cout << setw(130) << "| $$\\  $ | $$| $$       \\____  $$\\____  $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$      " << endl;
-  cout << setw(130) << "| $$ \\/  | $$| $$$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$      " << endl;
-  cout << setw(130) << "|__/     |__/|________/|_______/|_______/  \\_______/|__/  |__/ \\____  $$ \\_______/|__/      " << endl;
-  cout << setw(130) << "                                                               /$$  \\ $$                    " << endl;
-  cout << setw(130) << "                                                              |  $$$$$$/                    " << endl;
-  cout << setw(130) << "                                                               \\______/                     " << endl;
-  cout << setw(310) << "                                                                                     V 1.0   " << endl;
+  cout << setw(70) <<  " /$$     /$$                                     " << endl;
+  cout << setw(70) << "|  $$   /$$/                                     " << endl;
+  cout << setw(70) << " \\  $$ /$$//$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$ " << endl;
+  cout << setw(70) << "  \\  $$$$//$$__  $$| $$  | $$| $$__  $$ /$$__  $$" << endl;
+  cout << setw(70) << "   \\  $$/| $$  \\ $$| $$  | $$| $$  \\ $$| $$  \\ $$" << endl;
+  cout << setw(70) << "    | $$ | $$  | $$| $$  | $$| $$  | $$| $$  | $$" << endl;
+  cout << setw(70) << "    | $$ |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$" << endl;
+  cout << setw(70) << "    |__/  \\______/  \\______/ |__/  |__/ \\____  $$" << endl;
+  cout << setw(70) << "                                        /$$  \\ $$" << endl;
+  cout << setw(70) << "                                       |  $$$$$$/" << endl;
+  cout << setw(70) << "                                        \\______/ " << endl;
+  cout << setw(100) << " /$$      /$$ /$$$$$$$$                                                                     " << endl;
+  cout << setw(100) << "| $$$    /$$$| $$_____/                                                                     " << endl;
+  cout << setw(100) << "| $$$$  /$$$$| $$        /$$$$$$$ /$$$$$$$  /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ " << endl;
+  cout << setw(100) << "| $$ $$/$$ $$| $$$$$    /$$_____//$$_____/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$" << endl;
+  cout << setw(100) << "| $$  $$$| $$| $$__/   |  $$$$$$|  $$$$$$ | $$$$$$$$| $$  \\ $$| $$  \\ $$| $$$$$$$$| $$  \\__/" << endl;
+  cout << setw(100) << "| $$\\  $ | $$| $$       \\____  $$\\____  $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$      " << endl;
+  cout << setw(100) << "| $$ \\/  | $$| $$$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$      " << endl;
+  cout << setw(100) << "|__/     |__/|________/|_______/|_______/  \\_______/|__/  |__/ \\____  $$ \\_______/|__/      " << endl;
+  cout << setw(100) << "                                                               /$$  \\ $$                    " << endl;
+  cout << setw(100) << "                                                              |  $$$$$$/                    " << endl;
+  cout << setw(100) << "                                                               \\______/                     " << endl;
+  cout << setw(280) << "                                                                                     V 1.0   " << endl;
   cout << endl;
 }
 
@@ -72,7 +72,7 @@ userInfo ui::login(){
       ui::printBanner();
 
       cout << endl;
-      cout << setw(85) << "\x1b[32m >> Github ID : ";
+      cout << setw(50) << "\x1b[32m >> Github ID : ";
       GithubId = inputCheck();
 
 //      cout << "Github ID : " << GithubId << endl;
@@ -90,7 +90,7 @@ userInfo ui::login(){
         err_detect[0] = 0;
       }
 
-      cout << setw(89) << "\x1b[34m >> Public key ID : ";
+      cout << setw(54) << "\x1b[34m >> Public key ID : ";
       PubKeyID = inputCheck();
       // Test
       /*
@@ -103,7 +103,7 @@ userInfo ui::login(){
       }
       */
 
-      cout << setw(85) << "\x1b[35m >> Passphrases:";
+      cout << setw(50) << "\x1b[35m >> Passphrases:";
       Passphrase = getpass("");
 
       char *passOTK = new char[4];
@@ -122,6 +122,7 @@ userInfo ui::login(){
         cout << "\x1b[0m" << endl;
         break;
       }
+
       ui::clearScreen();
   }
 /*
@@ -132,6 +133,7 @@ userInfo ui::login(){
   }
 */
 
+  cout << setw(70) << "Login Confrim! PRESS ANY KEY..." << endl;
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }
 
@@ -149,9 +151,9 @@ string ui::inputCheck() {
         }
 */
         if( ichar == 0x7f || ichar == 8 && result_input.empty() == false ) {
-            cout << "\b";
+            cout << "\xb";
             cout << " ";
-            cout << "\b";
+            cout << "\xb";
             result_input.pop_back();
             continue;
         }
