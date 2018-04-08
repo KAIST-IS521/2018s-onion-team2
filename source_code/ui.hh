@@ -13,6 +13,7 @@ namespace ui{
   string getIPAddr();
   userInfo login();
   void clearScreen();
+  string inputCheck();
   void* userInput(void* args);
 }
 

@@ -58,6 +58,8 @@ void ui::printBanner(){
   cout << setw(130) << "                                                               /$$  \\ $$                    " << endl;
   cout << setw(130) << "                                                              |  $$$$$$/                    " << endl;
   cout << setw(130) << "                                                               \\______/                     " << endl;
+  cout << setw(310) << "                                                                                     V 1.0   " << endl;
+  cout << endl;
 }
 
 userInfo ui::login(){
@@ -71,15 +73,17 @@ userInfo ui::login(){
 
       cout << endl;
       cout << setw(85) << "\x1b[32m >> Github ID : ";
-      cin >> GithubId;
+      GithubId = inputCheck();
+
+      cout << "Github ID : " << GithubId << endl;
 
       if(GithubId.size() >= 40) {
         cout << "[!] Your Github ID is too long" << endl;
-        err = getchar();
+        err = cin.get();
         continue;
       }
-      else if (GithubId.size() < 1) {
-        cout << "[!] Must type this section";
+      else if (GithubId.size() < 2) {
+        cout << "[!] Must typing in this section";
         err = getchar();
         continue;
       } else {
@@ -87,7 +91,7 @@ userInfo ui::login(){
       }
 
       cout << setw(89) << "\x1b[34m >> Public key ID : ";
-      cin >> PubKeyID;
+      PubKeyID = inputCheck();
       // Test
       /*
       if( PubKeyID == "" || gpg::recvPubKey(&PubKeyID) == false) {
@@ -129,6 +133,41 @@ userInfo ui::login(){
 */
 
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
+}
+
+string ui::inputCheck() {
+    string result_input("");
+    
+    while(1) {
+        char ichar = cin.get();
+        string string_input ( 1, ichar );
+/*
+        if ( ichar == 27 ) {
+            ichar = cin.get();
+            ichar = cin.get();
+            continue;
+        }
+*/
+        if( ichar == 0x7f || ichar == 8 && result_input.empty() == false ) {
+            cout << "\b";
+            cout << " ";
+            cout << "\b";
+            result_input.pop_back();
+            continue;
+        }
+
+        cout << string_input;
+
+        if( ichar == '\x0a' ) {
+            return result_input;
+        }
+        else {
+            result_input.append( string_input );
+        }
+
+        fflush(stdout);
+    }
+    return NULL;
 }
 
 void* ui::userInput(void* args){
