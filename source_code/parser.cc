@@ -29,8 +29,10 @@ void parser::messageParser(char* stream, message* dest){
   dest->setGithubID(ID);
 
   int tmpMsgLen = util::byte2int(stream+17+tmpGithubIDLen);
-  char* tmpMsg = new char[tmpMsgLen];
-  memcpy(tmpMsg,stream+21+tmpGithubIDLen,tmpMsgLen);
+  char* tmpMsg = new char[tmpMsgLen+1];
+  bzero(tmpMsg, *tmpMsgLen+1);
+  memcpy(tmpMsg,stream+21+*tmpGithubIDLen,*tmpMsgLen);
+  
   string MSG(tmpMsg);
   dest->setContents(MSG);
   //dest = new message(MSG,ID,tmpOTK,tmpTstamp);
