@@ -1,6 +1,7 @@
 #ifndef __ui__
 #define __ui__
 #include "heartbeat.hh"
+#include <stdlib.h>
 #include <unistd.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>

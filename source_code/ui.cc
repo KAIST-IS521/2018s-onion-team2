@@ -1,6 +1,10 @@
 #include "ui.hh"
+#include "gpg.hh"
+#include <iomanip>
 
 using namespace std;
+
+//enum {BLACK, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHTGRAY, DARKGRAY, LIGHTBLUE, LIGHTGREEN, LIGHTCYAN, LIGHTRED, LIGHTMAGENTA, YELLOW, WHITE};
 
 // Original code for this function can be found on https://gist.github.com/wewearglasses/2521037
 string ui::getIPAddr(){
@@ -30,47 +34,99 @@ void ui::clearScreen()
 }
 
 void ui::printBanner(){
-  cout << " /$$     /$$                                     " << endl;
-  cout << "|  $$   /$$/                                     " << endl;
-  cout << " \\  $$ /$$//$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$ " << endl;
-  cout << "  \\  $$$$//$$__  $$| $$  | $$| $$__  $$ /$$__  $$" << endl;
-  cout << "   \\  $$/| $$  \\ $$| $$  | $$| $$  \\ $$| $$  \\ $$" << endl;
-  cout << "    | $$ | $$  | $$| $$  | $$| $$  | $$| $$  | $$" << endl;
-  cout << "    | $$ |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$" << endl;
-  cout << "    |__/  \\______/  \\______/ |__/  |__/ \\____  $$" << endl;
-  cout << "                                        /$$  \\ $$" << endl;
-  cout << "                                       |  $$$$$$/" << endl;
-  cout << "                                        \\______/ " << endl;
-  cout << " /$$      /$$ /$$$$$$$$                                                                     " << endl;
-  cout << "| $$$    /$$$| $$_____/                                                                     " << endl;
-  cout << "| $$$$  /$$$$| $$        /$$$$$$$ /$$$$$$$  /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ " << endl;
-  cout << "| $$ $$/$$ $$| $$$$$    /$$_____//$$_____/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$" << endl;
-  cout << "| $$  $$$| $$| $$__/   |  $$$$$$|  $$$$$$ | $$$$$$$$| $$  \\ $$| $$  \\ $$| $$$$$$$$| $$  \\__/" << endl;
-  cout << "| $$\\  $ | $$| $$       \\____  $$\\____  $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$      " << endl;
-  cout << "| $$ \\/  | $$| $$$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$      " << endl;
-  cout << "|__/     |__/|________/|_______/|_______/  \\_______/|__/  |__/ \\____  $$ \\_______/|__/      " << endl;
-  cout << "                                                               /$$  \\ $$                    " << endl;
-  cout << "                                                              |  $$$$$$/                    " << endl;
-  cout << "                                                               \\______/                     " << endl;
+ // system("clear");
+  cout << endl;
+  cout << setw(100) <<  " /$$     /$$                                     " << endl;
+  cout << setw(100) << "|  $$   /$$/                                     " << endl;
+  cout << setw(100) << " \\  $$ /$$//$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$ " << endl;
+  cout << setw(100) << "  \\  $$$$//$$__  $$| $$  | $$| $$__  $$ /$$__  $$" << endl;
+  cout << setw(100) << "   \\  $$/| $$  \\ $$| $$  | $$| $$  \\ $$| $$  \\ $$" << endl;
+  cout << setw(100) << "    | $$ | $$  | $$| $$  | $$| $$  | $$| $$  | $$" << endl;
+  cout << setw(100) << "    | $$ |  $$$$$$/|  $$$$$$/| $$  | $$|  $$$$$$$" << endl;
+  cout << setw(100) << "    |__/  \\______/  \\______/ |__/  |__/ \\____  $$" << endl;
+  cout << setw(100) << "                                        /$$  \\ $$" << endl;
+  cout << setw(100) << "                                       |  $$$$$$/" << endl;
+  cout << setw(100) << "                                        \\______/ " << endl;
+  cout << setw(130) << " /$$      /$$ /$$$$$$$$                                                                     " << endl;
+  cout << setw(130) << "| $$$    /$$$| $$_____/                                                                     " << endl;
+  cout << setw(130) << "| $$$$  /$$$$| $$        /$$$$$$$ /$$$$$$$  /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$ " << endl;
+  cout << setw(130) << "| $$ $$/$$ $$| $$$$$    /$$_____//$$_____/ /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$__  $$" << endl;
+  cout << setw(130) << "| $$  $$$| $$| $$__/   |  $$$$$$|  $$$$$$ | $$$$$$$$| $$  \\ $$| $$  \\ $$| $$$$$$$$| $$  \\__/" << endl;
+  cout << setw(130) << "| $$\\  $ | $$| $$       \\____  $$\\____  $$| $$_____/| $$  | $$| $$  | $$| $$_____/| $$      " << endl;
+  cout << setw(130) << "| $$ \\/  | $$| $$$$$$$$ /$$$$$$$//$$$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$      " << endl;
+  cout << setw(130) << "|__/     |__/|________/|_______/|_______/  \\_______/|__/  |__/ \\____  $$ \\_______/|__/      " << endl;
+  cout << setw(130) << "                                                               /$$  \\ $$                    " << endl;
+  cout << setw(130) << "                                                              |  $$$$$$/                    " << endl;
+  cout << setw(130) << "                                                               \\______/                     " << endl;
 }
 
 userInfo ui::login(){
   string GithubId, PubKeyID, IP, Passphrase;
-  ui::clearScreen();
-  ui::printBanner();
-  cout << "> Github ID: ";
-  cin >> GithubId;
-  cout << "> Public key ID: ";
-  cin >> PubKeyID;
-  Passphrase = getpass("> Passphrase: ");
+  while(1) {
+      int err_detect[3] = {1};
+      char err;
 
-  if(GithubId.length() > 40) {
-    cout << "[!] Your Github ID is too long";
+      ui::clearScreen();
+      ui::printBanner();
+
+      cout << endl;
+      cout << setw(85) << "\x1b[32m >> Github ID : ";
+      cin >> GithubId;
+
+      if(GithubId.size() >= 40) {
+        cout << "[!] Your Github ID is too long" << endl;
+        err = getchar();
+        continue;
+      }
+      else if (GithubId.size() < 1) {
+        cout << "[!] Must type this section";
+        err = getchar();
+        continue;
+      } else {
+        err_detect[0] = 0;
+      }
+
+      cout << setw(89) << "\x1b[34m >> Public key ID : ";
+      cin >> PubKeyID;
+      // Test
+      /*
+      if( PubKeyID == "" || gpg::recvPubKey(&PubKeyID) == false) {
+         cout << "[!] ERROR ";
+         continue;
+      }
+      else {
+         err_detect[1] = 0;
+      }
+      */
+
+      cout << setw(85) << "\x1b[35m >> Passphrases:";
+      Passphrase = getpass("");
+
+      char *passOTK = new char[4];
+      ifstream urand("/dev/urandom");
+      urand.read(passOTK, 4);
+      urand.close();
+      
+      if(Passphrase == "" && gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) != passOTK ) {
+        cout << "[!] ERROR Passpharase" << endl;
+        err_detect[2] = 1;
+      }
+
+      delete(passOTK);
+
+      if( (err_detect[0] + err_detect[1]) == 0 ) {
+        cout << "\x1b[0m" << endl;
+        break;
+      }
+      ui::clearScreen();
+  }
+/*
     exit(-1);
   } else if((IP = ui::getIPAddr()) == "") {
     cout << "[!] Error in retrieving the ip address";
     exit(-1);
   }
+*/
 
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }

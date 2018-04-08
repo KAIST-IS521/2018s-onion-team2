@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <cstring>
+#include <stdio.h>
 
 #include "../source_code/transmission.hh"
 #include "../source_code/util.hh"
@@ -10,6 +11,8 @@
 #include "../source_code/gpg.hh"
 #include "../source_code/nodelist.hh"
 #include "../source_code/msg_ui.hh"
+// Added by elmisty
+#include "../source_code/ui.hh"
 
 using namespace std;
 
@@ -94,10 +97,17 @@ void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_li
 
 int main(int argc, char* const argv[]){
   int opt;
+  char key;
+
+//  ui::printBanner();
+  ui::login();
+  key = getchar();
+
   string message = "";
   string pubKeyId = "";
   string passphrase = "";
   string to = "";
+
   /*
   while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
     switch(opt){
