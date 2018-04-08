@@ -5,6 +5,7 @@ using namespace std;
 list<string>* msgqueue = new list<string>();
 string ibuffer ("");
 string receiver ("");
+static struct termios oldtio;
 
 void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){//string path){
   list<string> ip_list;
@@ -50,7 +51,6 @@ void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist*
   string pubKeyId = node->getPubKeyID();
   stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
 
-  cout << "tmp_stream delete in"<< endl;
   delete tmp_stream;
   encMessage encMsg;
   for(list<string>::iterator it = ip_list.begin(); (++it)-- != ip_list.end(); it++){
@@ -69,7 +69,6 @@ void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist*
     pubKeyId = node->getPubKeyID();
     tmp_stream = stream;
     stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
-    cout << "tmp_stream delete in in loop"<< endl;
     delete tmp_stream;
 
   }
@@ -94,16 +93,43 @@ void msg_ui::moveCursorLoc(int Y){
  fflush(stdout);
 }
 
-void msg_ui::cmd_execute(string ibuffer){
+void msg_ui::cmd_execute(string ibuffer, nodelist* node_list, string you){
   if(ibuffer.compare("/exit")==0){
     cout << "BYE!" << endl;
     exit(0);
   }
+  else if(ibuffer.compare("/help") ==0){
+    msgqueue->push_back("[~] Command List");
+    msgqueue->push_back("[~]   /clear :: clear console");
+    msgqueue->push_back("[~]   /to [ID] :: message send to [ID]");
+    msgqueue->push_back("[~]   /list :: user list");
+    msgqueue->push_back("[~]   /exit :: exit program");
+  }
   else if(ibuffer.compare("/clear")==0){
     msgqueue->clear();
   }
-  else if((ibuffer.substr(4)).compare("/to ")){
+  else if(ibuffer.compare("/list")==0){
+    vector<string>* userIDList = node_list->getGithubIDList();
+    msgqueue->push_back("[~] UserList");
+    for (std::vector<string>::iterator it = userIDList->begin() ; it != userIDList->end(); ++it){
+      if(it->compare(you)==0){
+        msgqueue->push_back("[~]   "+*it+" (You)");
+      }
+      else{
+       msgqueue->push_back("[~]   "+*it);
+      }
+    }
+  }
+  else if(ibuffer.size()>5 and (ibuffer.substr(4)).compare("/to ")){
+    string tmp(receiver);
     receiver = ibuffer.substr(4,ibuffer.size()-4);
+    if(node_list->searchNode(receiver,0)==NULL){
+      msgqueue->push_back("[!] No User "+receiver+" in userlist. use /list");
+      receiver = tmp;
+    }
+  }
+  else{
+    msgqueue->push_back("[!] Wrong Command... use /help command");
   }
 }
 
@@ -113,7 +139,6 @@ void msg_ui::getRecvToMessageQueue(string you){
   
   while(!(tmp.getGithubID().size()==0)){
     string recvmsg(tmp.getGithubID()+" -> (YOU) "+you+" : "+tmp.getContents());
-    cout << recvmsg << endl;
     msgqueue->push_back(recvmsg);
     tmp = user.readMessage();
   }
@@ -137,10 +162,21 @@ void msg_ui::refresh_messages(string ibuffer,string senderID){
   cout << "[ "<< senderID <<" ]@YoungMEssenger>> (To. [ "<< receiver <<" ] ) :: "<< ibuffer; 
 }
 
+void atexit_handler(){
+  static struct termios oldtio, newtio;
+  tcgetattr(0, &oldtio);
+  std::atexit(atexit_handler);
+  newtio = oldtio;
+  newtio.c_lflag &= ICANON;
+  newtio.c_lflag &= ECHO;
+  tcsetattr(0, TCSANOW, &newtio);
+
+}
+
 // Edited by elmisty
 void* msg_ui::input_listener(void* args){
   int char_cnt = 0; // For limitation of the character
-  //static struct termios	oldtio, newtio; // Using for Synchronous 
+  static struct termios oldtio, newtio; // Using for Synchronous 
 
   struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
   string sender = arguments->senderID;
@@ -154,11 +190,12 @@ void* msg_ui::input_listener(void* args){
 
   */
 
-  //tcgetattr(0, &oldtio);
-  //newtio = oldtio;
-  //newtio.c_lflag &= ~ICANON; 
-  //newtio.c_lflag &= ~ECHO;
-  //tcsetattr(0, TCSANOW, &newtio);
+  tcgetattr(0, &oldtio);
+  std::atexit(atexit_handler);
+  newtio = oldtio;
+  newtio.c_lflag &= ~ICANON; 
+  newtio.c_lflag &= ~ECHO;
+  tcsetattr(0, TCSANOW, &newtio);
 
   msg_ui::refresh_messages(ibuffer,sender);
   while(true){
@@ -180,15 +217,17 @@ void* msg_ui::input_listener(void* args){
     cout << input_char << endl;
     if(ichar == '\x0a'){
       if (ibuffer.c_str()[0] == '\x2f'){
-        cmd_execute(ibuffer);
+        cmd_execute(ibuffer,node_list,sender);
       }
       else{
         node* tmp = node_list->searchNode(receiver,0);
         if(tmp == NULL){
-          cout << "No Receiever Setted.. use /to command" << endl;
+          msg_ui::refresh_messages("",sender);
+          msgqueue->push_back("[!] No Receiever Setted.. use /to command");
           ibuffer.clear();
           continue;
         }
+        else if(ibuffer.size() ==0) { } // pass
         else{
           string sendmsg(sender + " (YOU) -> "+receiver+" : "+ibuffer);
           msg_ui::sendWrapper(ibuffer, node_list, receiver);

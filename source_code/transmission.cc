@@ -27,7 +27,7 @@ void* tmd::tmdReceiver(void* args){
     pthread_t th_forward;
     pthread_create(&th_forward, NULL, tmd::tmdSender, (void*)msg_argument);
 
-    cout << "Forwarding packets to " + msg->getNextIP() << endl;
+    //cout << "Forwarding packets to " + msg->getNextIP() << endl;
     delete msg;
   } else if(stream[0] == '\x01') {
     message msg;
@@ -203,7 +203,7 @@ void* tmd::tmdSender(void* args){
   write(cfd, data, length);
   close(cfd);
 
-  cout << "Message sent" << endl;
+  //cout << "Message sent" << endl;
 
   delete data;
 
