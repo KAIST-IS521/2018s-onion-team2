@@ -75,7 +75,7 @@ userInfo ui::login(){
       cout << setw(85) << "\x1b[32m >> Github ID : ";
       GithubId = inputCheck();
 
-      cout << "Github ID : " << GithubId << endl;
+//      cout << "Github ID : " << GithubId << endl;
 
       if(GithubId.size() >= 40) {
         cout << "[!] Your Github ID is too long" << endl;
@@ -156,7 +156,7 @@ string ui::inputCheck() {
             continue;
         }
 
-        cout << string_input;
+//        cout << string_input;
 
         if( ichar == '\x0a' ) {
             return result_input;
