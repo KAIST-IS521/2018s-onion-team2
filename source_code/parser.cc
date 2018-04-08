@@ -23,8 +23,8 @@ void parser::messageParser(char* stream, message* dest){
   dest->setTimestamp(tmpTstamp);
 
   int tmpGithubIDLen = util::byte2int(stream+13);
-  char* tmpGithubID = new char[tmpGithubIDLen+1];
-  bzero(tmpGithubID,tmpGithubIDLen+1);
+  char* tmpGithubID = new char[tmpGithubIDLen];
+  //bzero(tmpGithubID,tmpGithubIDLen+1);
   memcpy(tmpGithubID,stream+17,tmpGithubIDLen);
   string ID(tmpGithubID);
   dest->setGithubID(ID);
@@ -116,8 +116,8 @@ encMessage* parser::encMessageParser(char* stream){
   delete tmpIP;
 
   int enc_data_length = util::byte2int(stream+5);
-  char* enc_data_char = new char[enc_data_length+1];
-  bzero(enc_data_char,enc_data_length+1);
+  char* enc_data_char = new char[enc_data_length];
+  //bzero(enc_data_char,enc_data_length+1);
   memcpy(enc_data_char, stream+9, enc_data_length);
   string tmp_str(enc_data_char);
   if (!temp->setEncData(tmp_str)){
