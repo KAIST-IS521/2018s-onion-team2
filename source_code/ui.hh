@@ -11,7 +11,7 @@
 namespace ui{
   void printBanner();
   string getIPAddr();
-  userInfo login();
+  userInfo login(nodelist* node_list);
   void clearScreen();
   string inputCheck();
   void* userInput(void* args);

@@ -18,126 +18,16 @@ using namespace std;
 
 void printHelp(char* const argv[]){
   cout << "Usage: " + string(argv[0]) + " [-p PASSPHRASE] [-m MESSAGE -r RECEIVER ID]" << endl;
-  //cout << "Using ':' as a delimiter, routing path should be specified with ip addresses" << endl;
-  //cout << "Do not include  sender's ip address in the routing path" << endl;
   exit(0);
 }
 
-/*
-// Set dummy arguments
-void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){//string path){
-  list<string> ip_list;
-
-  string senderIP = util::getContainerIP(); // get ip code needs
-  cout << senderIP << endl;
-  string receiverIP = (node_list->searchNode(recvID, 0))->getIP();
-  int middle_nodes = 3; // changeable
-
-  while(true){
-    string tmp((node_list->getRandomNode())->getIP());
-    if((ip_list.size()==0 && senderIP.compare(tmp)==0) or (ip_list.size()==middle_nodes-1 && receiverIP.compare(tmp)==0)){
-      continue;
-    }
-    if(ip_list.size()!=0 && (ip_list.begin())->compare(tmp)==0){
-      continue;
-    }
-    ip_list.push_front(tmp);
-    if(ip_list.size() == middle_nodes){
-      break;
-    }
-  }
-  ip_list.push_front(receiverIP);
-
-  // For the final client
-  send_args->IP = ip_list.back();
-
-  message _msg;
-  _msg.setContents(msg);
-  _msg.setGithubID("Donovan");
-  _msg.setOneTimeKey();
-  _msg.setTimestamp(timestamp::getTimestampNow());
-
-  // Convert the message into a protocol
-  int stream_len = parser::getMessagePackLen(&_msg);
-  char* stream = new char[stream_len];
-  char* tmp_stream = stream;
-  parser::packMessage(stream, &_msg, ip_list.front());
-
-  // Encrypting the message
-  node* node = node_list->searchNode(ip_list.front(), 1);
-  string pubKeyId = node->getPubKeyID();
-  stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
-  delete tmp_stream;
-
-  encMessage encMsg;
-  for(list<string>::iterator it = ip_list.begin(); (++it)-- != ip_list.end(); it++){
-    // For clients in the routing path excluding the final clients
-    encMsg.setNextIP(*it);
-    encMsg.setEncData(stream);
-    delete stream;
-
-    // Convert the message into a protocol
-    stream_len = parser::getEncMessagePackLen(&encMsg);
-    stream = new char[stream_len];
-    parser::packEncMessage(stream, &encMsg);
-
-    // Encrypting the message
-    node = node_list->searchNode(*((++it)--), 1);
-    pubKeyId = node->getPubKeyID();
-    tmp_stream = stream;
-    stream = gpg::encBytestream(stream, &pubKeyId, stream_len);
-    delete tmp_stream;
-  }
-  
-  send_args->length = string(stream).length();
-  send_args->data = new char[send_args->length];
-  memcpy(send_args->data, stream, send_args->length);
-  delete stream;
-}*/
 
 int main(int argc, char* const argv[]){
   int opt;
   char key;
-
-//  ui::printBanner();
-  user = ui::login();
-  key = getchar();
-
-  string message = "";
   string pubKeyId = "";
   string passphrase = "";
   string to = "";
-
-  /*
-  while((opt = getopt(argc, argv, "p:m:r:h")) != -1){
-    switch(opt){
-      case 'm':
-        // Set a message
-        message = optarg;
-        break;
-      case 'p':
-        // Set a passphrase
-        passphrase = optarg;
-        break;
-      case 'r':
-        to = optarg;
-        break;
-      case 'h':
-        // Print help message
-        printHelp(argv);
-        break;
-    }
-  }
-*/
-
-//  if(!(message != "" && to != "") && !(passphrase != "")){
-    /* 
-        Receiver should specify passphrase
-        Sender should specify message, path
-    */
-    //printHelp(argv);
-  //  return 1;
-//  }
 
   nodelist* node_list = new nodelist();
 
@@ -153,8 +43,7 @@ int main(int argc, char* const argv[]){
   node_list->appendNode(node4);
   node_list->appendNode(node5);
 
-  // Set a dummy user info
-//  user = userInfo("Donovan", "9932355F", util::getContainerIP(), passphrase);
+  user = ui::login(node_list);
 
 
   // Create an argument setting for the listening thread
@@ -164,17 +53,7 @@ int main(int argc, char* const argv[]){
   // Create a thread for the listening
   pthread_t th_listen;
   pthread_create(&th_listen, NULL, tmd::tmdReceiverMain, (void*)listen_args);
-  // pthread_join(th_listen, NULL); /* This thread is detached */
   
-  // Create an argument seting for the sending thread
-  /*
-  struct tmd::arg_data* send_args  = new struct tmd::arg_data();
-  setDummyArgs(send_args, message, node_list, to);
-  */
-  // Create a thread for the listening
-  //pthread_t th_send;
-  //pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
-
   struct msg_ui::arg_info* main_info= new struct msg_ui::arg_info();
   main_info->senderID = user.getGithubID();
   main_info->node_list=node_list;
