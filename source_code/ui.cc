@@ -84,7 +84,7 @@ userInfo ui::login(nodelist* node_list){
         err = getchar();
         continue;
       }
-      else if (node_list->searchNode(GithubId,0) == NULL){
+      else if ((node_list->searchNode(GithubId,0) == NULL) || (node_list->searchNode(util::getContainerIP(),1) != node_list->searchNode(GithubId,0))){
         cout << "[!] No Registed User";
         err = getchar();
         continue;
