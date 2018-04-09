@@ -1,6 +1,8 @@
 #include "transmission.hh"
 #include "parser.hh"
 #include "msg_ui.hh"
+#include <sys/types.h>
+#include <signal.h>
 
 
 // tmd::tmdReceiver
@@ -56,7 +58,7 @@ void* tmd::tmdReceiverMain(void* args){
 
   delete arguments;
   pthread_detach(pthread_self());
-  
+
   try{
     if ((sockFd = socket(AF_INET, type, protocol)) < 0)
       throw "socket() failed.";
@@ -89,7 +91,7 @@ void* tmd::tmdReceiverMain(void* args){
     cout << string(e) << endl;
     cout << "Terminating the program ..." << endl;
     close(sockFd);
-    exit(2);
+    kill(getpid(), -9);
   }
 
   return NULL;
@@ -149,7 +151,7 @@ void* tmd::tmdSender(void* args){
     cout << "Unreachable: " + string(e) << endl;
     cout << "Terminating the program ..." << endl;
     close(cfd);
-    exit(2);
+    kill(getpid(), -9);
   }
 
   write(cfd, data, length);
