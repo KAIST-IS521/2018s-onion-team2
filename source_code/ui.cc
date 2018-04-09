@@ -105,20 +105,24 @@ userInfo ui::login(){
 
       cout << setw(50) << "\x1b[35m >> Passphrases:";
       Passphrase = getpass("");
-
+      
       char *passOTK = new char[4];
       ifstream urand("/dev/urandom");
       urand.read(passOTK, 4);
       urand.close();
       cout << gpg::encBytestream(passOTK, &PubKeyID, 4) << endl;
       cout << gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) << endl;
-      
-      if(Passphrase == "" || gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) != passOTK ) {
+      try{ 
+      if(Passphrase.compare("")==0 || strncmp(gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase),passOTK,4) ) {
         cout << "[!] ERROR Passpharase" << endl;
         err_detect[2] = 1;
       }
       else{
         err_detect[2] = 0;
+      }
+      }
+      catch(int exception){
+        continue;
       }
 
       delete(passOTK);
