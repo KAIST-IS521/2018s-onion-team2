@@ -7,12 +7,12 @@ string ibuffer ("");
 string receiver ("");
 static struct termios oldtio;
 
-void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){//string path){
+void msg_ui::setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID){
   list<string> ip_list;
 
-  string senderIP = user.getIP(); // get ip code needs
+  string senderIP = user.getIP();
   string receiverIP = (node_list->searchNode(recvID, 0))->getIP();
-  int middle_nodes = 3; // changeable
+  int middle_nodes = 3;
 
 
   while(true){
