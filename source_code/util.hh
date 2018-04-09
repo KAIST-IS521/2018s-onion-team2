@@ -13,14 +13,22 @@
 #define SERVER_ADDR "0.0.0.0"
 
 #include "userInfo.hh"
-#include "nodelist.hh"
+
 #include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string>
 #include <pthread.h>
-// #include <list>
+
+#include <cassert>
+#include <cstring>
+#include <cerrno>
+#include <unistd.h>
+#include <net/if.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+
 using namespace std;
 
 extern nodelist node_list;
@@ -35,10 +43,10 @@ namespace util{
     char byte[INT_SIZE];
   };
 
+  string getContainerIP();
+
   void int2byte(int integer, char* byte);
   int byte2int(char* integer);
-  // void time_t2byte(time_t t, char* byte);
-  // time_t byte2time_t(char* t);
   void ip2byte(string IP, unsigned char* byte);
   string byte2ip(unsigned char* byte);
 }

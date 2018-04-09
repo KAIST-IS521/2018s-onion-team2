@@ -1,6 +1,6 @@
 #include "nodelist.hh"
-#include "ui.hh"
 #include "util.hh"
+#include "ui.hh"
 
 using namespace std;
 
@@ -115,7 +115,6 @@ node* nodelist::getRandomNode(){
   std::srand(rand_seed);
   size_t list_size = this->_nodelist->size();
   int rndInt = rand()/(RAND_MAX/list_size+1);
-  cout << rndInt << endl;
   std::list<node*>::iterator pick;
   for(pick = this->_nodelist->begin();pick!=this->_nodelist->end() and rndInt!=0;pick++){
     rndInt--;
@@ -129,18 +128,6 @@ node* nodelist::getRandomNode(){
 bool nodelist::appendNode(node* append_node){
   try{
     this->_nodelist->push_back(append_node);
-    pthread_mutex_lock(&m_user);
-    int mode = user.getMode();
-    pthread_mutex_unlock(&m_user);
-    
-    if(mode == IDLE){
-      ui::clearScreen();
-      vector<string>* id_list = this->getGithubIDList();
-      int idx = 1;
-      for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it){
-        cout << "User " + to_string(idx++) + ": " + *it << endl;
-      }
-    }
   }
   catch(int exception){
     return false;

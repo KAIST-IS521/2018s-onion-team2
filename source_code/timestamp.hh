@@ -9,7 +9,6 @@ using namespace std;
 namespace timestamp{
   
   time_t getTimestampNow();
-  string timestamp2str(time_t timestamp);
   char* timestamp2byte(time_t timestamp);
   time_t byte2timestamp(char* timestamp);
   
