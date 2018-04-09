@@ -79,7 +79,7 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
         count += 1;
     }
     else{
-  plain[i] = src[i];
+  plain[i+count] = src[i];
     }
   }
   string base64_dst("");
