@@ -202,6 +202,7 @@ clinet name list -
 ** 5개의 클라이언트가 모두 실행되어야 정상적인 테스트가 가능합니다. **
 
 ##  테스트 계정 정보
+
 - 안타깝게도, Prototype2 버전이기 때문에, 주어진 계정에서만 작동이 가능합니다. 계정 및 서버 정보는 다음과 같습니다.
 
 | IP        | ID      | PubkeyID  | PW       |
@@ -212,6 +213,10 @@ clinet name list -
 | 172.20.0.5| Stanton | BBB8EA0C  | 1q2w3e!@ |
 | 172.20.0.6| jason   | BC1B3Bc4  | qwer1234 |
 
+## 원인을 확인하지 못한 버그 정보
+
+- Login 화면 Backspace visualize 관련 문제 : Login 화면에서 Backspace는 작동하지 않는 것 처럼 보이지만 실제로는 작동을 하고 있으니 안심하고 쓰셔도 됩니다.  
+- 메세지 수신시 Chat Console 사라짐 문제 : 송신시 Chat Console이 아래로 한칸 내려가면서 화면에서 사라집니다. Enter 한번 누르시면 복구되며, 복구하지 않은체 사용하셔도 작동 합니다.  
 
 ## Team Member 
 -----
