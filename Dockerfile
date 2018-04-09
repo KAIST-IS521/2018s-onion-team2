@@ -12,5 +12,5 @@ RUN git clone https://github.com/KAIST-IS521/2018s-onion-team2.git
 
 WORKDIR /root/2018s-onion-team2/client
 
-RUN make
+RUN git pull && make
 
