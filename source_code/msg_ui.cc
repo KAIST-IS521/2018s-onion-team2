@@ -138,7 +138,7 @@ void msg_ui::getRecvToMessageQueue(string you){
   message tmp = user.readMessage();
   
   while(!(tmp.getGithubID().size()==0)){
-    string recvmsg(tmp.getGithubID()+" -> (YOU) "+you+" : "+tmp.getContents());
+    string recvmsg(tmp.getGithubID()+" -> "+you+" (YOU) : "+tmp.getContents());
     msgqueue->push_back(recvmsg);
     tmp = user.readMessage();
   }
