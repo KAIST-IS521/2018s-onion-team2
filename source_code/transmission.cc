@@ -67,7 +67,7 @@ void* tmd::tmdReceiverMain(void* args){
 
 
   delete arguments;
-//  pthread_detach(pthread_self());
+  pthread_detach(pthread_self());
 
   if ((sockFd = socket(AF_INET, type, protocol)) < 0)
     throw "socket() failed.";
@@ -175,7 +175,7 @@ void* tmd::tmdSender(void* args){
   delete arguments->data;
   delete arguments;
 
-  // pthread_detach(pthread_self());
+  pthread_detach(pthread_self());
   try{
     if ((cfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
       delete data;

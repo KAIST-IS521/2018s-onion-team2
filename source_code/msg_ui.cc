@@ -96,6 +96,7 @@ void msg_ui::moveCursorLoc(int Y){
 void msg_ui::cmd_execute(string ibuffer, nodelist* node_list, string you){
   if(ibuffer.compare("/exit")==0){
     cout << "BYE!" << endl;
+    delete msgqueue;
     exit(0);
   }
   else if(ibuffer.compare("/help") ==0){
@@ -148,7 +149,8 @@ void msg_ui::getRecvToMessageQueue(string you){
 void msg_ui::sendWrapper(string message, nodelist* node_list, string to){
   struct tmd::arg_data* send_args  = new struct tmd::arg_data();
   msg_ui::setDummyArgs(send_args, message, node_list, to);
-  tmd::tmdSender(send_args);
+  pthread_t th_send;
+  pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
 }
 
 void msg_ui::refresh_messages(string senderID){
@@ -165,31 +167,18 @@ void msg_ui::refresh_messages(string senderID){
 void atexit_handler(){
   static struct termios oldtio, newtio;
   tcgetattr(0, &oldtio);
-  std::atexit(atexit_handler);
   newtio = oldtio;
-  newtio.c_lflag &= ICANON;
-  newtio.c_lflag &= ECHO;
+  newtio.c_lflag |= ICANON;
+  newtio.c_lflag |= ECHO;
   tcsetattr(0, TCSANOW, &newtio);
 
 }
 
 // Edited by elmisty
-void* msg_ui::input_listener(void* args){
+void msg_ui::input_listener(string senderID, nodelist* node_list){
   int char_cnt = 0; // For limitation of the character
   static struct termios oldtio, newtio; // Using for Synchronous 
-
-  struct msg_ui::arg_info* arguments = (struct msg_ui::arg_info*) args;
-  string sender = arguments->senderID;
-  nodelist* node_list = arguments->node_list;
-  /*
-  list<string>* msg_ui::msgqueue
-  struct arg_data{
-    string senderID;
-    nodelist* node_list;
-  }
-
-  */
-
+ 
   tcgetattr(0, &oldtio);
   std::atexit(atexit_handler);
   newtio = oldtio;
@@ -197,7 +186,7 @@ void* msg_ui::input_listener(void* args){
   newtio.c_lflag &= ~ECHO;
   tcsetattr(0, TCSANOW, &newtio);
 
-  msg_ui::refresh_messages(sender);
+  msg_ui::refresh_messages(senderID);
   while(true){
     fflush(stdin);
     char ichar = getchar();
@@ -218,19 +207,19 @@ void* msg_ui::input_listener(void* args){
     cout << input_char << endl;
     if(ichar == '\x0a'){
       if (ibuffer.c_str()[0] == '\x2f'){
-        cmd_execute(ibuffer,node_list,sender);
+        cmd_execute(ibuffer,node_list,senderID);
       }
       else{
         node* tmp = node_list->searchNode(receiver,0);
         if(ibuffer.size() ==0) { } // pass
         else if(tmp == NULL){
-          msg_ui::refresh_messages(sender);
+          msg_ui::refresh_messages(senderID);
           msgqueue->push_back("[!] No Receiever Setted.. use /to command");
           ibuffer.clear();
           continue;
         }
         else{
-          string sendmsg(sender + " (YOU) -> "+receiver+" : "+ibuffer);
+          string sendmsg(senderID + " (YOU) -> "+receiver+" : "+ibuffer);
           msg_ui::sendWrapper(ibuffer, node_list, receiver);
           msgqueue->push_back(sendmsg);
         }
@@ -240,7 +229,7 @@ void* msg_ui::input_listener(void* args){
     else{
       ibuffer.append(input_char);
     }
-    msg_ui::refresh_messages(sender);
+    msg_ui::refresh_messages(senderID);
   }
 }
 

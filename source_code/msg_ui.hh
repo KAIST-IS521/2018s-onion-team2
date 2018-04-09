@@ -16,14 +16,7 @@
  
 using namespace std;
 
-
 namespace msg_ui{
-
-  struct arg_info{
-    string senderID;
-    nodelist* node_list;
-  };
-
   void getRecvToMessageQueue(string you);
 
   void setDummyArgs(struct tmd::arg_data* send_args, string msg, nodelist* node_list, string recvID);
@@ -33,6 +26,6 @@ namespace msg_ui{
   void sendWrapper(string message, nodelist* node_list, string to);
   void cmd_execute(string ibuffer, nodelist* node_list, string you);
   void refresh_messages(string sender);
-  void* input_listener(void* args);
+  void input_listener(string senderID, nodelist* node_list);
 }
 #endif

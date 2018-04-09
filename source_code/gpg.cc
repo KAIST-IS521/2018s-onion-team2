@@ -62,18 +62,19 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
     return NULL;
   }
   int count = 0;
+/*
   char* plain;
-
+  
   // checking src (prevent cmd injection)
   for(int i=0;i<length;i++){
-    if(src[i]=='\x22' and (i>0 and src[i-1]!='\x5c')){
+    if(src[i]=='\x22' && (i>0 && src[i-1]!='\x5c')){
       count++;
     }
   }
-  plain = new char[length+count];
+  plain = new char[length+count+1];
   count = 0;
   for(int i=0;i<length;i++){
-    if(src[i]=='\x22' and (i>0 and src[i-1]!='\x5c')){
+    if(src[i]=='\x22' && (i>0 && src[i-1]!='\x5c')){
   plain[i+count] = '\x5c';
   plain[i+count+1] = '\x22';
         count += 1;
@@ -82,8 +83,9 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
   plain[i+count] = src[i];
     }
   }
+*/
   string base64_dst("");
-  b64_encode(plain,&base64_dst, length+count);
+  b64_encode(src,&base64_dst, length+count);
   string full_cmd(prefix_cmd+base64_dst+middle_cmd+*PubKeyID+suffix_cmd);
   char* buf = new char[1024];
   FILE* pp = popen(full_cmd.c_str(),"r");

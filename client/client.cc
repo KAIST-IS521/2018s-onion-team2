@@ -45,7 +45,6 @@ int main(int argc, char* const argv[]){
 
   user = ui::login(node_list);
 
-
   // Create an argument setting for the listening thread
   struct tmd::arg_main* listen_args = new struct tmd::arg_main();
   tmd::msg_args(listen_args,user.getGithubID());
@@ -54,24 +53,7 @@ int main(int argc, char* const argv[]){
   pthread_t th_listen;
   pthread_create(&th_listen, NULL, tmd::tmdReceiverMain, (void*)listen_args);
   
-  struct msg_ui::arg_info* main_info= new struct msg_ui::arg_info();
-  main_info->senderID = user.getGithubID();
-  main_info->node_list=node_list;
-
-  pthread_t th_msg_ui;
-  pthread_create(&th_msg_ui, NULL, msg_ui::input_listener, (void*)main_info);
-  pthread_join(th_msg_ui,NULL);
-  pthread_join(th_listen, NULL);
-
-  while(true){
-    /*
-      This is a dummy inifinite loop
-      to prevent other threads from being terminated
-      due to termination of the main thread.
-
-      This loop can be replaced to get user inputs from stdin.
-    */
-  }
+  msg_ui::input_listener(user.getGithubID(), node_list);
 
   delete node1;
   delete node2;
