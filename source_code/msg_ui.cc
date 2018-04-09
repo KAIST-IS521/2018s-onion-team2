@@ -199,6 +199,7 @@ void* msg_ui::input_listener(void* args){
 
   msg_ui::refresh_messages(sender);
   while(true){
+    fflush(stdin);
     char ichar = getchar();
     string input_char (1,ichar);
     char_cnt++;
@@ -221,13 +222,13 @@ void* msg_ui::input_listener(void* args){
       }
       else{
         node* tmp = node_list->searchNode(receiver,0);
-        if(tmp == NULL){
+        if(ibuffer.size() ==0) { } // pass
+        else if(tmp == NULL){
           msg_ui::refresh_messages(sender);
           msgqueue->push_back("[!] No Receiever Setted.. use /to command");
           ibuffer.clear();
           continue;
         }
-        else if(ibuffer.size() ==0) { } // pass
         else{
           string sendmsg(sender + " (YOU) -> "+receiver+" : "+ibuffer);
           msg_ui::sendWrapper(ibuffer, node_list, receiver);
