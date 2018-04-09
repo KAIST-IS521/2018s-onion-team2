@@ -128,17 +128,6 @@ node* nodelist::getRandomNode(){
 bool nodelist::appendNode(node* append_node){
   try{
     this->_nodelist->push_back(append_node);
-    pthread_mutex_lock(&m_user);
-    int mode = user.getMode();
-    pthread_mutex_unlock(&m_user);
-    
-    if(mode == IDLE){
-      ui::clearScreen();
-      vector<string>* id_list = this->getGithubIDList();
-      int idx = 1;
-      for(std::vector<string>::iterator it = id_list->begin() ; it != id_list->end(); ++it){
-      }
-    }
   }
   catch(int exception){
     return false;

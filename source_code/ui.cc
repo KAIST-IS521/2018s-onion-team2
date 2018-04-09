@@ -1,5 +1,6 @@
 #include "ui.hh"
 #include "gpg.hh"
+#include "util.hh"
 #include <iomanip>
 
 using namespace std;

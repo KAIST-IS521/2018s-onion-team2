@@ -34,13 +34,7 @@ void* tmd::tmdReceiver(void* args){
     pthread_mutex_lock(&m_user);
     user.addMessage(msg);
     pthread_mutex_unlock(&m_user);
-    cout << user.getGithubID() << endl;
     msg_ui::refresh_messages(user.getGithubID());
-  } else if(stream[0] == '\x02'){
-    node* new_node = parser::nodeParser(stream);
-    pthread_mutex_lock(&m_node_list);
-    node_list.appendNode(new_node);
-    pthread_mutex_unlock(&m_node_list);
   }
   delete stream;
   close(recvFd);
@@ -87,20 +81,6 @@ void* tmd::tmdReceiverMain(void* args){
       }
       h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
       arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      pthread_t tid;
-      pthread_create(&tid, NULL, func, (void *)arg_recv);
-    }
-  } else {
-    while(1){
-      caddrlen = sizeof(caddr);
-      arg_recv = new struct tmd::arg_receiver();
-      if ((n = recvfrom(sockFd, arg_recv->buf, HB_LEN, 0, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
-        delete arg_recv;
-        continue;
-      }
-      h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
-      arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      arg_recv->you = you;
       pthread_t tid;
       pthread_create(&tid, NULL, func, (void *)arg_recv);
     }

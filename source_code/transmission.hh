@@ -27,7 +27,6 @@ namespace tmd{
     int recvFd;
     string IP;
     string you;
-    char buf[HB_LEN];
   };
 
   struct arg_data {
@@ -40,7 +39,6 @@ namespace tmd{
   void* tmdReceiverMain(void* args);
   void msg_args(struct arg_main* arguments,string hostid);
   void data_args(string IP, char* data, struct arg_data* list_update_arguments);
-  list<node*> tmdPathSelecter();
   void* tmdSender(void* args);
 };
 

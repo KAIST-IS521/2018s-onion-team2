@@ -1,5 +1,4 @@
 #include "parser.hh"
-#include "heartbeat.hh"
 using namespace std;
 
 // parser::messageParser

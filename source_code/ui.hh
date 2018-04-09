@@ -1,6 +1,6 @@
 #ifndef __ui__
 #define __ui__
-#include "heartbeat.hh"
+#include "userInfo.hh"
 #include <stdlib.h>
 #include <unistd.h>
 #include <ifaddrs.h>
@@ -10,7 +10,6 @@
 
 namespace ui{
   void printBanner();
-  string getIPAddr();
   userInfo login(nodelist* node_list);
   void clearScreen();
   string inputCheck();

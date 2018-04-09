@@ -4,21 +4,12 @@ using namespace std;
 userInfo::userInfo(string GithubID, string PubKeyID, string IP, string Passphrase)
 :node(GithubID, PubKeyID, IP) {
   this->Passphrase = Passphrase;
-  this->mode = IDLE;
 }
 
 userInfo::userInfo():node(){}
 
 string userInfo::getPassphrase(){
   return this->Passphrase;
-}
-
-void userInfo::setMode(int mode){
-  this->mode = mode;
-}
-
-int userInfo::getMode(){
-  return this->mode;
 }
 
 void userInfo::addMessage(message msg){
@@ -34,4 +25,3 @@ message userInfo::readMessage(){
   message tmp;
   return tmp;
 }
-
