@@ -42,23 +42,22 @@ void* tmd::tmdReceiver(void* args){
 }
 
 void* tmd::tmdReceiverMain(void* args){
+  int n, sockFd, caddrlen, recvFd;
+  struct sockaddr_in saddr, caddr;
+  struct tmd::arg_receiver* arg_recv;
+  struct hostent *h;
+
+  struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
+  int port = arguments->port;
+  int protocol = arguments->protocol;
+  int type = arguments->type;
+  string you = arguments->you;
+  void*(*func)(void*) = arguments->func;
+
+  delete arguments;
+  pthread_detach(pthread_self());
+  
   try{
-    int n, sockFd, caddrlen, recvFd;
-    struct sockaddr_in saddr, caddr;
-    struct tmd::arg_receiver* arg_recv;
-    struct hostent *h;
-
-    struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
-    int port = arguments->port;
-    int protocol = arguments->protocol;
-    int type = arguments->type;
-    string you = arguments->you;
-    void*(*func)(void*) = arguments->func;
-
-
-    delete arguments;
-    pthread_detach(pthread_self());
-
     if ((sockFd = socket(AF_INET, type, protocol)) < 0)
       throw "socket() failed.";
 
