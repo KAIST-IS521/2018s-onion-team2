@@ -121,7 +121,7 @@ void msg_ui::cmd_execute(string ibuffer, nodelist* node_list, string you){
       }
     }
   }
-  else if(ibuffer.size()>5 and (ibuffer.substr(4)).compare("/to ")==0){
+  else if(ibuffer.size()>5 and ibuffer.compare(0,4,"/to ")==0){
     string tmp(receiver);
     receiver = ibuffer.substr(4,ibuffer.size()-4);
     if(node_list->searchNode(receiver,0)==NULL){
