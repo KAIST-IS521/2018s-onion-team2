@@ -42,48 +42,55 @@ void* tmd::tmdReceiver(void* args){
 }
 
 void* tmd::tmdReceiverMain(void* args){
-  int n, sockFd, caddrlen, recvFd;
-  struct sockaddr_in saddr, caddr;
-  struct tmd::arg_receiver* arg_recv;
-  struct hostent *h;
+  try{
+    int n, sockFd, caddrlen, recvFd;
+    struct sockaddr_in saddr, caddr;
+    struct tmd::arg_receiver* arg_recv;
+    struct hostent *h;
 
-  struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
-  int port = arguments->port;
-  int protocol = arguments->protocol;
-  int type = arguments->type;
-  string you = arguments->you;
-  void*(*func)(void*) = arguments->func;
+    struct tmd::arg_main* arguments = (struct tmd::arg_main*)args;
+    int port = arguments->port;
+    int protocol = arguments->protocol;
+    int type = arguments->type;
+    string you = arguments->you;
+    void*(*func)(void*) = arguments->func;
 
 
-  delete arguments;
-  pthread_detach(pthread_self());
+    delete arguments;
+    pthread_detach(pthread_self());
 
-  if ((sockFd = socket(AF_INET, type, protocol)) < 0)
-    throw "socket() failed.";
+    if ((sockFd = socket(AF_INET, type, protocol)) < 0)
+      throw "socket() failed.";
 
-  bzero((char *)&saddr, sizeof(saddr));
-  saddr.sin_family = AF_INET;
-  saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  saddr.sin_port = htons(port);
-  
-  if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
-    throw "bind() failed.";
+    bzero((char *)&saddr, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    saddr.sin_port = htons(port);
+    
+    if (bind(sockFd, (struct sockaddr *)&saddr, sizeof(saddr)) < 0)
+      throw "bind() failed.";
 
-  if(protocol == IPPROTO_TCP){
-    if (listen(sockFd, MAX_QUEUE) < 0)
-      throw "listen() failed.";
-    while (1) {
-      caddrlen = sizeof(caddr);
-      arg_recv = new struct tmd::arg_receiver();
-      if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
-        delete arg_recv;
-        continue;
+    if(protocol == IPPROTO_TCP){
+      if (listen(sockFd, MAX_QUEUE) < 0)
+        throw "listen() failed.";
+      while (1) {
+        caddrlen = sizeof(caddr);
+        arg_recv = new struct tmd::arg_receiver();
+        if ((arg_recv->recvFd = accept(sockFd, (struct sockaddr *)&caddr, (socklen_t*)&caddrlen)) < 0){
+          delete arg_recv;
+          continue;
+        }
+        h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
+        arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
+        pthread_t tid;
+        pthread_create(&tid, NULL, func, (void *)arg_recv);
       }
-      h = gethostbyaddr((const char *)&caddr.sin_addr.s_addr, sizeof(caddr.sin_addr.s_addr), AF_INET);
-      arg_recv->IP = inet_ntoa(*(struct in_addr *)&caddr.sin_addr);
-      pthread_t tid;
-      pthread_create(&tid, NULL, func, (void *)arg_recv);
     }
+  } catch (char const* e){
+    cout << string(e) << endl;
+    cout << "Terminating the program ..." << endl;
+    close(cfd);
+    exit(2);
   }
 
   return NULL;
