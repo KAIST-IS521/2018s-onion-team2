@@ -10,4 +10,4 @@ if [ $# -eq 0 ]; then
   exit
 fi
 
-docker exec -i onion_$1 ./client||echo "::: Fail to run Client file! :::"
+docker exec -it onion_$1 ./client/client||echo "::: Fail to run Client file! :::"
