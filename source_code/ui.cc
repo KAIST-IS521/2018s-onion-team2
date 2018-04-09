@@ -65,7 +65,7 @@ void ui::printBanner(){
 userInfo ui::login(){
   string GithubId, PubKeyID, IP, Passphrase;
   while(1) {
-      int err_detect[3] = {1};
+      int err_detect[3] = {1,1,1};
       char err;
 
       ui::clearScreen();
@@ -110,15 +110,20 @@ userInfo ui::login(){
       ifstream urand("/dev/urandom");
       urand.read(passOTK, 4);
       urand.close();
+      cout << gpg::encBytestream(passOTK, &PubKeyID, 4) << endl;
+      cout << gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) << endl;
       
-      if(Passphrase == "" && gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) != passOTK ) {
+      if(Passphrase == "" || gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase) != passOTK ) {
         cout << "[!] ERROR Passpharase" << endl;
         err_detect[2] = 1;
+      }
+      else{
+        err_detect[2] = 0;
       }
 
       delete(passOTK);
 
-      if( (err_detect[0] + err_detect[1]) == 0 ) {
+      if( (err_detect[0] + err_detect[2]) == 0 ) {
         cout << "\x1b[0m" << endl;
         break;
       }
