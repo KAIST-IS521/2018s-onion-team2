@@ -29,7 +29,6 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 
-// #include <list>
 using namespace std;
 
 extern nodelist node_list;
@@ -48,8 +47,6 @@ namespace util{
 
   void int2byte(int integer, char* byte);
   int byte2int(char* integer);
-  // void time_t2byte(time_t t, char* byte);
-  // time_t byte2time_t(char* t);
   void ip2byte(string IP, unsigned char* byte);
   string byte2ip(unsigned char* byte);
 }

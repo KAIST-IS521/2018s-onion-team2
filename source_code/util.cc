@@ -38,27 +38,6 @@ string util::getContainerIP(){
    return tmpName;
 }
 
-// void packet::insertPkt(char* buf){
-//   char* data = new char[MAX_LEN];
-//   memcpy(data, buf, MAX_LEN);
-//   this->pkt.push_back(data);
-// }
-
-// bool packet::getPkt(char* buf){
-//   if (this->pkt.empty())
-//     return false;
-//   char* data = this->pkt.front();
-//   memcpy(buf, data, MAX_LEN);
-//   delete data;
-//   this->pkt.pop_front();
-//   return true;
-// }
-
-// packet::~packet(){
-//   for(list<char*>::iterator it = this->pkt.begin(); it != this->pkt.end(); ++it)
-//     delete *it;  
-// }
-
 void util::int2byte(int integer, char* byte){
   union util::int_byte x;
   x.integer = integer;
@@ -70,18 +49,6 @@ int util::byte2int(char* integer){
   memcpy(x.byte, integer, INT_SIZE);
   return x.integer;
 }
-
-// void util::time_t2byte(time_t t, char* byte){
-//   union util::time_t_byte x;
-//   x.t = t;
-//   memcpy(byte, x.byte, TIME_T_SIZE);
-// }
-
-// time_t util::byte2time_t(char* t){
-//   union util::time_t_byte x;
-//   memcpy(x.byte, t, TIME_T_SIZE);
-//   return x.t;
-// }
 
 void util::ip2byte(string IP, unsigned char* byte){
   int i = 0;

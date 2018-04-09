@@ -7,13 +7,6 @@ time_t timestamp::getTimestampNow(){
   
 }
 
-string timestamp::timestamp2str(time_t _timestamp){
-  std::tm tm = *std::localtime(&_timestamp);
-  std::stringstream ss;
-  ss << std::put_time(&tm, "%F %T");
-  return ss.str();
-}
-
 char* timestamp::timestamp2byte(time_t _timestamp){
     size_t i;
     char *str = new char[5];

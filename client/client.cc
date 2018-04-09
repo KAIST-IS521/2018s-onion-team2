@@ -11,7 +11,6 @@
 #include "../source_code/gpg.hh"
 #include "../source_code/nodelist.hh"
 #include "../source_code/msg_ui.hh"
-// Added by elmisty
 #include "../source_code/ui.hh"
 
 using namespace std;

@@ -4,29 +4,6 @@
 
 using namespace std;
 
-//enum {BLACK, BLUE, GREEN, CYAN, RED, MAGENTA, BROWN, LIGHTGRAY, DARKGRAY, LIGHTBLUE, LIGHTGREEN, LIGHTCYAN, LIGHTRED, LIGHTMAGENTA, YELLOW, WHITE};
-
-// Original code for this function can be found on https://gist.github.com/wewearglasses/2521037
-string ui::getIPAddr(){
-  string ip_addr = "";
-  struct ifaddrs* net_ifa = NULL;
-  struct ifaddrs* cur_ifa = NULL;
-
-  if(!getifaddrs(&net_ifa)){
-    cur_ifa = net_ifa;
-    while(cur_ifa) {
-      if(cur_ifa->ifa_addr->sa_family == AF_INET && cur_ifa->ifa_name == string("enp0s31f6")) {
-        ip_addr = inet_ntoa(((struct sockaddr_in*)cur_ifa->ifa_addr)->sin_addr);
-      }
-      cur_ifa = cur_ifa->ifa_next;
-    }
-  }
-
-  if(!net_ifa)
-    freeifaddrs(net_ifa);
-  return ip_addr;
-}
-
 void ui::clearScreen()
 {
   cout << "\e[1;1H\e[2J";

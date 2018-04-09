@@ -42,7 +42,6 @@ namespace tmd{
   void data_args(string IP, char* data, struct arg_data* list_update_arguments);
   list<node*> tmdPathSelecter();
   void* tmdSender(void* args);
-  // char* tmdPackPacket(node* sender, node* reciver, BYTE* plain);
 };
 
 #endif

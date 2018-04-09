@@ -2,7 +2,6 @@
 #include "parser.hh"
 #include "msg_ui.hh"
 
-// pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 
 // tmd::tmdReceiver
 // Description - tmdReceiverMain 에서 thread로 돌릴 함수, port를 계속 listen 하고 있음
@@ -28,19 +27,15 @@ void* tmd::tmdReceiver(void* args){
     pthread_t th_forward;
     pthread_create(&th_forward, NULL, tmd::tmdSender, (void*)msg_argument);
 
-    //cout << "Forwarding packets to " + msg->getNextIP() << endl;
     delete msg;
   } else if(stream[0] == '\x01') {
     message msg;
     parser::messageParser(stream,&msg);
     pthread_mutex_lock(&m_user);
-    //string recvmsg(msg->getGithubID()+" -> (YOU) "+you+" : "+msg->getContents());
-    //cout << "Received msg from " + msg->getGithubID() + ": " + msg->getContents() << endl;
     user.addMessage(msg);
     pthread_mutex_unlock(&m_user);
     cout << user.getGithubID() << endl;
     msg_ui::refresh_messages(user.getGithubID());
-    //delete msg;
   } else if(stream[0] == '\x02'){
     node* new_node = parser::nodeParser(stream);
     pthread_mutex_lock(&m_node_list);
@@ -129,38 +124,6 @@ void tmd::data_args(string IP, char* data, struct tmd::arg_data* list_update_arg
   list_update_arguments->length = MAX_LEN;
 }
 
-// // tmd::tmdPathSelecter
-// // Description - 타 클라이언트로 메세지 전송시 Path를 결정. nodes 만큼의 클라이언트를 거치도록 만들어줌
-// // Return - IP 배열  or Null(실패)
-// list<node*> tmd::tmdPathSelecter(int nodes){
-//   return nodelist::getRandomNode(nodes-1);
-// }
-
-// // tmd::tmdPackPacket
-// // Desctiption - 평문 char stream을 송신자와 Path 순서 대로 암호화를 한다.
-// // Return - 암호화된 char stream
-// char* tmd::tmdPackPacket(node* sender, node* reciver, char* plain){
-//   list<node*> pathlist = tmd::tmdPathSelecter(3);
-//   if(pathlist.size() < 3){
-//     return NULL;
-//   }
-//   char* encPr = gpg::encBytestream(plain,reciver->node::getPubKeyID());
-  
-//   // pathlist : reciver -> B -> C
-//   // in real : C -> B -> reciver 
-//   pathlist.insert(pathlist.begin(),reciver);
-
-//   // encPr = Erec(Prec)
-//   // structure : EC(EB(encPr,Erec)EB)
-//   std::list<node*> iterator i = pathlist.begin();
-//   while (i!=pathlist.end()){
-//     encPr = gpg::encBytestream(parser::packEncMessage(encPr,*(i)->getIP()), *(i+1)->getPubKeyID());
-//     i++;
-//   }
-
-//   return encPr;
-// }
-
 void* tmd::tmdSender(void* args){
   int n, cfd;
   struct hostent *h;
@@ -205,9 +168,6 @@ void* tmd::tmdSender(void* args){
 
   write(cfd, data, length);
   close(cfd);
-
-  //cout << "Message sent" << endl;
-
   delete data;
 
   return NULL;
