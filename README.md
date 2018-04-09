@@ -211,12 +211,13 @@ clinet name list -
 | 172.20.0.3| Marvin  | 704DB4C6  | 123qwe!@ |
 | 172.20.0.4| Sandra  | 60003972  | asdfasdf!|
 | 172.20.0.5| Stanton | BBB8EA0C  | 1q2w3e!@ |
-| 172.20.0.6| jason   | BC1B3Bc4  | qwer1234 |
+| 172.20.0.6| Jason   | BC1B3BC4  | qwer1234 |
 
 ## 원인을 확인하지 못한 버그 정보
 
-- Login 화면 Backspace visualize 관련 문제 : Login 화면에서 Backspace는 작동하지 않는 것 처럼 보이지만 실제로는 작동을 하고 있으니 안심하고 쓰셔도 됩니다.  
+- Login 화면 Backspace visualize 관련 문제 : 일부 Shell의 Login 화면에서 Backspace는 작동하지 않는 것 처럼 보이지만 실제로는 작동을 하고 있으니 안심하고 쓰셔도 됩니다.  
 - 메세지 수신시 Chat Console 사라짐 문제 : 송신시 Chat Console이 아래로 한칸 내려가면서 화면에서 사라집니다. Enter 한번 누르시면 복구되며, 복구하지 않은체 사용하셔도 작동 합니다.  
+- 다량 송신 문제 : 다량으로 송신하면 Shell 처리 과정에서 깨지는 현상을 발견하였으나 원인을 확인하지 못했습니다.
 
 ## Team Member 
 -----
