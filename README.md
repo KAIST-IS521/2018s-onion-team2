@@ -159,28 +159,58 @@ K<sub>3</sub> ( K<sub>5</sub> ( Flag, OTK, Git ID length, Timestamp, Git ID, Mes
 
 ### 소규모에서 규모를 늘려가며 개발을 한다. 그 모델은 다음과 같다. 
 > 1차 : 클라이언트간 리스트를 미리 가지고 있다고 가정 하고, 클라이언트 들은 죽지 않는다고 가정한다. 이 때, 서버 없이 클라이언트간 통신이 가능한 모델을 제작한다.
+
 > 2차 : 클라이언트는 서버에서 리스트를 받고, 이를 바탕으로 클라이언트 끼리 통신을 진행하는 모델을 제작한다. 이 때, 클라이언트 들은 죽지 않는다.
+
+**< 현재 제출된 클라이언트는 2차에 해당하는 모델입니다. >**
+
 > 3차 : 클라이언트는 서버에서 리스트를 받고, 이를 바탕으로 클라이언트 끼리 통신을 진행하는 모델을 제작한다. 이 때, 클라이언트는 정상 종료을 위해 서버와 통신하며, 서버는 통신 후에 리스트를 업데이트 하여 다른 클라이언트에 분배한다.
+
 > 4차 : 모든 클라이언트는 비정상종료가 될 수 있으며 이를 Heartbeat를 통해 리스트를 업데이트 시킬 수 있다. 이 리스트를 통해 클라이언트는 클라이언트 간의 통신을 진행 할 수 있다. (최종)
 * 여기서 언급된 "통신은" Onion-routing을 통한 통신이다.
 
 ## Docker shell script 사용법
-
-1. setdocker.sh 실행
-setdocker.sh는 Docker의 네트워크 환경 및 Docker image를 build 해주는 스크립트 입니다.  
-
-2. run.sh 실행
-run.sh는 build된 image를 container로 만들어주고 실행시켜 주는 스크립트 입니다.
-run.sh는 ./run.sh \[ container name \] \[ ssh port \] 로 실행시키시면 됩니다. 예시는 아래와 같습니다.
-```
-./run.sh do 50000 # onion_do 라는 컨테이너가 돌아가기 시작하며 50000번 포트는 컨테이너의 22번 포트로 포워딩 됩니다.  
+** Docker 특성상, 두 script에 Root 권한이 필요합니다. **
+1. set\_env.sh
+- YoungMEssenger를 사용하기 위해 환경을 조성하는 파일 입니다.
+``` 
+# ./set_env.sh 
 ```
 
-3. (개발용) exec\_sh.sh 실행
-exec\_sh.sh 는 개발 테스트 등에만 사용될 스크립트며, exec\_sh.sh \[ container name \]으로 실행시키시면 됩니다.
+or
+
+``` 
+$ sudo ./set_env.sh 
 ```
-./exec_sh.sh onion_do # onion_do의 쉘이 뜹니다.
+
+2. run.sh
+- YoungMEssenger를 실행시키는 클라이언트 프로그램 입니다. 옵션을 주지 않으면, 사용 가능한 계정이 제공됩니다.
+** 현재 제출된 클라이언트는 2차 Prototype이므로, 서버가 구현되어 있지 않습니다. 따라서 제공되는 계정으로만 실행이 가능합니다. **
+
+``` 
+# ./run.sh    # $ sudo ./run.sh 도 가능
+clinet name list -
+ donovan
+ marvin
+ sandra
+ stanton
+ jason
+
+# ./run.sh donovan # $ sudo ./run.sh donovan 도 가능, client 실행
 ```
+
+** 5개의 클라이언트가 모두 실행되어야 정상적인 테스트가 가능합니다. **
+
+##  테스트 계정 정보
+- 안타깝게도, Prototype2 버전이기 때문에, 주어진 계정에서만 작동이 가능합니다. 계정 및 서버 정보는 다음과 같습니다.
+
+| IP        | ID      | PubkeyID  | PW       |
+|-----------|---------|-----------|----------|
+| 172.20.0.2| Donovan | 9932355F  | 1q2w3e!@ |
+| 172.20.0.3| Marvin  | 704DB4C6  | 123qwe!@ |
+| 172.20.0.4| Sandra  | 60003972  | asdfasdf!|
+| 172.20.0.5| Stanton | BBB8EA0C  | 1q2w3e!@ |
+| 172.20.0.6| jason   | BC1B3Bc4  | qwer1234 |
 
 
 ## Team Member 
