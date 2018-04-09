@@ -98,13 +98,21 @@ userInfo ui::login(nodelist* node_list){
       cout << setw(50) << "\x1b[35m >> Passphrases:";
       Passphrase = getpass("");
       
+      char* encPassOTK;
+      char* decPassOTK;
       char *passOTK = new char[5];
       bzero(passOTK, 5);
       ifstream urand("/dev/urandom");
       urand.read(passOTK, 4);
       urand.close();
-      try{ 
-      if(Passphrase.compare("")==0 || strncmp(gpg::decBytestream(gpg::encBytestream(passOTK, &PubKeyID, 4), &Passphrase),passOTK,4) ) {
+      try{
+      encPassOTK = gpg::encBytestream(passOTK, &PubKeyID, 4);
+      if(encPassOTK == NULL)
+        throw 1;
+      decPassOTK = gpg::decBytestream(encPassOTK, &Passphrase);
+      if(decPassOTK == NULL)
+        throw 2;
+      else if(Passphrase.compare("")==0 || strncmp(decPassOTK,passOTK,4) ) {
         cout << "[!] ERROR Passpharase" << endl;
         err_detect[2] = 1;
       }
@@ -113,10 +121,14 @@ userInfo ui::login(nodelist* node_list){
       }
       }
       catch(int exception){
+        delete(passOTK);
+        if(exception == 2)
+          delete(encPassOTK);
         continue;
       }
-
       delete(passOTK);
+      delete(encPassOTK);
+      delete(decPassOTK);
 
       if( (err_detect[0] + err_detect[2]) == 0 ) {
         cout << "\x1b[0m" << endl;

@@ -54,11 +54,11 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
 
   // checking PUBKEYID
   if(PubKeyID->size()!=8){
-    cout << "Length Fault" << endl;
+    cout << "Public Key ID Length Fault" << endl;
     return NULL;
   }
   else if(not(std::regex_match(*PubKeyID, exp))){
-    cout << "REGEX Fault" << endl;
+    cout << "Public Key ID REGEX Fault" << endl;
     return NULL;
   }
   int count = 0;
@@ -102,7 +102,10 @@ char* gpg::encBytestream(char* src,string* PubKeyID,int length){
   }
   delete buf;
   pclose(pp);
-  return (char*)(result->c_str());
+  char* encResult = new char[result->size()+1];
+  memcpy(encResult, result->c_str(), result->size());
+  delete result;
+  return encResult;
 }
 
 // gpg::keyRefresh
@@ -145,7 +148,7 @@ char* gpg::decBytestream(char* src, string* passphrase){
   string suffix_cmd("\' 2>/dev/null");
   std::regex exp ("[;|\$\(|\)|\`]");
    if(std::regex_search(*passphrase,exp )){
-    cout << "REGEX Fault" << endl;
+    cout << "Passphrase REGEX Fault" << endl;
     return NULL;
   }
   string full_cmd(prefix_cmd+encData+middle_cmd+*passphrase+suffix_cmd);
@@ -172,7 +175,11 @@ char* gpg::decBytestream(char* src, string* passphrase){
   }
   delete buf;
   pclose(pp);
-  return (char*)(result->c_str());
+  char* decResult = new char[result->size()+1];
+  bzero(decResult, result->size()+1);
+  memcpy(decResult, result->c_str(), result->size());
+  delete result;
+  return decResult;
 }
 
 // gpg::recvPubKey
