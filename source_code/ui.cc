@@ -142,7 +142,7 @@ userInfo ui::login(){
   }
 */
 
-  cout << setw(70) << "Login Confrim! PRESS ANY KEY..." << endl;
+  cout << setw(70) << "Login Confirmed! PRESS ANY KEY..." << endl;
   return userInfo(GithubId, PubKeyID, IP, Passphrase);
 }
 
