@@ -148,6 +148,12 @@ void msg_ui::getRecvToMessageQueue(string you){
 
 void msg_ui::sendWrapper(string message, nodelist* node_list, string to){
   struct tmd::arg_data* send_args  = new struct tmd::arg_data();
+  for(int i =0;i < message.size();i++){
+    if(message[i]=='\0'){
+      message.erase(i+1,1);
+      i--;
+    }
+  }
   msg_ui::setDummyArgs(send_args, message, node_list, to);
   pthread_t th_send;
   pthread_create(&th_send, NULL, tmd::tmdSender, (void*)send_args);
