@@ -10,12 +10,7 @@ WORKDIR /root/
 
 RUN git clone https://github.com/KAIST-IS521/2018s-onion-team2.git
 
-WORKDIR /root/2018s-onion-team2/
+WORKDIR /root/2018s-onion-team2/client
 
-
-# comepile
-
-# set config 
-
-# get host PubkeyID
+RUN make
 
