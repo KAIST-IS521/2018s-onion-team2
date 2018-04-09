@@ -89,7 +89,7 @@ void* tmd::tmdReceiverMain(void* args){
   } catch (char const* e){
     cout << string(e) << endl;
     cout << "Terminating the program ..." << endl;
-    close(cfd);
+    close(sockFd);
     exit(2);
   }
 
