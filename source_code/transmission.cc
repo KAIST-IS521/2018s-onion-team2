@@ -91,7 +91,7 @@ void* tmd::tmdReceiverMain(void* args){
     cout << string(e) << endl;
     cout << "Terminating the program ..." << endl;
     close(sockFd);
-    kill(getpid(), -9);
+    exit(2);
   }
 
   return NULL;
@@ -151,7 +151,7 @@ void* tmd::tmdSender(void* args){
     cout << "Unreachable: " + string(e) << endl;
     cout << "Terminating the program ..." << endl;
     close(cfd);
-    kill(getpid(), -9);
+    exit(2);
   }
 
   write(cfd, data, length);
