@@ -20,6 +20,7 @@ void* tmd::tmdReceiver(void* args){
   while ((n = read(recvFd, buf, MAX_LEN)) > 0) {
     data += buf;
   }
+  data = data.substr(0,data.find("-----END PGP MESSAGE-----")+25);
   string passphrase = user.getPassphrase();
   char* stream = gpg::decBytestream((char*)data.c_str(), &passphrase);
   if(stream[0] == '\x00'){
