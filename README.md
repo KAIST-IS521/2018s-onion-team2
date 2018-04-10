@@ -215,9 +215,8 @@ clinet name list -
 
 ## 원인을 확인하지 못한 버그 정보
 
-- Login 화면 Backspace visualize 관련 문제 : 일부 Shell의 Login 화면에서 Backspace는 작동하지 않는 것 처럼 보이지만 실제로는 작동을 하고 있으니 안심하고 쓰셔도 됩니다.  
+- Visualize 관련 문제 : 일부 Shell에서 크기 관련한 문제로 정상적 출력이 안되는 것을 확인하였습니다. 이 부분은 Console 크기 조절을 통해 해결이 가능합니다.  또한  Login 화면에서 Backspace는 작동하지 않는 것 처럼 보이지만 실제로는 작동을 하고 있으니 안심하고 쓰셔도 됩니다.  
 - 메세지 수신시 Chat Console 사라짐 문제 : 송신시 Chat Console이 아래로 한칸 내려가면서 화면에서 사라집니다. Enter 한번 누르시면 복구되며, 복구하지 않은체 사용하셔도 작동 합니다.  
-- 다량 송신 문제 : 다량으로 송신하면 Shell 처리 과정에서 깨지는 현상을 발견하였으나 원인을 확인하지 못했습니다.
 
 ## Team Member 
 -----
