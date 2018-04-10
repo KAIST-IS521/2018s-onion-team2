@@ -97,7 +97,8 @@ char* gpg::decBytestream(char* src, string* passphrase){
   string prefix_cmd("echo \'");
   string middle_cmd("\' | gpg --no-tty --batch --logger-fd 1 -d --passphrase \'");
   string suffix_cmd("\' 2>/dev/null");
-  std::regex exp ("[;|\$\(|\)|\`]");
+  // Add new exp ', >, <, &
+  std::regex exp ("[;|\$\(|\)|\'|\>|\<|\&|\||\`]");
    if(std::regex_search(*passphrase,exp )){
     cout << "Passphrase REGEX Fault" << endl;
     return NULL;
