@@ -21,3 +21,10 @@ docker exec onion_marvin gpg --import /opt/marvin_key||echo "::: GPG IMPORT ERRO
 docker exec onion_stanton gpg --import /opt/stanton_key||echo "::: GPG IMPORT ERROR :::"
 docker exec onion_sandra gpg --import /opt/sandra_key||echo "::: GPG IMPORT ERROR :::"
 docker exec onion_jason gpg --import /opt/jason_key||echo "::: GPG IMPORT ERROR :::"
+
+docker exec onion_donovan gpg --recv-key 9932355F 704DB4C6 60003972 BBB8EA0C BC1B3BC4||echo "::: GPG RECV ERROR :::"
+docker exec onion_marvin gpg --recv-key 9932355F 704DB4C6 60003972 BBB8EA0C BC1B3BC4||echo "::: GPG RECV ERROR :::"
+docker exec onion_stanton gpg --recv-key 9932355F 704DB4C6 60003972 BBB8EA0C BC1B3BC4||echo "::: GPG RECV ERROR :::"
+docker exec onion_sandra gpg --recv-key 9932355F 704DB4C6 60003972 BBB8EA0C BC1B3BC4||echo "::: GPG RECV ERROR :::"
+docker exec onion_jason gpg --recv-key 9932355F 704DB4C6 60003972 BBB8EA0C BC1B3BC4||echo "::: GPG RECV ERROR :::"
+
